@@ -28,7 +28,9 @@ exports.getDashboard = async (req, res, next) => {
             return res.render('parent/dashboard', {
                 title: 'Parent Dashboard | EduSmart',
                 children: [],
-                selectedChild: null
+                selectedChild: null,
+                totalAchievements: 0,
+                recentAchievements: []
             });
         }
 
