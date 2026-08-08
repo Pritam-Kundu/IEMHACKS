@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="<%= language %>" dir="<%= direction %>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -126,6 +126,19 @@
                 </div>
                 
                 <div class="flex items-center gap-5">
+                    
+                    <!-- Language Switcher -->
+                    <div class="relative group mr-2">
+                        <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
+                            <i class="fa-solid fa-globe text-xl"></i>
+                            <%= locals.language === 'bn' ? 'বাংলা' : 'English' %>
+                        </button>
+                        <div class="absolute right-0 mt-0 w-32 bg-white border border-slate-200 rounded-md shadow-lg hidden group-hover:block z-50 overflow-hidden">
+                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'en' ? 'font-bold' : '' %>">English</button>
+                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'bn' ? 'font-bold' : '' %>">বাংলা</button>
+                        </div>
+                    </div>
+
                     <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
                         <i class="fa-regular fa-bell text-xl"></i>
                         <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
@@ -250,5 +263,6 @@
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
         });
     </script>
+    <%- include('../partials/language-modal') %>
 </body>
 </html>
