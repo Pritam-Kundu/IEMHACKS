@@ -29,6 +29,13 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
+// Global template variables
+app.use((req, res, next) => {
+    res.locals.language = res.locals.language || 'en';
+    res.locals.direction = res.locals.direction || 'ltr';
+    next();
+});
+
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));
 
