@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Tailwind CSS (CDN for rapid hackathon setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Dashboard-specific custom styles */
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Sidebar styling */
+        .sidebar-active { 
+            background-color: #e0e7ff; 
+            color: #4f46e5; 
+            font-weight: 600; 
+            border-right: 4px solid #4f46e5; 
+        }
+        .sidebar-item { transition: all 0.2s ease-in-out; }
+        .sidebar-item:hover:not(.sidebar-active) { 
+            background-color: #f1f5f9; 
+            color: #334155; 
+        }
+        
+        /* Utility */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800">
+
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl">E</div>
+                <span class="text-xl font-bold text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase">Pro</span></span>
+            </div>
+            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            <a href="/teacher/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/teacher/courses" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+                <i class="fa-solid fa-book-open w-5 text-center"></i>
+                <span>My Courses</span>
+            </a>
+            <a href="/teacher/students" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Students</span>
+            </a>
+            <a href="/teacher/lessons" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i>
+                <span>Lessons</span>
+            </a>
+            <a href="/teacher/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
+                <span>Quizzes</span>
+            </a>
+            <a href="/teacher/assignments" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-file-pen w-5 text-center"></i>
+                <span>Assignments</span>
+            </a>
+            <a href="/teacher/analytics" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/teacher/reports" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-200">
+            <a href="/teacher/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-gear w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+            <!-- Using existing logout flow -->
+            <form action="/auth/logout" method="POST" class="w-full mt-1">
+                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full">
+        
+        <!-- Top Header -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Create Course</h1>
+                    
+                    <!-- Global Links -->
+                    <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
+                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Home</a>
+                        <a href="/#features" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Features</a>
+                        <a href="/#how-it-works" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">How it Works</a>
+                        <a href="/#about" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">About</a>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-5">
+                    <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
+                        <i class="fa-regular fa-bell text-xl"></i>
+                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+                    </button>
+                    
+                    <a href="/teacher/profile" class="flex items-center gap-3 cursor-pointer group">
+                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-semibold text-slate-800">Prof. <%= user.lastName %></p>
+                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-200 bg-slate-50">
+                        <h2 class="text-2xl font-bold text-slate-800">Create New Course</h2>
+                        <p class="text-slate-500 mt-1">Design a new learning experience for your students.</p>
+                    </div>
+                    
+                    <div class="p-6 sm:p-8">
+                        <form id="createCourseForm" class="space-y-6">
+                            <!-- Error Alert -->
+                            <div id="errorAlert" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
+                                <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                                <span id="errorMessage">Please check your inputs.</span>
+                            </div>
+
+                            <!-- Success Alert -->
+                            <div id="successAlert" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check mt-0.5"></i>
+                                <span id="successMessage">Course created successfully! Redirecting...</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <!-- Title -->
+                                <div>
+                                    <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">Course Title <span class="text-red-500">*</span></label>
+                                    <input type="text" id="title" name="title" required placeholder="e.g. Advanced Java Programming" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                </div>
+
+                                <!-- Description -->
+                                <div>
+                                    <label for="description" class="block text-sm font-semibold text-slate-700 mb-1">Description <span class="text-red-500">*</span></label>
+                                    <textarea id="description" name="description" required rows="4" placeholder="Briefly describe what students will learn..." class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800"></textarea>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Category / Subject -->
+                                    <div>
+                                        <label for="subject" class="block text-sm font-semibold text-slate-700 mb-1">Category <span class="text-red-500">*</span></label>
+                                        <select id="subject" name="subject" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
+                                            <option value="" disabled selected>Select Category</option>
+                                            <% if (subjects && subjects.length > 0) { %>
+                                                <% subjects.forEach(sub => { %>
+                                                    <option value="<%= sub._id %>"><%= sub.name %></option>
+                                                <% }) %>
+                                            <% } else { %>
+                                                <option value="" disabled>No categories available</option>
+                                            <% } %>
+                                        </select>
+                                    </div>
+
+                                    <!-- Difficulty Level -->
+                                    <div>
+                                        <label for="level" class="block text-sm font-semibold text-slate-700 mb-1">Difficulty <span class="text-red-500">*</span></label>
+                                        <select id="level" name="level" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
+                                            <option value="" disabled selected>Select Difficulty</option>
+                                            <option value="beginner">Beginner</option>
+                                            <option value="intermediate">Intermediate</option>
+                                            <option value="advanced">Advanced</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Duration -->
+                                    <div>
+                                        <label for="duration" class="block text-sm font-semibold text-slate-700 mb-1">Duration (Optional)</label>
+                                        <input type="text" id="duration" name="duration" placeholder="e.g. 8 weeks" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                    </div>
+
+                                    <!-- Status -->
+                                    <div>
+                                        <label for="status" class="block text-sm font-semibold text-slate-700 mb-1">Course Status</label>
+                                        <select id="status" name="status" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
+                                            <option value="draft" selected>Draft (Hidden)</option>
+                                            <option value="published">Published (Visible)</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Thumbnail -->
+                                <div>
+                                    <label for="thumbnail" class="block text-sm font-semibold text-slate-700 mb-1">Thumbnail URL (Optional)</label>
+                                    <input type="url" id="thumbnail" name="thumbnail" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                    <p class="text-xs text-slate-500 mt-1">Leave empty to use the default course thumbnail.</p>
+                                </div>
+                            </div>
+                            
+                            <hr class="border-slate-200 my-6">
+                            
+                            <!-- Action Buttons -->
+                            <div class="flex items-center justify-end gap-3 pt-2">
+                                <a href="/teacher/dashboard" class="px-5 py-2.5 rounded-lg text-slate-600 font-semibold hover:bg-slate-100 transition-colors">Cancel</a>
+                                <button type="submit" id="submitBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold shadow-sm transition-colors flex items-center justify-center min-w-[140px]">
+                                    <span>Create Course</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Page Specific Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sidebar Toggle Logic for Mobile
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const openSidebarBtn = document.getElementById('openSidebarBtn');
+            const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+            
+            const toggleSidebar = () => {
+                const isOpen = !sidebar.classList.contains('-translate-x-full');
+                
+                if (isOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                    document.body.classList.add('overflow-hidden');
+                }
+            };
+            
+            if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
+            if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            // Form Submission Logic
+            const form = document.getElementById('createCourseForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const errorAlert = document.getElementById('errorAlert');
+            const errorMessage = document.getElementById('errorMessage');
+            const successAlert = document.getElementById('successAlert');
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                // Reset alerts
+                errorAlert.classList.add('hidden');
+                successAlert.classList.add('hidden');
+                
+                // Get form data
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                
+                // Client-side validation
+                if (!data.title.trim() || !data.description.trim() || !data.subject || !data.level) {
+                    errorMessage.textContent = 'Please fill in all required fields.';
+                    errorAlert.classList.remove('hidden');
+                    return;
+                }
+                
+                // Loading state
+                const originalBtnText = submitBtn.innerHTML;
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Creating...';
+
+                try {
+                    const response = await fetch('/teacher/courses', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        successAlert.classList.remove('hidden');
+                        // Redirect after brief delay
+                        setTimeout(() => {
+                            window.location.href = '/teacher/dashboard';
+                        }, 1000);
+                    } else {
+                        errorMessage.textContent = result.message || 'Failed to create course. Please try again.';
+                        errorAlert.classList.remove('hidden');
+                        
+                        // Re-enable button
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                        submitBtn.innerHTML = originalBtnText;
+                    }
+                } catch (error) {
+                    console.error('Create course error:', error);
+                    errorMessage.textContent = 'A network error occurred. Please try again.';
+                    errorAlert.classList.remove('hidden');
+                    
+                    // Re-enable button
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        .sidebar-active { 
+            background-color: #f0fdf4; 
+            color: #16a34a; 
+            font-weight: 600; 
+            border-right: 4px solid #16a34a; 
+        }
+        .sidebar-item { transition: all 0.2s ease-in-out; }
+        .sidebar-item:hover:not(.sidebar-active) { 
+            background-color: #f1f5f9; 
+            color: #334155; 
+        }
+        
+        .badge-pending { @apply bg-amber-100 text-amber-700 border-amber-200; }
+        .badge-overdue { @apply bg-red-100 text-red-700 border-red-200; }
+        .badge-submitted, .badge-late { @apply bg-blue-100 text-blue-700 border-blue-200; }
+        .badge-graded { @apply bg-emerald-100 text-emerald-700 border-emerald-200; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800">
+
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-xl">E</div>
+                <span class="text-xl font-bold text-slate-900">EduSmart <span class="text-xs text-emerald-600 ml-1 font-semibold uppercase">Family</span></span>
+            </div>
+            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            <a href="/parent/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-house-chimney w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/parent/children" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-children w-5 text-center"></i>
+                <span>My Children</span>
+            </a>
+            <a href="/parent/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>Progress</span>
+            </a>
+            <a href="/parent/assignments" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+                <i class="fa-solid fa-file-signature w-5 text-center"></i>
+                <span>Assignments</span>
+            </a>
+            <a href="/parent/achievements" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-medal w-5 text-center"></i>
+                <span>Achievements</span>
+            </a>
+            </nav>
+
+        <div class="p-4 border-t border-slate-200">
+            <a href="/parent/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-gear w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+            <form action="/logout" method="POST" class="w-full mt-1">
+                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full relative">
+        
+        <!-- Top Header -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">AssignmentsTracker</h1>
+                </div>
+                
+                <div class="flex items-center gap-5">
+
+                    <!-- Notification Icon & Dropdown -->
+                    <div class="relative" id="notificationDropdownContainer">
+                        <button id="notificationBtn" class="relative text-slate-500 hover:text-emerald-600 transition-colors focus:outline-none">
+                            <i class="fa-regular fa-bell text-xl"></i>
+                            <span id="unreadBadge" class="hidden absolute -top-2 -right-2 text-[9px] font-bold text-white bg-red-500 rounded-full px-1.5 py-0.5 border-2 border-white">0</span>
+                        </button>
+                        
+                        <!-- Dropdown Panel -->
+                        <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-lg border border-slate-200 z-50 overflow-hidden transform origin-top-right transition-all">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                                <h3 class="font-bold text-slate-800">Notifications</h3>
+                                <button id="markAllReadBtn" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hidden">Mark all as read</button>
+                            </div>
+                            <div id="notificationList" class="max-h-96 overflow-y-auto divide-y divide-slate-100">
+                                <!-- Notifications will be injected here -->
+                                <div class="p-4 text-center text-sm text-slate-500">Loading notifications...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/parent/profile" class="flex items-center gap-3 cursor-pointer group">
+                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
+                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-1">Academic Assignments</h2>
+                    <p class="text-slate-500">Monitor upcoming deadlines and reviewed homework.</p>
+                </div>
+                
+                <% if (children && children.length > 1) { %>
+                    <div class="bg-white border border-slate-200 rounded-xl p-2 shadow-sm shrink-0 flex items-center">
+                        <span class="text-sm text-slate-500 px-3 font-medium">Child:</span>
+                        <div class="relative">
+                            <select class="appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-sm font-bold rounded-lg focus:ring-emerald-500 focus:border-emerald-500 block w-full pr-8 pl-3 py-2 cursor-pointer" onchange="window.location.href='/parent/assignments' + (this.value ? '?childId=' + this.value : '')">
+                                <option value="">All Children</option>
+                                <% children.forEach(child => { %>
+                                    <option value="<%= child.id %>" <%= selectedChild && selectedChild.id === child.id ? 'selected' : '' %>><%= child.name %></option>
+                                <% }) %>
+                            </select>
+                            <i class="fa-solid fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
+                <% } else if (children && children.length === 1) { %>
+                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2 flex items-center gap-3 shrink-0">
+                        <img src="<%= children[0].profilePicture || '/images/default-avatar.png' %>" class="w-8 h-8 rounded-full border border-emerald-200">
+                        <div>
+                            <p class="text-xs text-emerald-600 font-semibold uppercase tracking-wider">Student</p>
+                            <p class="text-sm font-bold text-slate-800"><%= children[0].name %></p>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+
+            <% if (children && children.length > 0) { %>
+                
+                <!-- Summary Metrics -->
+                <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+                        <p class="text-sm text-slate-500 font-medium mb-1">Total</p>
+                        <p class="text-2xl font-bold text-slate-800"><%= summary.total %></p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+                        <p class="text-sm text-slate-500 font-medium mb-1">Pending</p>
+                        <p class="text-2xl font-bold text-amber-600"><%= summary.pending %></p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+                        <p class="text-sm text-slate-500 font-medium mb-1">Submitted</p>
+                        <p class="text-2xl font-bold text-blue-600"><%= summary.submitted %></p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-slate-200 shadow-sm text-center">
+                        <p class="text-sm text-slate-500 font-medium mb-1">Graded</p>
+                        <p class="text-2xl font-bold text-emerald-600"><%= summary.graded %></p>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 border border-red-200 shadow-sm text-center bg-red-50">
+                        <p class="text-sm text-red-500 font-medium mb-1">Overdue</p>
+                        <p class="text-2xl font-bold text-red-600"><%= summary.overdue %></p>
+                    </div>
+                </div>
+
+                <% if (assignments && assignments.length > 0) { %>
+                    <div class="space-y-4">
+                        <% assignments.forEach(assign => { %>
+                            <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <span class="px-2.5 py-1 border rounded-md text-xs font-bold uppercase tracking-wide badge-<%= assign.calcStatus %>">
+                                            <%= assign.calcStatus %>
+                                        </span>
+                                        <% if (assign.isLate) { %>
+                                            <span class="text-xs text-red-500 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-100">LATE</span>
+                                        <% } %>
+                                    </div>
+                                    
+                                    <h3 class="text-lg font-bold text-slate-800 mb-1"><%= assign.title %></h3>
+                                    
+                                    <div class="text-sm text-slate-500 space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-solid fa-book w-4 text-center"></i>
+                                            <span class="font-medium text-slate-700"><%= assign.courseName %></span>
+                                            <span class="text-slate-300 mx-1">|</span>
+                                            <i class="fa-solid fa-chalkboard-user w-4 text-center text-slate-400"></i>
+                                            <span><%= assign.teacherName %></span>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="fa-solid fa-user-graduate w-4 text-center"></i>
+                                            <span class="font-medium text-slate-700"><%= assign.childName %></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex flex-row md:flex-col justify-between items-center md:items-end gap-4 md:w-48 shrink-0">
+                                    <div class="text-left md:text-right">
+                                        <p class="text-xs text-slate-500 font-medium uppercase">Due Date</p>
+                                        <p class="text-sm font-bold text-slate-800"><%= new Date(assign.dueDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></p>
+                                    </div>
+                                    
+                                    <% if (assign.calcStatus === 'graded' && assign.submission) { %>
+                                        <div class="text-right">
+                                            <p class="text-xs text-slate-500 font-medium uppercase">Score</p>
+                                            <p class="text-lg font-bold text-emerald-600"><%= assign.submission.score %><span class="text-sm text-slate-400">/<%= assign.totalPoints %></span></p>
+                                        </div>
+                                    <% } %>
+
+                                    <button onclick="openAssignmentModal('<%= Buffer.from(JSON.stringify(assign)).toString('base64') %>')" class="px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-lg hover:bg-slate-200 transition-colors text-sm border border-slate-200">
+                                        View Details
+                                    </button>
+                                </div>
+
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="flex flex-col items-center justify-center h-64 max-w-lg mx-auto text-center border-2 border-dashed border-slate-200 rounded-2xl bg-white p-10">
+                        <div class="w-16 h-16 bg-slate-50 text-slate-400 rounded-full flex items-center justify-center text-2xl mb-4 shadow-sm">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-2">No assignments found.</h3>
+                        <p class="text-slate-500">Your child is all caught up or is not enrolled in any active courses with assignments.</p>
+                    </div>
+                <% } %>
+
+            <% } else { %>
+                <!-- Empty State: No Children -->
+                <div class="flex flex-col items-center justify-center h-[60vh] max-w-lg mx-auto text-center border-2 border-dashed border-slate-200 rounded-2xl bg-white p-10">
+                    <div class="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center text-3xl mb-6 shadow-sm">
+                        <i class="fa-solid fa-child-reaching"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">No children connected yet.</h2>
+                    <p class="text-slate-500 mb-8">Connect your child's account to start viewing their assignments.</p>
+                    <a href="/parent/children" class="bg-emerald-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm">Go to My Children</a>
+                </div>
+            <% } %>
+            
+        </div>
+        
+        <!-- Assignment Details Modal -->
+        <div id="assignmentModal" class="fixed inset-0 bg-slate-900/50 z-50 hidden flex items-center justify-center p-4 transition-opacity">
+            <div class="bg-white rounded-xl shadow-lg w-full max-w-2xl max-h-[90vh] flex flex-col transform transition-transform">
+                
+                <div class="px-6 py-4 border-b border-slate-200 flex justify-between items-center shrink-0">
+                    <h3 class="text-xl font-bold text-slate-800">Assignment Details</h3>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 transition-colors p-1"><i class="fa-solid fa-xmark text-lg"></i></button>
+                </div>
+                
+                <div class="p-6 overflow-y-auto flex-1">
+                    
+                    <div class="flex items-center gap-3 mb-4">
+                        <span id="modalStatusBadge" class="px-3 py-1 border rounded-md text-sm font-bold uppercase tracking-wide"></span>
+                    </div>
+
+                    <h2 id="modalTitle" class="text-2xl font-bold text-slate-800 mb-2"></h2>
+                    
+                    <div class="flex flex-wrap gap-x-6 gap-y-2 mb-6 text-sm text-slate-600">
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-book w-4 text-center"></i> <span id="modalCourse"></span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-chalkboard-user w-4 text-center"></i> <span id="modalTeacher"></span></div>
+                        <div class="flex items-center gap-2"><i class="fa-solid fa-user-graduate w-4 text-center"></i> <span id="modalChild"></span></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6 bg-slate-50 rounded-lg p-4 border border-slate-100">
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium uppercase mb-1">Assigned Date</p>
+                            <p id="modalAssignedDate" class="font-semibold text-slate-800"></p>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500 font-medium uppercase mb-1">Due Date</p>
+                            <p id="modalDueDate" class="font-semibold text-slate-800"></p>
+                        </div>
+                    </div>
+
+                    <div class="mb-8">
+                        <h4 class="font-bold text-slate-800 mb-2">Description</h4>
+                        <div id="modalDescription" class="prose prose-sm max-w-none text-slate-600 whitespace-pre-line"></div>
+                    </div>
+
+                    <div id="modalSubmissionSection" class="hidden border-t border-slate-200 pt-6">
+                        <h4 class="font-bold text-slate-800 mb-4">Submission & Feedback</h4>
+                        
+                        <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-4">
+                            <p class="text-xs text-blue-600 font-semibold uppercase mb-1">Submitted On</p>
+                            <p id="modalSubmittedAt" class="font-medium text-slate-700"></p>
+                        </div>
+
+                        <div id="modalFeedbackSection" class="hidden bg-emerald-50 border border-emerald-100 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <p class="text-xs text-emerald-600 font-semibold uppercase">Teacher Feedback</p>
+                                <div class="text-right">
+                                    <span class="text-2xl font-bold text-emerald-700" id="modalScore"></span>
+                                    <span class="text-sm text-emerald-600 font-medium" id="modalMaxScore"></span>
+                                </div>
+                            </div>
+                            <p id="modalFeedbackText" class="text-slate-700 italic text-sm whitespace-pre-line"></p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="px-6 py-4 border-t border-slate-200 shrink-0 text-right">
+                    <button onclick="closeModal()" class="px-6 py-2 bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-700 transition-colors shadow-sm">Close</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // Sidebar Logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const openSidebarBtn = document.getElementById('openSidebarBtn');
+            const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+            
+            const toggleSidebar = () => {
+                const isOpen = !sidebar.classList.contains('-translate-x-full');
+                if (isOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                    document.body.classList.add('overflow-hidden');
+                }
+            };
+            
+            if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
+            if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+        });
+
+        // Modal Logic
+        const modal = document.getElementById('assignmentModal');
+        
+        function formatDate(isoString) {
+            if (!isoString) return 'N/A';
+            return new Date(isoString).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute:'2-digit' });
+        }
+
+        function openAssignmentModal(base64Data) {
+            try {
+                const assign = JSON.parse(atob(base64Data));
+                
+                // Populate Headers
+                document.getElementById('modalTitle').textContent = assign.title;
+                document.getElementById('modalCourse').textContent = assign.courseName;
+                document.getElementById('modalTeacher').textContent = assign.teacherName;
+                document.getElementById('modalChild').textContent = assign.childName;
+                document.getElementById('modalAssignedDate').textContent = formatDate(assign.assignedAt);
+                document.getElementById('modalDueDate').textContent = formatDate(assign.dueDate);
+                document.getElementById('modalDescription').textContent = assign.description;
+                
+                // Badge
+                const badge = document.getElementById('modalStatusBadge');
+                badge.className = `px-3 py-1 border rounded-md text-sm font-bold uppercase tracking-wide badge-${assign.calcStatus}`;
+                badge.textContent = assign.isLate ? `${assign.calcStatus} (Late)` : assign.calcStatus;
+
+                // Submission Section
+                const subSection = document.getElementById('modalSubmissionSection');
+                const feedbackSection = document.getElementById('modalFeedbackSection');
+                
+                if (assign.submission) {
+                    subSection.classList.remove('hidden');
+                    document.getElementById('modalSubmittedAt').textContent = formatDate(assign.submission.submittedAt);
+                    
+                    if (assign.calcStatus === 'graded') {
+                        feedbackSection.classList.remove('hidden');
+                        document.getElementById('modalScore').textContent = assign.submission.score;
+                        document.getElementById('modalMaxScore').textContent = `/${assign.totalPoints}`;
+                        document.getElementById('modalFeedbackText').textContent = assign.submission.feedback || 'No written feedback provided.';
+                    } else {
+                        feedbackSection.classList.add('hidden');
+                    }
+                } else {
+                    subSection.classList.add('hidden');
+                }
+
+                // Show Modal
+                modal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            } catch(e) {
+                console.error("Error opening modal:", e);
+                alert("Could not load assignment details.");
+            }
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+
+        // Close modal on outside click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Notifications Logic ---
+            const notificationBtn = document.getElementById('notificationBtn');
+            const notificationPanel = document.getElementById('notificationPanel');
+            const notificationList = document.getElementById('notificationList');
+            const unreadBadge = document.getElementById('unreadBadge');
+            const markAllReadBtn = document.getElementById('markAllReadBtn');
+            
+            let notificationsOpen = false;
+
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    notificationsOpen = !notificationsOpen;
+                    notificationPanel.classList.toggle('hidden', !notificationsOpen);
+                    if (notificationsOpen) fetchNotifications();
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (notificationsOpen && !document.getElementById('notificationDropdownContainer').contains(e.target)) {
+                    notificationsOpen = false;
+                    notificationPanel.classList.add('hidden');
+                }
+            });
+
+            if (notificationPanel) {
+                notificationPanel.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
+            async function fetchNotifications() {
+                try {
+                    const res = await fetch('/parent/api/notifications?limit=10');
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        updateUnreadBadge(data.unreadCount);
+                        renderNotifications(data.notifications);
+                    }
+                } catch (error) {
+                    console.error('Failed to load notifications', error);
+                    notificationList.innerHTML = '<div class="p-4 text-center text-sm text-red-500">Failed to load notifications. Please try again.</div>';
+                }
+            }
+
+            function updateUnreadBadge(count) {
+                if (count > 0) {
+                    unreadBadge.textContent = count > 99 ? '99+' : count;
+                    unreadBadge.classList.remove('hidden');
+                    markAllReadBtn.classList.remove('hidden');
+                } else {
+                    unreadBadge.classList.add('hidden');
+                    markAllReadBtn.classList.add('hidden');
+                }
+            }
+
+            function renderNotifications(notifications) {
+                if (!notifications || notifications.length === 0) {
+                    notificationList.innerHTML = `<div class="p-8 text-center flex flex-col items-center">
+                        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3 text-xl">
+                            <i class="fa-regular fa-bell-slash"></i>
+                        </div>
+                        <p class="text-sm text-slate-500">You're all caught up!</p>
+                    </div>`;
+                    return;
+                }
+
+                notificationList.innerHTML = notifications.map(notif => {
+                    const isUnread = !notif.isRead;
+                    const bgColor = isUnread ? 'bg-emerald-50/50' : 'bg-white';
+                    const iconColor = isUnread ? 'text-emerald-500' : 'text-slate-400';
+                    const titleColor = isUnread ? 'text-slate-900 font-bold' : 'text-slate-700 font-semibold';
+                    
+                    const date = new Date(notif.createdAt);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHrs = Math.floor(diffMins / 60);
+                    const diffDays = Math.floor(diffHrs / 24);
+                    let timeStr = 'Just now';
+                    if (diffDays > 0) timeStr = diffDays === 1 ? 'Yesterday' : `${diffDays}d ago`;
+                    else if (diffHrs > 0) timeStr = `${diffHrs}h ago`;
+                    else if (diffMins > 0) timeStr = `${diffMins}m ago`;
+
+                    let icon = 'fa-solid fa-bell';
+                    if (notif.type === 'assignment_submitted') icon = 'fa-solid fa-file-arrow-up';
+                    if (notif.type === 'assignment_reviewed') icon = 'fa-solid fa-check-double';
+                    if (notif.type === 'quiz_completed') icon = 'fa-solid fa-spell-check';
+                    if (notif.type === 'achievement_earned') icon = 'fa-solid fa-trophy text-yellow-500';
+
+                    return `
+                        <div class="p-4 flex gap-3 hover:bg-slate-50 transition-colors cursor-pointer ${bgColor}" onclick="handleNotificationClick('${notif._id}', '${notif.link || ''}')">
+                            <div class="shrink-0 w-8 h-8 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center ${iconColor} mt-1">
+                                <i class="${icon} text-xs"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm ${titleColor} truncate">${notif.title}</p>
+                                <p class="text-xs text-slate-500 mt-0.5 line-clamp-2">${notif.message}</p>
+                                <p class="text-[10px] font-medium text-slate-400 mt-1">${timeStr}</p>
+                            </div>
+                            ${isUnread ? '<div class="shrink-0 w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            fetchNotifications();
+
+            window.handleNotificationClick = async (id, link) => {
+                try {
+                    await fetch(`/parent/api/notifications/${id}/read`, { method: 'PATCH' });
+                    if (link && link !== 'null') {
+                        window.location.href = link;
+                    } else {
+                        fetchNotifications();
+                    }
+                } catch (error) {
+                    console.error('Failed to mark as read', error);
+                }
+            };
+
+            if (markAllReadBtn) {
+                markAllReadBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    try {
+                        const res = await fetch('/parent/api/notifications/read-all', { method: 'PATCH' });
+                        if (res.ok) fetchNotifications();
+                    } catch (error) {
+                        console.error('Failed to mark all as read', error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

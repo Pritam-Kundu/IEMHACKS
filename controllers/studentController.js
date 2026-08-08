@@ -105,3 +105,139 @@ exports.getDashboard = async (req, res, next) => {
         next(error);
     }
 };
+
+exports.getCourses = async (req, res, next) => {
+    try {
+        const studentId = req.user._id;
+        
+        // Enrolled courses
+        const enrollments = await Enrollment.find({ student: studentId, status: { $ne: 'dropped' } })
+            .populate({
+                path: 'course',
+                populate: [
+                    { path: 'teacher', select: 'name profilePicture' },
+                    { path: 'subject', select: 'name' }
+                ]
+            }).lean();
+
+        // All courses
+        const allCourses = await Course.find({ isActive: true })
+            .populate('teacher', 'name profilePicture')
+            .populate('subject', 'name')
+            .lean();
+
+        // Filter out courses already enrolled in
+        const enrolledCourseIds = enrollments.map(e => e.course._id.toString());
+        const availableCourses = allCourses.filter(c => !enrolledCourseIds.includes(c._id.toString()));
+
+        res.render('student/courses', {
+            title: 'My Courses | EduSmart',
+            enrollments,
+            availableCourses,
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getQuizzes = async (req, res, next) => {
+    try {
+        const studentId = req.user._id;
+        
+        const quizAttempts = await QuizAttempt.find({ student: studentId })
+            .populate({
+                path: 'quiz',
+                populate: { path: 'course', select: 'title' }
+            })
+            .sort({ createdAt: -1 })
+            .lean();
+            
+        res.render('student/quizzes', {
+            title: 'Quizzes | EduSmart',
+            quizAttempts,
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getAITutor = async (req, res, next) => {
+    try {
+        res.render('student/ai-tutor', {
+            title: 'AI Tutor | EduSmart',
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getProgress = async (req, res, next) => {
+    try {
+        const studentId = req.user._id;
+        const progressRecords = await Progress.find({ student: studentId })
+            .populate({
+                path: 'lesson',
+                populate: { path: 'course', select: 'title' }
+            })
+            .sort({ lastAccessed: -1 })
+            .lean();
+
+        res.render('student/progress', {
+            title: 'Progress | EduSmart',
+            progressRecords,
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getLeaderboard = async (req, res, next) => {
+    try {
+        res.render('student/leaderboard', {
+            title: 'Leaderboard | EduSmart',
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getBadges = async (req, res, next) => {
+    try {
+        const studentId = req.user._id;
+        const profile = await StudentProfile.findOne({ user: studentId })
+            .populate('earnedBadges.badge')
+            .lean();
+            
+        const earnedBadges = profile && profile.earnedBadges ? profile.earnedBadges : [];
+        const allBadges = await Badge.find({ role: 'student' }).lean();
+        
+        // Find which badges are locked
+        const earnedBadgeIds = earnedBadges.map(eb => eb.badge._id.toString());
+        const lockedBadges = allBadges.filter(b => !earnedBadgeIds.includes(b._id.toString()));
+
+        res.render('student/badges', {
+            title: 'Badges | EduSmart',
+            earnedBadges,
+            lockedBadges,
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getSettings = async (req, res, next) => {
+    try {
+        res.render('student/settings', {
+            title: 'Settings | EduSmart',
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};

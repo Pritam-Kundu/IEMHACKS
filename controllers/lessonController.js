@@ -3,6 +3,7 @@ const Lesson = require('../models/Lesson');
 const Course = require('../models/Course');
 const Progress = require('../models/Progress');
 const Enrollment = require('../models/Enrollment');
+const achievementService = require('../services/achievementService');
 
 /**
  * Get lesson page
@@ -146,6 +147,11 @@ exports.updateProgress = async (req, res, next) => {
             },
             { new: true, upsert: true }
         );
+
+        // Check for achievements asynchronously (don't block the response)
+        achievementService.checkLessonAchievements(studentId, lesson.course).catch(err => {
+            console.error('Achievement check failed:', err);
+        });
 
         // Recalculate course progress percentage to return to frontend
         const userProgress = await Progress.find({ student: studentId, course: lesson.course });
