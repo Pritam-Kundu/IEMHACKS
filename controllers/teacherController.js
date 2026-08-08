@@ -149,6 +149,39 @@ exports.getDashboard = async (req, res, next) => {
 };
 
 /**
+ * Controller to handle fetching My Courses
+ */
+exports.getCourses = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const courses = await Course.find({ teacher: teacherId })
+            .populate('subject', 'name')
+            .lean();
+            
+        // Calculate basic stats for each course
+        const courseIds = courses.map(c => c._id);
+        const enrollments = await Enrollment.find({ course: { $in: courseIds }, status: { $ne: 'dropped' } }).lean();
+        const lessons = await Lesson.find({ course: { $in: courseIds } }).lean();
+        
+        const coursesWithStats = courses.map(course => {
+            return {
+                ...course,
+                studentsCount: enrollments.filter(e => e.course.toString() === course._id.toString()).length,
+                lessonsCount: lessons.filter(l => l.course.toString() === course._id.toString()).length,
+            };
+        });
+
+        res.render('teacher/courses', {
+            title: 'My Courses | Teacher Dashboard',
+            user: req.user,
+            courses: coursesWithStats
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * Controller to render the Create Course page
  */
 exports.getCreateCourse = async (req, res, next) => {
@@ -162,6 +195,209 @@ exports.getCreateCourse = async (req, res, next) => {
     } catch (error) {
         next(error);
     }
+};
+
+/**
+ * Controller to handle fetching Students
+ */
+exports.getStudents = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const courses = await Course.find({ teacher: teacherId }).lean();
+        const courseIds = courses.map(c => c._id);
+        
+        const enrollments = await Enrollment.find({ course: { $in: courseIds }, status: { $ne: 'dropped' } })
+            .populate('student', 'name email profilePicture')
+            .populate('course', 'title')
+            .lean();
+
+        // Group by student
+        const studentMap = new Map();
+        enrollments.forEach(e => {
+            const studentId = e.student._id.toString();
+            if (!studentMap.has(studentId)) {
+                studentMap.set(studentId, {
+                    student: e.student,
+                    courses: [],
+                    averageProgress: 0,
+                    enrollmentDate: e.enrolledAt || e.createdAt
+                });
+            }
+            const studentData = studentMap.get(studentId);
+            studentData.courses.push({
+                courseTitle: e.course.title,
+                progress: e.progress || 0
+            });
+        });
+        
+        const studentsList = Array.from(studentMap.values()).map(s => {
+            const avg = s.courses.reduce((acc, curr) => acc + curr.progress, 0) / (s.courses.length || 1);
+            s.averageProgress = Math.round(avg);
+            return s;
+        });
+
+        res.render('teacher/students', {
+            title: 'Students | Teacher Dashboard',
+            user: req.user,
+            students: studentsList
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle fetching Lessons
+ */
+exports.getLessons = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const courses = await Course.find({ teacher: teacherId }).lean();
+        const courseIds = courses.map(c => c._id);
+        
+        const lessons = await Lesson.find({ course: { $in: courseIds } })
+            .populate('course', 'title')
+            .sort({ 'course': 1, 'order': 1 })
+            .lean();
+
+        res.render('teacher/lessons', {
+            title: 'Lessons | Teacher Dashboard',
+            user: req.user,
+            lessons
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle fetching Quizzes
+ */
+exports.getQuizzes = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const courses = await Course.find({ teacher: teacherId }).lean();
+        const courseIds = courses.map(c => c._id);
+        
+        const quizzes = await Quiz.find({ course: { $in: courseIds } })
+            .populate('course', 'title')
+            .lean();
+            
+        // Fetch attempts for stats
+        const quizIds = quizzes.map(q => q._id);
+        const quizAttempts = await QuizAttempt.find({ quiz: { $in: quizIds } }).lean();
+        
+        const quizzesWithStats = quizzes.map(quiz => {
+            const attempts = quizAttempts.filter(qa => qa.quiz.toString() === quiz._id.toString());
+            let avgScore = 0;
+            if (attempts.length > 0) {
+                avgScore = Math.round(attempts.reduce((acc, curr) => acc + curr.score, 0) / attempts.length);
+            }
+            return {
+                ...quiz,
+                attemptsCount: attempts.length,
+                averageScore: avgScore
+            };
+        });
+
+        res.render('teacher/quizzes', {
+            title: 'Quizzes | Teacher Dashboard',
+            user: req.user,
+            quizzes: quizzesWithStats
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle fetching Assignments
+ */
+exports.getAssignments = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const courses = await Course.find({ teacher: teacherId }).lean();
+        const courseIds = courses.map(c => c._id);
+        
+        const assignments = await Assignment.find({ course: { $in: courseIds } })
+            .populate('course', 'title')
+            .sort({ dueDate: 1 })
+            .lean();
+            
+        const assignmentIds = assignments.map(a => a._id);
+        const submissions = await Submission.find({ assignment: { $in: assignmentIds } }).lean();
+        
+        const assignmentsWithStats = assignments.map(assignment => {
+            const assignmentSubs = submissions.filter(s => s.assignment.toString() === assignment._id.toString());
+            return {
+                ...assignment,
+                submissionCount: assignmentSubs.length,
+                pendingGradingCount: assignmentSubs.filter(s => s.status === 'submitted').length,
+                status: new Date(assignment.dueDate) < new Date() ? 'Closed' : 'Active'
+            };
+        });
+
+        res.render('teacher/assignments', {
+            title: 'Assignments | Teacher Dashboard',
+            user: req.user,
+            assignments: assignmentsWithStats
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle fetching Analytics
+ */
+exports.getAnalytics = async (req, res, next) => {
+    try {
+        res.render('teacher/analytics', {
+            title: 'Analytics | Teacher Dashboard',
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle fetching Reports
+ */
+exports.getReports = async (req, res, next) => {
+    try {
+        res.render('teacher/reports', {
+            title: 'Reports | Teacher Dashboard',
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle fetching Settings
+ */
+exports.getSettings = async (req, res, next) => {
+    try {
+        res.render('teacher/settings', {
+            title: 'Settings | Teacher Dashboard',
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle create pages that are under construction
+ */
+exports.getUnderConstruction = (req, res) => {
+    // Re-use the reports template as a quick under construction placeholder
+    res.render('teacher/reports', {
+        title: 'Coming Soon | Teacher Dashboard',
+        user: req.user
+    });
 };
 
 /**
