@@ -147,3 +147,49 @@ exports.getDashboard = async (req, res, next) => {
         next(error);
     }
 };
+
+/**
+ * Controller to render the Create Course page
+ */
+exports.getCreateCourse = async (req, res, next) => {
+    try {
+        const subjects = await Subject.find().lean();
+        res.render('teacher/create-course', {
+            title: 'Create Course | EduSmart',
+            user: req.user,
+            subjects
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * Controller to handle Course Creation API
+ */
+exports.createCourse = async (req, res, next) => {
+    try {
+        const { title, description, subject, level, duration, thumbnail, status } = req.body;
+        
+        // Basic validation
+        if (!title || !description || !subject) {
+            return res.status(400).json({ success: false, message: 'Title, description, and category are required.' });
+        }
+
+        const newCourse = await Course.create({
+            title: title.trim(),
+            description: description.trim(),
+            subject,
+            teacher: req.user._id, // Securely injected from authentication middleware
+            level: level || 'beginner',
+            duration: duration ? duration.trim() : undefined,
+            thumbnail: thumbnail || '/images/default-course.png',
+            isPublished: status === 'published'
+        });
+
+        res.status(201).json({ success: true, message: 'Course created successfully.', course: newCourse });
+    } catch (error) {
+        console.error('Create Course Error:', error);
+        res.status(500).json({ success: false, message: 'An error occurred while creating the course.' });
+    }
+};

@@ -2,6 +2,8 @@ const Quiz = require('../models/Quiz');
 const Question = require('../models/Question');
 const QuizAttempt = require('../models/QuizAttempt');
 const StudentProfile = require('../models/StudentProfile');
+const achievementService = require('../services/achievementService');
+const notificationService = require('../services/notificationService');
 
 // Render the quiz SPA page
 const renderQuizPage = async (req, res) => {
@@ -92,6 +94,11 @@ const submitQuiz = async (req, res) => {
             endTime: new Date()
         });
 
+        // Check for achievements asynchronously
+        achievementService.checkQuizAchievements(studentId, quiz._id, percentage).catch(err => {
+            console.error('Quiz achievement check failed:', err);
+        });
+
         // Adaptive Difficulty Logic
         if (req.user.role === 'student') {
             const profile = await StudentProfile.findOne({ user: studentId });
@@ -106,6 +113,16 @@ const submitQuiz = async (req, res) => {
                 await profile.save();
             }
         }
+
+        // Notify parent about quiz completion
+        notificationService.createNotification({
+            type: 'quiz_completed',
+            title: 'Quiz Completed',
+            message: `${req.user.name || 'Your child'} completed the ${quiz.title} quiz with a score of ${percentage}%.`,
+            childId: studentId,
+            relatedId: quiz._id,
+            link: `/parent/progress` // Link to progress page where they can see quizzes
+        });
 
         // Return Detailed Results (including correct answers and explanations for review)
         const reviewData = actualQuestions.map(q => {
