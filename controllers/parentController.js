@@ -4,9 +4,6 @@ const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
 const Submission = require('../models/Submission');
 const Assignment = require('../models/Assignment');
-const Badge = require('../models/Badge');
-const User = require('../models/User');
-const ParentProfile = require('../models/ParentProfile');
 
 /**
  * Controller to handle Parent Dashboard data fetching
@@ -20,7 +17,7 @@ exports.getDashboard = async (req, res, next) => {
             .populate('user', 'firstName lastName profilePicture')
             .populate('earnedBadges.badge')
             .lean();
-        
+
         if (!studentProfiles || studentProfiles.length === 0) {
             // No children linked
             return res.render('parent/dashboard', {
@@ -41,7 +38,7 @@ exports.getDashboard = async (req, res, next) => {
         // 2. Determine selected child (Verify parent-child relationship implicitly)
         let selectedChildId = req.query.childId;
         let selectedChild = children.find(c => c.id === selectedChildId);
-        
+
         // If childId is manipulated or not provided, fallback to the first verified child
         if (!selectedChild) {
             selectedChild = children[0];
@@ -63,21 +60,21 @@ exports.getDashboard = async (req, res, next) => {
         // 4. Fetch Progress Records
         const progressRecords = await Progress.find({ student: studentUserId }).lean();
         const completedLessonsCount = progressRecords.filter(p => p.status === 'completed').length;
-        
+
         // We use progressRecords.length as a naive proxy for total unlocked lessons
-        const overallProgress = progressRecords.length === 0 
-            ? 0 
+        const overallProgress = progressRecords.length === 0
+            ? 0
             : Math.round((completedLessonsCount / progressRecords.length) * 100);
-        
+
         // Enhance enrollments with localized progress data
         const courses = enrollments.map(e => {
             if (!e.course) return null; // Safe check
             const courseProgressRecords = progressRecords.filter(p => p.course && p.course.toString() === e.course._id.toString());
             const courseCompleted = courseProgressRecords.filter(p => p.status === 'completed').length;
-            const courseProgressPercent = courseProgressRecords.length === 0 
-                ? 0 
+            const courseProgressPercent = courseProgressRecords.length === 0
+                ? 0
                 : Math.round((courseCompleted / courseProgressRecords.length) * 100);
-            
+
             return {
                 ...e.course,
                 progressPercent: courseProgressPercent,
@@ -91,7 +88,7 @@ exports.getDashboard = async (req, res, next) => {
             .sort({ createdAt: -1 })
             .lean()
             .catch(() => []);
-        
+
         let averageQuizScore = 0;
         if (quizAttempts.length > 0) {
             const totalScore = quizAttempts.reduce((acc, curr) => acc + curr.score, 0);
@@ -107,7 +104,7 @@ exports.getDashboard = async (req, res, next) => {
             .sort({ submittedAt: -1 })
             .lean()
             .catch(() => []);
-        
+
         // 7. Recent Activity feed (Aggregate quizzes and submissions)
         const activities = [];
         quizAttempts.slice(0, 5).forEach(qa => {
@@ -155,7 +152,7 @@ exports.getDashboard = async (req, res, next) => {
 exports.linkStudentAccount = async (req, res) => {
     try {
         const parentId = req.user._id;
-        
+
         // Parent role check
         if (req.user.role !== 'parent') {
             return res.status(403).json({ success: false, message: 'Only parents can link student accounts.' });
