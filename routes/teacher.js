@@ -10,6 +10,9 @@ router.get('/dashboard', requireAuth, requireRole('teacher'), teacherController.
 router.get('/courses/create', requireAuth, requireRole('teacher'), teacherController.getCreateCourse);
 router.post('/courses', requireAuth, requireRole('teacher'), teacherController.createCourse);
 
+// AI Tutor Route
+router.get('/ai-tutor', requireAuth, requireRole('teacher'), teacherController.getAiTutor);
+
 // Additional Teacher Pages
 router.get('/courses', requireAuth, requireRole('teacher'), teacherController.getCourses);
 router.get('/courses/:id', requireAuth, requireRole('teacher'), teacherController.getUnderConstruction);

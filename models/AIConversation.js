@@ -12,6 +12,23 @@ const aiConversationSchema = new mongoose.Schema({
         default: 'New Conversation',
         trim: true
     },
+    context: {
+        type: String,
+        enum: ['student', 'parent', 'teacher', 'home', 'lesson', 'quiz'],
+        default: 'student'
+    },
+    lesson: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Lesson'
+    },
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course'
+    },
+    selectedStudent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'StudentProfile'
+    },
     status: {
         type: String,
         enum: ['active', 'archived'],

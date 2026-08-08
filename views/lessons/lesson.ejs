@@ -6,6 +6,8 @@
     <title><%= lesson.title %> - EduSmart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="/js/voice/speechToText.js"></script>
+    <script src="/js/voice/textToSpeech.js"></script>
     <style>
         .sidebar-scroll {
             max-height: calc(100vh - 120px);
@@ -250,9 +252,12 @@
             
             <!-- Input Area -->
             <div class="p-4 border-t border-slate-200 bg-white rounded-b-2xl">
-                <form id="aiForm" class="flex gap-2">
+                <form id="aiForm" class="flex gap-2 relative">
+                    <button type="button" id="micBtnAi" class="absolute left-3 top-2 text-slate-400 hover:text-indigo-600 transition-colors z-10" aria-label="Start voice input" title="Start voice input">
+                        <i class="fa-solid fa-microphone"></i>
+                    </button>
                     <input type="text" id="aiInput" placeholder="Type your question..." required
-                           class="flex-1 border border-slate-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                           class="flex-1 border border-slate-300 rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
                     <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full w-10 h-10 flex items-center justify-center shrink-0 transition-colors">
                         <i class="fas fa-paper-plane"></i>
                     </button>
@@ -423,6 +428,91 @@
         // ==========================================
         // AI TUTOR LOGIC
         // ==========================================
+        
+        // Voice Integration
+        const aiStt = new EduSmartSpeechToText({
+            language: 'en-US',
+            onResult: (res) => {
+                let currentVal = aiInput.value.replace(/\s*\[.*\]$/, ''); 
+                if (res.final) {
+                    aiInput.value = currentVal + (currentVal ? ' ' : '') + res.final;
+                } else if (res.interim) {
+                    aiInput.value = currentVal + (currentVal ? ' ' : '') + `[${res.interim}]`;
+                }
+            },
+            onStateChange: (state) => {
+                const micBtn = document.getElementById('micBtnAi');
+                if(!micBtn) return;
+                const micIcon = micBtn.querySelector('i');
+                if (state === 'LISTENING' || state === 'PROCESSING') {
+                    micBtn.classList.add('text-red-500');
+                    micBtn.classList.remove('text-slate-400');
+                    micIcon.className = 'fa-solid fa-microphone-lines animate-pulse';
+                    micBtn.setAttribute('aria-label', 'Stop voice input');
+                } else {
+                    aiInput.value = aiInput.value.replace(/\s*\[.*\]$/, '');
+                    micBtn.classList.remove('text-red-500');
+                    micBtn.classList.add('text-slate-400');
+                    micIcon.className = 'fa-solid fa-microphone';
+                    micBtn.setAttribute('aria-label', 'Start voice input');
+                }
+            },
+            onError: (err) => {
+                appendAiMessage(`**Voice Input Error:** ${err}`, 'ai');
+            }
+        });
+
+        const aiTts = new EduSmartTextToSpeech({ language: 'en-US' });
+
+        if(document.getElementById('micBtnAi')) {
+            document.getElementById('micBtnAi').addEventListener('click', () => {
+                aiStt.toggle();
+            });
+        }
+
+        aiChatArea.addEventListener('click', (e) => {
+            const btn = e.target.closest('.ai-tts-btn');
+            if (btn) {
+                const textContainer = btn.parentElement.querySelector('.ai-msg-text');
+                if (textContainer) {
+                    const isCurrentlyPlaying = btn.classList.contains('playing');
+                    
+                    document.querySelectorAll('.ai-tts-btn').forEach(b => {
+                        b.classList.remove('playing', 'text-indigo-600');
+                        b.classList.add('text-slate-500');
+                        const i = b.querySelector('i');
+                        if(i) i.className = 'fa-solid fa-volume-up';
+                        const span = b.querySelector('span');
+                        if(span) span.innerText = 'Listen';
+                    });
+
+                    if (isCurrentlyPlaying) {
+                        aiTts.stop();
+                    } else {
+                        btn.classList.add('playing', 'text-indigo-600');
+                        btn.classList.remove('text-slate-500');
+                        const i = btn.querySelector('i');
+                        if(i) i.className = 'fa-solid fa-circle-stop animate-pulse';
+                        const span = btn.querySelector('span');
+                        if(span) span.innerText = 'Stop';
+                        
+                        aiTts.onStateChange = (state) => {
+                            if (state === 'STOPPED' || state === 'ERROR') {
+                                btn.classList.remove('playing', 'text-indigo-600');
+                                btn.classList.add('text-slate-500');
+                                const bi = btn.querySelector('i');
+                                if(bi) bi.className = 'fa-solid fa-volume-up';
+                                const bspan = btn.querySelector('span');
+                                if(bspan) bspan.innerText = 'Listen';
+                            }
+                        };
+                        
+                        aiTts.speak(textContainer.innerText);
+                    }
+                }
+            }
+        });
+
         aiForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const query = aiInput.value.trim();
@@ -449,7 +539,16 @@
                 
                 // MOCK RESPONSE (Since no AI endpoint was explicitly specified to exist yet)
                 setTimeout(() => {
-                    document.getElementById(loadingId).innerHTML = `I understand you're asking about "${query}". As your AI tutor for ${LESSON_TITLE}, I'm here to help you understand the core concepts. (Note: Real AI backend integration pending).`;
+                    const responseText = `I understand you're asking about "${query}". As your AI tutor for ${LESSON_TITLE}, I'm here to help you understand the core concepts. (Note: Real AI backend integration pending).`;
+                    const loadingDiv = document.getElementById(loadingId);
+                    
+                    const speakerHtml = `
+                        <button type="button" class="ai-tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors">
+                            <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                        </button>
+                    `;
+                    
+                    loadingDiv.innerHTML = `<div class="ai-msg-text break-words">${responseText}</div>${speakerHtml}`;
                     aiChatArea.scrollTop = aiChatArea.scrollHeight;
                 }, 1000);
                 
@@ -473,13 +572,23 @@
                     </div>
                 `;
             } else {
+                let speakerHtml = '';
+                if(htmlContent && !htmlContent.includes('fa-fade')) { // don't add speaker for loading indicator
+                     speakerHtml = `
+                        <button type="button" class="ai-tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors">
+                            <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                        </button>
+                    `;
+                }
+
                 wrapper.className = 'flex gap-3';
                 wrapper.innerHTML = `
                     <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
                         <i class="fas fa-robot text-indigo-600 text-sm"></i>
                     </div>
-                    <div id="${id}" class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700">
-                        ${htmlContent}
+                    <div id="${id}" class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 w-full overflow-hidden">
+                        <div class="ai-msg-text break-words">${htmlContent}</div>
+                        ${speakerHtml}
                     </div>
                 `;
             }

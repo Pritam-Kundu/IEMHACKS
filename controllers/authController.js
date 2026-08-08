@@ -15,8 +15,9 @@ const renderLogin = (req, res) => {
     const sessionCookie = req.cookies.__session;
     if (sessionCookie) {
         try {
-            jwt.verify(sessionCookie, JWT_SECRET);
-            return res.redirect('/'); 
+            const decoded = jwt.verify(sessionCookie, JWT_SECRET);
+            const redirectUrl = req.query.redirect || getRedirectUrl(decoded.role);
+            return res.redirect(redirectUrl); 
         } catch (err) {
             res.clearCookie('__session');
         }
@@ -28,8 +29,9 @@ const renderSignup = (req, res) => {
     const sessionCookie = req.cookies.__session;
     if (sessionCookie) {
         try {
-            jwt.verify(sessionCookie, JWT_SECRET);
-            return res.redirect('/'); 
+            const decoded = jwt.verify(sessionCookie, JWT_SECRET);
+            const redirectUrl = req.query.redirect || getRedirectUrl(decoded.role);
+            return res.redirect(redirectUrl); 
         } catch (err) {
             res.clearCookie('__session');
         }

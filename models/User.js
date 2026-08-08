@@ -59,6 +59,13 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordExpires: {
         type: Date
+    },
+    notificationPreferences: {
+        email: { type: Boolean, default: true },
+        assignments: { type: Boolean, default: true },
+        quizzes: { type: Boolean, default: true },
+        achievements: { type: Boolean, default: true },
+        courseUpdates: { type: Boolean, default: true }
     }
 }, { 
     timestamps: true 

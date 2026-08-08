@@ -390,6 +390,20 @@ exports.getSettings = async (req, res, next) => {
 };
 
 /**
+ * Controller to handle fetching AI Tutor
+ */
+exports.getAiTutor = async (req, res, next) => {
+    try {
+        res.render('teacher/ai-tutor', {
+            title: 'AI Tutor | Teacher Dashboard',
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
  * Controller to handle create pages that are under construction
  */
 exports.getUnderConstruction = (req, res) => {

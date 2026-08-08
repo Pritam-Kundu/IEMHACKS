@@ -1,3 +1,4 @@
+const bcrypt = require('bcryptjs');
 const StudentProfile = require('../models/StudentProfile');
 const ParentProfile = require('../models/ParentProfile');
 const User = require('../models/User');
@@ -908,6 +909,167 @@ exports.markAllNotificationsRead = async (req, res, next) => {
     } catch (error) {
         console.error('Mark All Notifications Read Error:', error);
         res.status(500).json({ success: false, message: 'Failed to mark notifications as read' });
+    }
+};
+
+/**
+ * =====================================
+ * SETTINGS CONTROLLERS
+ * =====================================
+ */
+
+/**
+ * Render Settings Page
+ */
+exports.getSettingsPage = async (req, res, next) => {
+    try {
+        res.render('parent/settings', {
+            title: 'Settings | EduSmart Family',
+            user: req.user
+        });
+    } catch (error) {
+        console.error('Get Settings Page Error:', error);
+        next(error);
+    }
+};
+
+/**
+ * Get Parent Settings Data (API)
+ */
+exports.getSettingsData = async (req, res, next) => {
+    try {
+        const parentId = req.user._id;
+        
+        const user = await User.findById(parentId).lean();
+        const parentProfile = await ParentProfile.findOne({ user: parentId }).lean();
+        
+        if (!user) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+        
+        res.status(200).json({
+            success: true,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                phoneNumber: parentProfile?.phoneNumber || '',
+                profilePicture: user.profilePicture,
+                createdAt: user.createdAt,
+                notificationPreferences: user.notificationPreferences || {
+                    email: true, assignments: true, quizzes: true, achievements: true, courseUpdates: true
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Get Settings Data Error:', error);
+        res.status(500).json({ success: false, message: 'Server error fetching settings' });
+    }
+};
+
+/**
+ * Update Profile Info
+ */
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const parentId = req.user._id;
+        const { name, email, phoneNumber } = req.body;
+        
+        if (!name || name.trim().length < 2) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid name' });
+        }
+        
+        if (!email || !email.includes('@')) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid email address' });
+        }
+
+        // Check email uniqueness
+        const existingUser = await User.findOne({ email: email.toLowerCase().trim(), _id: { $ne: parentId } });
+        if (existingUser) {
+            return res.status(409).json({ success: false, message: 'This email is already registered' });
+        }
+        
+        // Update User
+        await User.findByIdAndUpdate(parentId, { 
+            name: name.trim(), 
+            email: email.toLowerCase().trim() 
+        });
+        
+        // Update ParentProfile
+        await ParentProfile.findOneAndUpdate(
+            { user: parentId },
+            { phoneNumber: phoneNumber?.trim() || '' },
+            { upsert: true }
+        );
+        
+        res.status(200).json({ success: true, message: 'Profile updated successfully' });
+    } catch (error) {
+        console.error('Update Profile Error:', error);
+        res.status(500).json({ success: false, message: 'Unable to update profile. Please try again.' });
+    }
+};
+
+/**
+ * Update Password
+ */
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const parentId = req.user._id;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+        
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({ success: false, message: 'All password fields are required' });
+        }
+        
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ success: false, message: 'New passwords do not match' });
+        }
+        
+        if (newPassword.length < 8) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters' });
+        }
+        
+        const user = await User.findById(parentId).select('+password');
+        
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+        }
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        
+        user.password = hashedPassword;
+        await user.save();
+        
+        res.status(200).json({ success: true, message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Update Password Error:', error);
+        res.status(500).json({ success: false, message: 'Unable to save changes. Please try again.' });
+    }
+};
+
+/**
+ * Update Notification Preferences
+ */
+exports.updateNotifications = async (req, res, next) => {
+    try {
+        const parentId = req.user._id;
+        const { preferences } = req.body;
+        
+        if (!preferences || typeof preferences !== 'object') {
+            return res.status(400).json({ success: false, message: 'Invalid preferences format' });
+        }
+        
+        await User.findByIdAndUpdate(parentId, {
+            $set: { notificationPreferences: preferences }
+        });
+        
+        res.status(200).json({ success: true, message: 'Notification preferences updated successfully' });
+    } catch (error) {
+        console.error('Update Notifications Error:', error);
+        res.status(500).json({ success: false, message: 'Unable to save changes. Please try again.' });
     }
 };
 
