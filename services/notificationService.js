@@ -43,6 +43,18 @@ exports.createNotification = async ({ type, title, message, childId, relatedId, 
         parentIds = [...new Set(parentIds.map(id => id.toString()))];
 
         const notificationPromises = parentIds.map(async (parentId) => {
+            // Check Parent's Notification Preferences
+            const parentUser = await User.findById(parentId).select('notificationPreferences').lean();
+            if (parentUser && parentUser.notificationPreferences) {
+                const prefs = parentUser.notificationPreferences;
+                
+                // Map event types to preference keys
+                if (type.includes('assignment') && prefs.assignments === false) return null;
+                if (type.includes('quiz') && prefs.quizzes === false) return null;
+                if (type.includes('achievement') && prefs.achievements === false) return null;
+                if (type.includes('course') && prefs.courseUpdates === false) return null;
+            }
+
             // Prevent duplicate notifications for the same event type and relatedId for this recipient
             if (relatedId) {
                 const existing = await Notification.findOne({

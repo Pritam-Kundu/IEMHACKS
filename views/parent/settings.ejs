@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | EduSmart Family</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        .sidebar-active { 
+            background-color: #f0fdf4; 
+            color: #16a34a; 
+            font-weight: 600; 
+            border-right: 4px solid #16a34a; 
+        }
+        .sidebar-item { transition: all 0.2s ease-in-out; }
+        .sidebar-item:hover:not(.sidebar-active) { 
+            background-color: #f1f5f9; 
+            color: #334155; 
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800">
+
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white font-bold text-xl">E</div>
+                <span class="text-xl font-bold text-slate-900">EduSmart <span class="text-xs text-emerald-600 ml-1 font-semibold uppercase">Family</span></span>
+            </div>
+            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            <a href="/parent/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-house-chimney w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/parent/children" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-children w-5 text-center"></i>
+                <span>My Children</span>
+            </a>
+            <a href="/parent/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+                <span>Progress</span>
+            </a>
+            <a href="/parent/assignments" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-file-signature w-5 text-center"></i>
+                <span>Assignments</span>
+            </a>
+            <a href="/parent/achievements" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-medal w-5 text-center"></i>
+                <span>Achievements</span>
+            </a>
+            </nav>
+
+        <div class="p-4 border-t border-slate-200">
+            <a href="/parent/settings" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+                <i class="fa-solid fa-gear w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+            <form action="/logout" method="POST" class="w-full mt-1">
+                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full relative">
+        
+        <!-- Top Header -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Settings</h1>
+                </div>
+                
+                <div class="flex items-center gap-5">
+
+                    <!-- Notification Icon & Dropdown -->
+                    <div class="relative" id="notificationDropdownContainer">
+                        <button id="notificationBtn" class="relative text-slate-500 hover:text-emerald-600 transition-colors focus:outline-none">
+                            <i class="fa-regular fa-bell text-xl"></i>
+                            <span id="unreadBadge" class="hidden absolute -top-2 -right-2 text-[9px] font-bold text-white bg-red-500 rounded-full px-1.5 py-0.5 border-2 border-white">0</span>
+                        </button>
+                        
+                        <!-- Dropdown Panel -->
+                        <div id="notificationPanel" class="hidden absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-xl shadow-lg border border-slate-200 z-50 overflow-hidden transform origin-top-right transition-all">
+                            <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                                <h3 class="font-bold text-slate-800">Notifications</h3>
+                                <button id="markAllReadBtn" class="text-xs font-semibold text-emerald-600 hover:text-emerald-700 hidden">Mark all as read</button>
+                            </div>
+                            <div id="notificationList" class="max-h-96 overflow-y-auto divide-y divide-slate-100">
+                                <!-- Notifications will be injected here -->
+                                <div class="p-4 text-center text-sm text-slate-500">Loading notifications...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="/parent/profile" class="flex items-center gap-3 cursor-pointer group">
+                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
+                        <div class="hidden md:block">
+                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
+                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-slate-50">
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-1">Account Settings</h2>
+                    <p class="text-slate-500">Manage your profile, security, and notification preferences.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    
+                    <!-- Left Sidebar (Tabs) -->
+                    <div class="md:col-span-1 space-y-2">
+                        <button onclick="switchTab('profile')" id="tab-profile" class="w-full text-left px-4 py-3 rounded-xl font-semibold bg-emerald-50 text-emerald-700 transition-colors">
+                            <i class="fa-regular fa-user w-6 text-center"></i> Profile
+                        </button>
+                        <button onclick="switchTab('security')" id="tab-security" class="w-full text-left px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                            <i class="fa-solid fa-lock w-6 text-center"></i> Security
+                        </button>
+                        <button onclick="switchTab('notifications')" id="tab-notifications" class="w-full text-left px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-100 transition-colors">
+                            <i class="fa-regular fa-bell w-6 text-center"></i> Notifications
+                        </button>
+                        <div class="mt-8 p-4 bg-white border border-slate-200 rounded-xl">
+                            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Account Info</p>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-xs text-slate-500">Account Type</p>
+                                    <p class="text-sm font-semibold text-slate-800 capitalize" id="infoRole">Loading...</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500">Member Since</p>
+                                    <p class="text-sm font-semibold text-slate-800" id="infoDate">Loading...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Content Area -->
+                    <div class="md:col-span-2">
+                        
+                        <!-- PROFILE TAB -->
+                        <div id="section-profile" class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                            <h3 class="text-xl font-bold text-slate-800 mb-6">Profile Information</h3>
+                            <form id="profileForm" class="space-y-5">
+                                <div id="profileMsg" class="hidden p-3 rounded-lg text-sm font-medium"></div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                                    <input type="text" id="profileName" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                                    <input type="email" id="profileEmail" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Phone Number <span class="text-slate-400 font-normal">(Optional)</span></label>
+                                    <input type="tel" id="profilePhone" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors">
+                                </div>
+
+                                <div class="pt-4 flex justify-end">
+                                    <button type="submit" id="profileBtn" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-2">
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- SECURITY TAB -->
+                        <div id="section-security" class="hidden bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                            <h3 class="text-xl font-bold text-slate-800 mb-6">Change Password</h3>
+                            <form id="passwordForm" class="space-y-5">
+                                <div id="passwordMsg" class="hidden p-3 rounded-lg text-sm font-medium"></div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Current Password</label>
+                                    <input type="password" id="currentPassword" required class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">New Password</label>
+                                    <input type="password" id="newPassword" required minlength="8" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors">
+                                    <p class="text-xs text-slate-500 mt-1">Must be at least 8 characters long.</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-slate-700 mb-1">Confirm New Password</label>
+                                    <input type="password" id="confirmPassword" required minlength="8" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-colors">
+                                </div>
+
+                                <div class="pt-4 flex justify-end">
+                                    <button type="submit" id="passwordBtn" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-2">
+                                        Update Password
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- NOTIFICATIONS TAB -->
+                        <div id="section-notifications" class="hidden bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-sm">
+                            <h3 class="text-xl font-bold text-slate-800 mb-6">Notification Preferences</h3>
+                            <form id="notificationsForm" class="space-y-6">
+                                <div id="notificationsMsg" class="hidden p-3 rounded-lg text-sm font-medium mb-4"></div>
+                                
+                                <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                                    <div>
+                                        <p class="font-semibold text-slate-800">Email Notifications</p>
+                                        <p class="text-sm text-slate-500">Receive important updates via email</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="prefEmail" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                                    <div>
+                                        <p class="font-semibold text-slate-800">Assignment Notifications</p>
+                                        <p class="text-sm text-slate-500">Alerts when assignments are due or graded</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="prefAssignments" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                                    <div>
+                                        <p class="font-semibold text-slate-800">Quiz Notifications</p>
+                                        <p class="text-sm text-slate-500">Alerts for upcoming or completed quizzes</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="prefQuizzes" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                                    <div>
+                                        <p class="font-semibold text-slate-800">Achievement Notifications</p>
+                                        <p class="text-sm text-slate-500">Alerts when your child earns a badge/trophy</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="prefAchievements" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                    </label>
+                                </div>
+
+                                <div class="flex items-center justify-between py-3 border-b border-slate-100">
+                                    <div>
+                                        <p class="font-semibold text-slate-800">Course Updates</p>
+                                        <p class="text-sm text-slate-500">Alerts for new lessons and materials</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="prefCourseUpdates" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                                    </label>
+                                </div>
+
+                                <div class="pt-4 flex justify-end">
+                                    <button type="submit" id="notificationsBtn" class="bg-emerald-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-emerald-700 transition-colors flex items-center gap-2">
+                                        Save Preferences
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+
+
+    <!-- Settings JS -->
+    <script>
+        function switchTab(tabId) {
+            // Reset tabs
+            ['profile', 'security', 'notifications'].forEach(id => {
+                document.getElementById('tab-' + id).className = 'w-full text-left px-4 py-3 rounded-xl font-medium text-slate-600 hover:bg-slate-100 transition-colors';
+                document.getElementById('section-' + id).classList.add('hidden');
+            });
+            // Set active
+            document.getElementById('tab-' + tabId).className = 'w-full text-left px-4 py-3 rounded-xl font-semibold bg-emerald-50 text-emerald-700 transition-colors';
+            document.getElementById('section-' + tabId).classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load initial settings
+            try {
+                const res = await fetch('/parent/api/settings');
+                const data = await res.json();
+                if(data.success) {
+                    const user = data.user;
+                    // Populate Profile
+                    document.getElementById('profileName').value = user.name;
+                    document.getElementById('profileEmail').value = user.email;
+                    document.getElementById('profilePhone').value = user.phoneNumber || '';
+                    
+                    // Populate Info
+                    document.getElementById('infoRole').textContent = user.role;
+                    document.getElementById('infoDate').textContent = new Date(user.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                    // Populate Notifications
+                    const prefs = user.notificationPreferences || {};
+                    document.getElementById('prefEmail').checked = prefs.email !== false;
+                    document.getElementById('prefAssignments').checked = prefs.assignments !== false;
+                    document.getElementById('prefQuizzes').checked = prefs.quizzes !== false;
+                    document.getElementById('prefAchievements').checked = prefs.achievements !== false;
+                    document.getElementById('prefCourseUpdates').checked = prefs.courseUpdates !== false;
+                }
+            } catch (error) {
+                console.error('Failed to load settings');
+            }
+
+            // Message helper
+            function showMessage(elementId, msg, type) {
+                const el = document.getElementById(elementId);
+                el.textContent = msg;
+                el.className = `p-3 rounded-lg text-sm font-medium mb-4 ${type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`;
+                el.classList.remove('hidden');
+                setTimeout(() => el.classList.add('hidden'), 5000);
+            }
+
+            // Update Profile
+            document.getElementById('profileForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('profileBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+                btn.disabled = true;
+
+                try {
+                    const name = document.getElementById('profileName').value;
+                    const email = document.getElementById('profileEmail').value;
+                    const phoneNumber = document.getElementById('profilePhone').value;
+
+                    const res = await fetch('/parent/api/settings/profile', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, email, phoneNumber })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showMessage('profileMsg', 'Profile updated successfully.', 'success');
+                        // Update UI names if available
+                        document.querySelectorAll('.font-semibold.text-slate-800').forEach(el => {
+                            if(el.textContent !== 'Profile Information' && !el.closest('form')) {
+                                el.textContent = name;
+                            }
+                        });
+                    } else {
+                        showMessage('profileMsg', data.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('profileMsg', 'Unable to update profile. Please try again.', 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+
+            // Update Password
+            document.getElementById('passwordForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('passwordBtn');
+                const originalText = btn.innerHTML;
+                
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if(newPassword !== confirmPassword) {
+                    showMessage('passwordMsg', 'New passwords do not match.', 'error');
+                    return;
+                }
+
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+                btn.disabled = true;
+
+                try {
+                    const res = await fetch('/parent/api/settings/password', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ currentPassword, newPassword, confirmPassword })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showMessage('passwordMsg', 'Password changed successfully.', 'success');
+                        document.getElementById('passwordForm').reset();
+                    } else {
+                        showMessage('passwordMsg', data.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('passwordMsg', 'Unable to save changes. Please try again.', 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+
+            // Update Notifications
+            document.getElementById('notificationsForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('notificationsBtn');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+                btn.disabled = true;
+
+                try {
+                    const preferences = {
+                        email: document.getElementById('prefEmail').checked,
+                        assignments: document.getElementById('prefAssignments').checked,
+                        quizzes: document.getElementById('prefQuizzes').checked,
+                        achievements: document.getElementById('prefAchievements').checked,
+                        courseUpdates: document.getElementById('prefCourseUpdates').checked
+                    };
+
+                    const res = await fetch('/parent/api/settings/notifications', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ preferences })
+                    });
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        showMessage('notificationsMsg', 'Preferences updated successfully.', 'success');
+                    } else {
+                        showMessage('notificationsMsg', data.message, 'error');
+                    }
+                } catch (error) {
+                    showMessage('notificationsMsg', 'Unable to save changes. Please try again.', 'error');
+                } finally {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
+
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sidebar Logic
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const openSidebarBtn = document.getElementById('openSidebarBtn');
+            const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+            
+            const toggleSidebar = () => {
+                const isOpen = !sidebar.classList.contains('-translate-x-full');
+                if (isOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                    document.body.classList.add('overflow-hidden');
+                }
+            };
+            
+            if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
+            if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            // Dropdown Logic
+            document.querySelectorAll('.dropdown-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const childId = btn.getAttribute('data-child-id');
+                    const dropdown = document.getElementById(`dropdown-${childId}`);
+                    
+                    // Close others
+                    document.querySelectorAll('[id^="dropdown-"]').forEach(d => {
+                        if(d.id !== `dropdown-${childId}`) d.classList.add('hidden');
+                    });
+                    
+                    dropdown.classList.toggle('hidden');
+                });
+            });
+
+            // Close dropdowns on outside click
+            document.addEventListener('click', () => {
+                document.querySelectorAll('[id^="dropdown-"]').forEach(d => d.classList.add('hidden'));
+            });
+
+            // Add Child Logic
+            const linkForm = document.getElementById('linkStudentForm');
+            if (linkForm) {
+                linkForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('childEmail').value.trim();
+                    const submitBtn = document.getElementById('submitLinkBtn');
+                    const submitBtnText = document.getElementById('submitLinkBtnText');
+                    const submitSpinner = document.getElementById('submitLinkSpinner');
+                    const errorDiv = document.getElementById('linkStudentError');
+                    const successDiv = document.getElementById('linkStudentSuccess');
+
+                    errorDiv.classList.add('hidden');
+                    successDiv.classList.add('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                    submitBtnText.textContent = "Connecting...";
+                    submitSpinner.classList.remove('hidden');
+
+                    try {
+                        const response = await fetch('/parent/api/children/link', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.success) {
+                            throw new Error(data.message || 'Failed to link account.');
+                        }
+
+                        successDiv.classList.remove('hidden');
+                        setTimeout(() => window.location.reload(), 1000);
+
+                    } catch (err) {
+                        errorDiv.textContent = err.message;
+                        errorDiv.classList.remove('hidden');
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                        submitBtnText.textContent = "Connect";
+                        submitSpinner.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Remove Child Logic
+            let childIdToRemove = null;
+            const removeModal = document.getElementById('removeChildModal');
+            const confirmRemoveBtn = document.getElementById('confirmRemoveBtn');
+            const removeNameText = document.getElementById('removeNameText');
+            const removeError = document.getElementById('removeChildError');
+
+            window.confirmRemoveChild = (id, name) => {
+                childIdToRemove = id;
+                removeNameText.textContent = name;
+                removeError.classList.add('hidden');
+                removeModal.classList.remove('hidden');
+            };
+
+            confirmRemoveBtn.addEventListener('click', async () => {
+                if (!childIdToRemove) return;
+                
+                const btnText = document.getElementById('confirmRemoveBtnText');
+                const spinner = document.getElementById('confirmRemoveSpinner');
+                
+                confirmRemoveBtn.disabled = true;
+                btnText.textContent = "Disconnecting...";
+                spinner.classList.remove('hidden');
+                removeError.classList.add('hidden');
+
+                try {
+                    const response = await fetch('/parent/api/children/unlink', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ childId: childIdToRemove })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Failed to remove connection.');
+                    }
+
+                    window.location.reload();
+                } catch (err) {
+                    removeError.textContent = err.message;
+                    removeError.classList.remove('hidden');
+                    confirmRemoveBtn.disabled = false;
+                    btnText.textContent = "Disconnect";
+                    spinner.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Notifications Logic ---
+            const notificationBtn = document.getElementById('notificationBtn');
+            const notificationPanel = document.getElementById('notificationPanel');
+            const notificationList = document.getElementById('notificationList');
+            const unreadBadge = document.getElementById('unreadBadge');
+            const markAllReadBtn = document.getElementById('markAllReadBtn');
+            
+            let notificationsOpen = false;
+
+            if (notificationBtn) {
+                notificationBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    notificationsOpen = !notificationsOpen;
+                    notificationPanel.classList.toggle('hidden', !notificationsOpen);
+                    if (notificationsOpen) fetchNotifications();
+                });
+            }
+
+            document.addEventListener('click', (e) => {
+                if (notificationsOpen && !document.getElementById('notificationDropdownContainer').contains(e.target)) {
+                    notificationsOpen = false;
+                    notificationPanel.classList.add('hidden');
+                }
+            });
+
+            if (notificationPanel) {
+                notificationPanel.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
+            async function fetchNotifications() {
+                try {
+                    const res = await fetch('/parent/api/notifications?limit=10');
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        updateUnreadBadge(data.unreadCount);
+                        renderNotifications(data.notifications);
+                    }
+                } catch (error) {
+                    console.error('Failed to load notifications', error);
+                    notificationList.innerHTML = '<div class="p-4 text-center text-sm text-red-500">Failed to load notifications. Please try again.</div>';
+                }
+            }
+
+            function updateUnreadBadge(count) {
+                if (count > 0) {
+                    unreadBadge.textContent = count > 99 ? '99+' : count;
+                    unreadBadge.classList.remove('hidden');
+                    markAllReadBtn.classList.remove('hidden');
+                } else {
+                    unreadBadge.classList.add('hidden');
+                    markAllReadBtn.classList.add('hidden');
+                }
+            }
+
+            function renderNotifications(notifications) {
+                if (!notifications || notifications.length === 0) {
+                    notificationList.innerHTML = `<div class="p-8 text-center flex flex-col items-center">
+                        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3 text-xl">
+                            <i class="fa-regular fa-bell-slash"></i>
+                        </div>
+                        <p class="text-sm text-slate-500">You're all caught up!</p>
+                    </div>`;
+                    return;
+                }
+
+                notificationList.innerHTML = notifications.map(notif => {
+                    const isUnread = !notif.isRead;
+                    const bgColor = isUnread ? 'bg-emerald-50/50' : 'bg-white';
+                    const iconColor = isUnread ? 'text-emerald-500' : 'text-slate-400';
+                    const titleColor = isUnread ? 'text-slate-900 font-bold' : 'text-slate-700 font-semibold';
+                    
+                    const date = new Date(notif.createdAt);
+                    const now = new Date();
+                    const diffMs = now - date;
+                    const diffMins = Math.floor(diffMs / 60000);
+                    const diffHrs = Math.floor(diffMins / 60);
+                    const diffDays = Math.floor(diffHrs / 24);
+                    let timeStr = 'Just now';
+                    if (diffDays > 0) timeStr = diffDays === 1 ? 'Yesterday' : `${diffDays}d ago`;
+                    else if (diffHrs > 0) timeStr = `${diffHrs}h ago`;
+                    else if (diffMins > 0) timeStr = `${diffMins}m ago`;
+
+                    let icon = 'fa-solid fa-bell';
+                    if (notif.type === 'assignment_submitted') icon = 'fa-solid fa-file-arrow-up';
+                    if (notif.type === 'assignment_reviewed') icon = 'fa-solid fa-check-double';
+                    if (notif.type === 'quiz_completed') icon = 'fa-solid fa-spell-check';
+                    if (notif.type === 'achievement_earned') icon = 'fa-solid fa-trophy text-yellow-500';
+
+                    return `
+                        <div class="p-4 flex gap-3 hover:bg-slate-50 transition-colors cursor-pointer ${bgColor}" onclick="handleNotificationClick('${notif._id}', '${notif.link || ''}')">
+                            <div class="shrink-0 w-8 h-8 rounded-full bg-white border border-slate-100 shadow-sm flex items-center justify-center ${iconColor} mt-1">
+                                <i class="${icon} text-xs"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm ${titleColor} truncate">${notif.title}</p>
+                                <p class="text-xs text-slate-500 mt-0.5 line-clamp-2">${notif.message}</p>
+                                <p class="text-[10px] font-medium text-slate-400 mt-1">${timeStr}</p>
+                            </div>
+                            ${isUnread ? '<div class="shrink-0 w-2 h-2 rounded-full bg-emerald-500 mt-2"></div>' : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            fetchNotifications();
+
+            window.handleNotificationClick = async (id, link) => {
+                try {
+                    await fetch(`/parent/api/notifications/${id}/read`, { method: 'PATCH' });
+                    if (link && link !== 'null') {
+                        window.location.href = link;
+                    } else {
+                        fetchNotifications();
+                    }
+                } catch (error) {
+                    console.error('Failed to mark as read', error);
+                }
+            };
+
+            if (markAllReadBtn) {
+                markAllReadBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    try {
+                        const res = await fetch('/parent/api/notifications/read-all', { method: 'PATCH' });
+                        if (res.ok) fetchNotifications();
+                    } catch (error) {
+                        console.error('Failed to mark all as read', error);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

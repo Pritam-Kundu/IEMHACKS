@@ -29,4 +29,11 @@ router.get('/api/notifications', requireAuth, requireRole('parent'), parentContr
 router.patch('/api/notifications/read-all', requireAuth, requireRole('parent'), parentController.markAllNotificationsRead);
 router.patch('/api/notifications/:id/read', requireAuth, requireRole('parent'), parentController.markNotificationRead);
 
+// Settings Routes
+router.get('/settings', requireAuth, requireRole('parent'), parentController.getSettingsPage);
+router.get('/api/settings', requireAuth, requireRole('parent'), parentController.getSettingsData);
+router.put('/api/settings/profile', requireAuth, requireRole('parent'), parentController.updateProfile);
+router.put('/api/settings/password', requireAuth, requireRole('parent'), parentController.updatePassword);
+router.put('/api/settings/notifications', requireAuth, requireRole('parent'), parentController.updateNotifications);
+
 module.exports = router;
