@@ -159,6 +159,7 @@
                         </div>
                     <% } %>
                 </div>
+            </div>
 
                 <!-- Overview Statistics Grid -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
@@ -472,27 +473,10 @@
                     submitSpinner.classList.remove('hidden');
 
                     try {
-                        // Wait for firebase auth state to resolve
-                        const currentUser = await new Promise((resolve) => {
-                            const unsubscribe = firebase.auth().onAuthStateChanged(user => {
-                                unsubscribe();
-                                resolve(user);
-                            });
-                        });
-
-                        if (!currentUser) {
-                            showError("You must be logged in to perform this action.");
-                            resetBtn();
-                            return;
-                        }
-
-                        const idToken = await currentUser.getIdToken();
-
                         const response = await fetch('/parent/api/children/link', {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json',
-                                'Authorization': `Bearer ${idToken}`
+                                'Content-Type': 'application/json'
                             },
                             body: JSON.stringify({ email })
                         });
