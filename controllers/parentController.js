@@ -14,7 +14,7 @@ exports.getDashboard = async (req, res, next) => {
 
         // 1. Fetch children connected to this parent securely
         const studentProfiles = await StudentProfile.find({ parents: parentId })
-            .populate('user', 'firstName lastName profilePicture')
+            .populate('user', 'name profilePicture')
             .populate('earnedBadges.badge')
             .lean();
 
@@ -30,7 +30,7 @@ exports.getDashboard = async (req, res, next) => {
         // Map children for the selector
         const children = studentProfiles.map(sp => ({
             id: sp.user._id.toString(),
-            name: `${sp.user.firstName} ${sp.user.lastName}`,
+            name: sp.user.name,
             profilePicture: sp.user.profilePicture,
             badges: sp.earnedBadges || []
         }));
@@ -51,7 +51,7 @@ exports.getDashboard = async (req, res, next) => {
             .populate({
                 path: 'course',
                 populate: [
-                    { path: 'teacher', select: 'firstName lastName' },
+                    { path: 'teacher', select: 'name' },
                     { path: 'subject', select: 'name' }
                 ]
             })
@@ -171,34 +171,48 @@ exports.linkStudentAccount = async (req, res) => {
             return res.status(404).json({ success: false, message: 'No EduSmart student account was found with this email address.' });
         }
 
-        if (studentUser.role !== 'student') {
+        if (studentUser.role !== 'student' && studentUser.role !== 'child') {
             return res.status(403).json({ success: false, message: 'This email is not registered as a student account.' });
         }
 
-        // Find Student Profile
-        const studentProfile = await StudentProfile.findOne({ user: studentUser._id });
-        if (!studentProfile) {
-            return res.status(404).json({ success: false, message: 'Student profile is not available for this account. Please ask the student to complete their profile.' });
+        // Find parent User
+        const parentUser = await User.findById(parentId);
+        if (!parentUser) {
+            return res.status(404).json({ success: false, message: 'Parent account not found.' });
         }
 
-        // Find Parent Profile
-        const parentProfile = await ParentProfile.findOne({ user: parentId });
-        if (!parentProfile) {
-            return res.status(404).json({ success: false, message: 'Parent profile not found.' });
-        }
-
-        // Check if already linked
-        if (parentProfile.children.includes(studentUser._id) || studentProfile.parents.includes(parentId)) {
+        // Check if already linked directly in User models
+        if (parentUser.children && parentUser.children.includes(studentUser._id) || 
+            studentUser.parentId && studentUser.parentId.toString() === parentId.toString()) {
             return res.status(400).json({ success: false, message: 'This student is already linked to your account.' });
         }
 
-        // Create relationships
-        parentProfile.children.push(studentUser._id);
-        studentProfile.parents.push(parentId);
+        // Also check if child is already linked to a different parent
+        if (studentUser.parentId && studentUser.parentId.toString() !== parentId.toString()) {
+            return res.status(400).json({ success: false, message: 'This student is already linked to another parent.' });
+        }
+
+        // Create relationships natively on User model
+        if (!parentUser.children) parentUser.children = [];
+        parentUser.children.push(studentUser._id);
+        studentUser.parentId = parentId;
+
+        // Also maintain backwards compatibility with existing StudentProfile/ParentProfile
+        const studentProfile = await StudentProfile.findOne({ user: studentUser._id });
+        const parentProfile = await ParentProfile.findOne({ user: parentId });
+        
+        if (parentProfile && !parentProfile.children.includes(studentUser._id)) {
+            parentProfile.children.push(studentUser._id);
+            await parentProfile.save();
+        }
+        if (studentProfile && !studentProfile.parents.includes(parentId)) {
+            studentProfile.parents.push(parentId);
+            await studentProfile.save();
+        }
 
         await Promise.all([
-            parentProfile.save(),
-            studentProfile.save()
+            parentUser.save(),
+            studentUser.save()
         ]);
 
         return res.status(200).json({ success: true, message: 'Child added successfully.' });

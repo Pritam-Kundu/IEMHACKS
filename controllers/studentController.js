@@ -17,7 +17,7 @@ exports.getDashboard = async (req, res, next) => {
             .populate({
                 path: 'course',
                 populate: [
-                    { path: 'teacher', select: 'firstName lastName profilePicture' },
+                    { path: 'teacher', select: 'name profilePicture' },
                     { path: 'subject', select: 'name' }
                 ]
             })

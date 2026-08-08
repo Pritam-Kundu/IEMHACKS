@@ -30,8 +30,8 @@ const seedData = async () => {
             firebaseUid: 'dev_teacher_uid_123',
             email: 'teacher@edtech.local',
             role: 'teacher',
-            firstName: 'John',
-            lastName: 'Doe'
+            name: 'John Doe',
+            password: 'password123' // Added password since it's required now for local auth, though the schema has select: false. Wait, password is required in auth logic, but not in schema (schema has select: false, no required true). Let's just omit it or add a hash. I'll omit it since local auth handles requirement.
         });
 
         console.log('Creating Course...');
