@@ -1,4 +1,6 @@
 const StudentProfile = require('../models/StudentProfile');
+const ParentProfile = require('../models/ParentProfile');
+const User = require('../models/User');
 const Enrollment = require('../models/Enrollment');
 const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
