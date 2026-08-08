@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const { initializeApp, cert } = require('firebase-admin/app');
 
 // Initialize Firebase Admin only if credentials are provided in the environment
 const initializeFirebaseAdmin = () => {
@@ -8,8 +9,8 @@ const initializeFirebaseAdmin = () => {
             return null;
         }
 
-        const app = admin.initializeApp({
-            credential: admin.credential.cert({
+        const app = initializeApp({
+            credential: cert({
                 projectId: process.env.FIREBASE_PROJECT_ID,
                 clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
                 // Handle escaped newlines in private key which often happens when passed via .env
