@@ -451,7 +451,7 @@
                                 context-aware hints, detailed explanations, and step-by-step guidance without just
                                 giving away the answer.
                             </p>
-                            <a href="/login?redirect=/student/dashboard"
+                            <a href="/login?redirect=/student/ai-tutor"
                                 class="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-xl text-indigo-900 bg-white hover:bg-gray-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5">
                                 <i class="fas fa-comment-dots mr-2 text-indigo-600"></i> Ask AI Tutor
                             </a>
@@ -470,7 +470,7 @@
                                         <div class="text-xs text-green-500">Online</div>
                                     </div>
                                 </div>
-                                <div class="p-6 space-y-4 h-64 overflow-y-auto bg-gray-50/50">
+                                <div class="p-6 space-y-4 h-64 overflow-y-auto bg-gray-50/50" id="homeChatContainer">
                                     <div class="flex justify-end">
                                         <div
                                             class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm">
@@ -489,10 +489,12 @@
                                     </div>
                                 </div>
                                 <div class="p-3 border-t border-gray-100 bg-white">
-                                    <div class="flex items-center bg-gray-100 rounded-full px-4 py-2">
-                                        <span class="text-gray-400 italic flex-grow">Type a message...</span>
-                                        <i class="fas fa-paper-plane text-indigo-500 cursor-pointer ml-2"></i>
-                                    </div>
+                                    <form id="homeAiForm" class="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                                        <input type="text" id="homeAiInput" class="bg-transparent border-none outline-none flex-grow text-gray-700" placeholder="Type a message..." autocomplete="off" required>
+                                        <button type="submit" id="homeAiSubmitBtn" class="text-indigo-500 hover:text-indigo-600 focus:outline-none disabled:opacity-50 transition-colors ml-2">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -1032,5 +1034,104 @@
                         init();
                     }
                 })();
+
+                // Landing Page Chat Widget Logic
+                document.addEventListener('DOMContentLoaded', () => {
+                    const form = document.getElementById('homeAiForm');
+                    const input = document.getElementById('homeAiInput');
+                    const chatContainer = document.getElementById('homeChatContainer');
+                    const submitBtn = document.getElementById('homeAiSubmitBtn');
+
+                    if (!form || !input || !chatContainer || !submitBtn) return;
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const message = input.value.trim();
+                        if (!message) return;
+
+                        // Clear initial mock messages if any exist
+                        if (chatContainer.innerHTML.includes('python')) {
+                            chatContainer.innerHTML = '';
+                        }
+
+                        // Add user message
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'flex justify-end';
+                        userDiv.innerHTML = `
+                            <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm">
+                                ${message}
+                            </div>
+                        `;
+                        chatContainer.appendChild(userDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                        input.value = '';
+                        input.disabled = true;
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                        // Add AI message container
+                        const aiDiv = document.createElement('div');
+                        aiDiv.className = 'flex justify-start';
+                        const aiInner = document.createElement('div');
+                        aiInner.className = 'bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none max-w-[90%] shadow-sm text-gray-600 leading-relaxed min-h-[3rem]';
+                        aiDiv.appendChild(aiInner);
+                        chatContainer.appendChild(aiDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                        try {
+                            const response = await fetch('/api/ai/public-chat', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ message: message })
+                            });
+
+                            if (!response.ok) throw new Error("Failed to connect to AI");
+                            
+                            const reader = response.body.getReader();
+                            const decoder = new TextDecoder('utf-8');
+                            let currentText = '';
+
+                            while (true) {
+                                const { value, done } = await reader.read();
+                                if (done) break;
+
+                                const chunkStr = decoder.decode(value, { stream: true });
+                                const lines = chunkStr.split('\n');
+
+                                for (const line of lines) {
+                                    if (line.startsWith('data: ')) {
+                                        const dataStr = line.substring(6).trim();
+                                        if (dataStr === '[DONE]') {
+                                            break;
+                                        }
+                                        try {
+                                            const data = JSON.parse(dataStr);
+                                            if (data.type === 'chunk' && data.text) {
+                                                currentText += data.text;
+                                                // Simple markdown-ish bold replacement
+                                                aiInner.innerHTML = currentText
+                                                    .replace(/\n/g, '<br>')
+                                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                                            } else if (data.type === 'error') {
+                                                aiInner.innerHTML = `<span class="text-red-500">Error: ${data.message}</span>`;
+                                            }
+                                        } catch (e) {
+                                            console.error("Error parsing stream data", e);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            aiInner.innerHTML = `<span class="text-red-500">Error communicating with AI Tutor. Please try again later.</span>`;
+                        } finally {
+                            input.disabled = false;
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                            input.focus();
+                        }
+                    });
+                });
             </script>
 </body>

@@ -209,10 +209,181 @@
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
             /**
-             * Phase 13 Preparation: IndexedDB Initialization 
-             * This provides the architecture placeholder for offline caching.
-             * The actual caching sync logic will be added in Phase 13.
+             * AI Tutor Chat Logic
              */
+            const aiTutorForm = document.getElementById('aiTutorForm');
+            const promptInput = document.getElementById('promptInput');
+            const chatContainer = document.getElementById('chatContainer');
+            const submitBtn = aiTutorForm.querySelector('button[type="submit"]');
+            
+            let conversationId = null;
+
+            // Simple markdown parser for basic formatting
+            const parseMarkdown = (text) => {
+                let html = text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`(.*?)`/g, '<code class="bg-slate-200 px-1 py-0.5 rounded text-sm text-pink-600">$1</code>')
+                    .replace(/\n/g, '<br>');
+                return html;
+            };
+
+            const appendMessage = (sender, text) => {
+                const isAI = sender === 'ai';
+                
+                const wrapper = document.createElement('div');
+                wrapper.className = `flex items-start gap-4 max-w-3xl ${isAI ? '' : 'ml-auto flex-row-reverse'}`;
+                
+                let iconHtml = '';
+                if (isAI) {
+                    iconHtml = `
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-md">
+                            <i class="fa-solid fa-robot"></i>
+                        </div>
+                    `;
+                } else {
+                    iconHtml = `
+                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 shrink-0 shadow-sm border border-slate-300">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                    `;
+                }
+
+                const bubbleHtml = `
+                    <div class="${isAI ? 'bg-white border border-slate-200 rounded-tl-none' : 'bg-indigo-600 text-white rounded-tr-none'} p-4 rounded-2xl shadow-sm">
+                        ${isAI ? '<p class="text-slate-700 font-medium mb-1">EduSmart Tutor</p>' : ''}
+                        <div class="${isAI ? 'text-slate-600' : 'text-indigo-50'} leading-relaxed overflow-x-auto whitespace-pre-wrap">${isAI ? parseMarkdown(text) : text}</div>
+                    </div>
+                `;
+
+                wrapper.innerHTML = isAI ? iconHtml + bubbleHtml : iconHtml + bubbleHtml;
+                chatContainer.appendChild(wrapper);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                return wrapper;
+            };
+
+            const appendLoading = () => {
+                const wrapper = document.createElement('div');
+                wrapper.id = "ai-loading";
+                wrapper.className = "flex items-start gap-4 max-w-3xl";
+                wrapper.innerHTML = `
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-md">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm flex gap-1 items-center h-14">
+                        <div class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0s"></div>
+                        <div class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                        <div class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    </div>
+                `;
+                chatContainer.appendChild(wrapper);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                return wrapper;
+            };
+
+            // Enter to submit (Shift+Enter for newline)
+            promptInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if(promptInput.value.trim() !== '') {
+                        aiTutorForm.dispatchEvent(new Event('submit'));
+                    }
+                }
+            });
+
+            aiTutorForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = promptInput.value.trim();
+                if (!text) return;
+
+                // Append user message
+                appendMessage('user', text);
+                promptInput.value = '';
+                
+                // Disable input and show loading
+                promptInput.disabled = true;
+                submitBtn.disabled = true;
+                const loadingIndicator = appendLoading();
+
+                try {
+                    const response = await fetch('/api/ai/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: text,
+                            conversationId: conversationId,
+                            stream: true
+                        })
+                    });
+
+                    loadingIndicator.remove();
+
+                    if (!response.ok) {
+                        let errMsg = "Unknown error";
+                        try {
+                            const errData = await response.json();
+                            errMsg = errData.error || errMsg;
+                        } catch(e) {}
+                        appendMessage('ai', "Sorry, I encountered an error: " + errMsg);
+                        return;
+                    }
+
+                    // Create empty bubble for streaming
+                    const aiBubble = appendMessage('ai', "");
+                    const textContainer = aiBubble.querySelector('.text-slate-600');
+                    let fullText = "";
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = "";
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        
+                        let boundary = buffer.indexOf('\n\n');
+                        while (boundary !== -1) {
+                            const chunk = buffer.slice(0, boundary).replace(/^data:\s*/, '').trim();
+                            buffer = buffer.slice(boundary + 2);
+                            
+                            if (chunk === '[DONE]') break;
+                            
+                            if (chunk) {
+                                try {
+                                    const parsed = JSON.parse(chunk);
+                                    if (parsed.type === 'meta') {
+                                        conversationId = parsed.conversationId;
+                                    } else if (parsed.type === 'chunk') {
+                                        fullText += parsed.text;
+                                        textContainer.innerHTML = parseMarkdown(fullText);
+                                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                                    } else if (parsed.type === 'error') {
+                                        fullText += "\n\n**Error:** " + parsed.message;
+                                        textContainer.innerHTML = parseMarkdown(fullText);
+                                        chatContainer.scrollTop = chatContainer.scrollHeight;
+                                    }
+                                } catch (e) {
+                                    console.error("Error parsing chunk:", e, chunk);
+                                }
+                            }
+                            boundary = buffer.indexOf('\n\n');
+                        }
+                    }
+                } catch (err) {
+                    console.error(err);
+                    loadingIndicator.remove();
+                    appendMessage('ai', "Network error. Please try again later.");
+                } finally {
+                    promptInput.disabled = false;
+                    submitBtn.disabled = false;
+                    promptInput.focus();
+                }
+            });
+
             if ('indexedDB' in window) {
                 // Future IndexedDB implementation placeholder
                 console.log('IndexedDB is supported. Ready for offline mode caching.');
