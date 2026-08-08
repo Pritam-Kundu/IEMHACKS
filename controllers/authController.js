@@ -112,12 +112,16 @@ const sessionSignup = async (req, res) => {
         // Security check: ensure valid role is provided
         const validRoles = ['student', 'teacher', 'parent'];
         const assignedRole = validRoles.includes(role) ? role : 'student';
+        
+        // Teachers require approval
+        const status = assignedRole === 'teacher' ? 'pending' : 'active';
 
         // Create MongoDB User
         user = await User.create({
             firebaseUid: firebaseUser.uid,
             email: firebaseUser.email,
             role: assignedRole,
+            status: status,
             firstName: firstName || 'New',
             lastName: lastName || 'User',
             profilePicture: firebaseUser.photoURL || '/images/default-avatar.png'

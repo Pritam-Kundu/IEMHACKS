@@ -5,6 +5,7 @@ const authRoutes = require('./auth');
 const studentRoutes = require('./student');
 const teacherRoutes = require('./teacher');
 const parentRoutes = require('./parent');
+const quizRoutes = require('./quizRoutes');
 const { injectAuthUser } = require('../middleware/authMiddleware');
 
 // Mount routes
@@ -12,6 +13,7 @@ router.use('/', authRoutes);
 router.use('/student', studentRoutes);
 router.use('/teacher', teacherRoutes);
 router.use('/parent', parentRoutes);
+router.use('/quiz', quizRoutes);
 
 // Landing page route
 router.get('/', injectAuthUser, (req, res) => {

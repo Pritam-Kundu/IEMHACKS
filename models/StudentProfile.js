@@ -32,8 +32,12 @@ const studentProfileSchema = new mongoose.Schema({
         earnedAt: {
             type: Date,
             default: Date.now
-        }
-    }]
+    }],
+    recommendedDifficulty: {
+        type: String,
+        enum: ['beginner', 'intermediate', 'advanced'],
+        default: 'intermediate'
+    }
 }, { 
     timestamps: true 
 });

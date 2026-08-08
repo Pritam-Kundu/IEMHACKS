@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - EduSmart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Quiz Specific Custom CSS */
+        
+        /* Options Hover & Selected States */
+        .option-card {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .option-card:hover {
+            border-color: #6366f1; /* indigo-500 */
+            background-color: #e0e7ff; /* indigo-50 */
+        }
+        .option-card.selected {
+            border-color: #4f46e5; /* indigo-600 */
+            background-color: #e0e7ff; /* indigo-50 */
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        
+        /* Question Palette States */
+        .palette-btn {
+            transition: all 0.2s ease-in-out;
+        }
+        .palette-unvisited {
+            background-color: #f3f4f6; /* gray-100 */
+            color: #4b5563; /* gray-600 */
+            border-color: #e5e7eb; /* gray-200 */
+        }
+        .palette-visited {
+            background-color: #fef08a; /* yellow-200 */
+            color: #854d0e; /* yellow-800 */
+            border-color: #fde047; /* yellow-300 */
+        }
+        .palette-answered {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            border-color: #4338ca; /* indigo-700 */
+        }
+        .palette-current {
+            border: 2px solid #0ea5e9 !important; /* sky-500 border to indicate current */
+            box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+        }
+        
+        /* Result Review States */
+        .review-correct {
+            background-color: #dcfce7 !important; /* green-100 */
+            border-color: #22c55e !important; /* green-500 */
+        }
+        .review-incorrect {
+            background-color: #fee2e2 !important; /* red-100 */
+            border-color: #ef4444 !important; /* red-500 */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased min-h-screen flex flex-col" data-quiz-id="<%= quizId %>">
+    
+    <%- include('../partials/navbar') %>
+
+    <!-- Global Loading Spinner -->
+    <div id="globalLoading" class="flex-grow flex items-center justify-center">
+        <div class="text-center">
+            <i class="fas fa-circle-notch fa-spin text-4xl text-indigo-600 mb-4"></i>
+            <p class="text-gray-500 font-medium">Loading Quiz Data...</p>
+        </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="errorState" class="hidden flex-grow flex items-center justify-center p-6">
+        <div class="bg-white rounded-xl shadow-sm border border-red-200 p-8 max-w-md text-center">
+            <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+            <h2 class="text-xl font-bold text-gray-900 mb-2">Quiz Unavailable</h2>
+            <p id="errorMsg" class="text-gray-600 mb-6">There was an error loading the quiz.</p>
+            <a href="/student/dashboard" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Return to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- 1. Quiz Start Screen -->
+    <main id="screenStart" class="hidden flex-grow container mx-auto px-4 py-12 max-w-3xl">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-indigo-600 text-white p-8 text-center relative">
+                <i class="fas fa-clipboard-list text-5xl mb-4 opacity-80"></i>
+                <h1 id="startTitle" class="text-3xl font-bold mb-2">Quiz Title</h1>
+                <p id="startDesc" class="text-indigo-100">Loading description...</p>
+            </div>
+            
+            <div class="p-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8 text-center border-b border-gray-100 pb-8">
+                    <div>
+                        <div class="text-gray-400 text-xs uppercase tracking-wider mb-1">Questions</div>
+                        <div id="startQCount" class="text-2xl font-bold text-gray-900">-</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-400 text-xs uppercase tracking-wider mb-1">Duration</div>
+                        <div id="startDuration" class="text-2xl font-bold text-gray-900">-</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-400 text-xs uppercase tracking-wider mb-1">Passing</div>
+                        <div id="startPassing" class="text-2xl font-bold text-gray-900">-</div>
+                    </div>
+                    <div>
+                        <div class="text-gray-400 text-xs uppercase tracking-wider mb-1">Difficulty</div>
+                        <div class="text-2xl font-bold text-gray-900">Auto</div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-8 flex items-start space-x-3 text-blue-800 text-sm">
+                    <i class="fas fa-info-circle mt-0.5"></i>
+                    <div>
+                        <strong>Instructions:</strong> Once you start the quiz, the timer will begin. Do not refresh the page or you may lose your progress. Unanswered questions will receive 0 marks.
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <button id="btnStartQuiz" class="px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-md hover:bg-indigo-700 transition-colors transform hover:-translate-y-1">
+                        Start Quiz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 2. Active Quiz UI -->
+    <main id="screenActive" class="hidden flex-grow container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Quiz Header -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col sm:flex-row justify-between items-center sticky top-20 z-40">
+            <div class="mb-2 sm:mb-0 text-center sm:text-left">
+                <h2 id="activeQuizTitle" class="font-bold text-gray-900">Quiz Title</h2>
+                <div class="text-xs text-gray-500" id="progressText">Question 1 of 10</div>
+            </div>
+            
+            <div class="w-full sm:w-1/3 bg-gray-200 rounded-full h-2 mb-2 sm:mb-0 mx-0 sm:mx-6 hidden sm:block">
+                <div id="progressBar" class="bg-indigo-600 h-2 rounded-full" style="width: 10%"></div>
+            </div>
+            
+            <div class="flex items-center space-x-2 bg-gray-100 px-4 py-2 rounded-lg font-mono font-bold text-lg" id="timerDisplay">
+                <i class="fas fa-clock text-gray-500"></i>
+                <span id="timeRemaining">--:--</span>
+            </div>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- Main Question Area -->
+            <div class="lg:w-3/4 flex flex-col">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8 flex-grow">
+                    <div class="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
+                        <h3 class="text-xl font-bold text-gray-900 flex">
+                            <span id="qNumber" class="text-indigo-600 mr-2">Q1.</span> 
+                            <span id="qText">Question text loading...</span>
+                        </h3>
+                    </div>
+                    
+                    <div id="optionsContainer" class="space-y-4">
+                        <!-- Options injected here by JS -->
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between items-center mt-6">
+                    <button id="btnPrev" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition">
+                        <i class="fas fa-chevron-left mr-2"></i> Previous
+                    </button>
+                    <button id="btnNext" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition shadow-sm">
+                        Next <i class="fas fa-chevron-right ml-2"></i>
+                    </button>
+                    <button id="btnSubmit" class="hidden px-6 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 transition shadow-sm animate-pulse">
+                        Submit Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Side Palette -->
+            <div class="lg:w-1/4">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-48">
+                    <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-4">Question Palette</h3>
+                    
+                    <div class="grid grid-cols-5 gap-2 mb-6" id="paletteGrid">
+                        <!-- Palette buttons injected here -->
+                    </div>
+                    
+                    <div class="space-y-2 text-xs text-gray-600 border-t border-gray-100 pt-4">
+                        <div class="flex items-center"><div class="w-3 h-3 rounded bg-indigo-600 mr-2"></div> Answered</div>
+                        <div class="flex items-center"><div class="w-3 h-3 rounded border border-gray-300 bg-gray-100 mr-2"></div> Unvisited</div>
+                        <div class="flex items-center"><div class="w-3 h-3 rounded bg-yellow-200 border border-yellow-300 mr-2"></div> Visited (Unanswered)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 3. Result & Review UI -->
+    <main id="screenResult" class="hidden flex-grow container mx-auto px-4 py-8 max-w-4xl">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+            <div id="resultBanner" class="p-8 text-center text-white">
+                <!-- Color dynamically set based on pass/fail -->
+                <i id="resultIcon" class="fas fa-trophy text-6xl mb-4"></i>
+                <h1 id="resultTitle" class="text-4xl font-bold mb-2">Quiz Complete!</h1>
+                <p id="resultMsg" class="text-lg opacity-90">You have successfully submitted your answers.</p>
+            </div>
+            
+            <div class="p-8 bg-gray-50 flex flex-col md:flex-row justify-around items-center border-b border-gray-100 gap-6">
+                <div class="text-center">
+                    <div class="text-sm text-gray-500 uppercase tracking-wide">Your Score</div>
+                    <div class="text-5xl font-extrabold text-gray-900 my-2" id="scoreDisplay">0%</div>
+                    <div class="inline-flex px-3 py-1 rounded-full text-sm font-bold" id="statusBadge">STATUS</div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-x-8 gap-y-4 text-left">
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase">Correct</div>
+                        <div class="text-xl font-bold text-green-600" id="statCorrect">0</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase">Incorrect</div>
+                        <div class="text-xl font-bold text-red-600" id="statIncorrect">0</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase">Total Questions</div>
+                        <div class="text-xl font-bold text-gray-900" id="statTotal">0</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 uppercase">Passing Score</div>
+                        <div class="text-xl font-bold text-gray-900" id="statPassing">0%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-6 text-center">
+                <button id="btnReview" class="px-6 py-2 bg-white border border-gray-300 text-gray-700 font-medium rounded-md hover:bg-gray-50 transition mr-4">
+                    Review Answers
+                </button>
+                <a href="/student/dashboard" class="px-6 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 transition">
+                    Back to Dashboard
+                </a>
+            </div>
+        </div>
+        
+        <!-- Detailed Review Section (Hidden by default) -->
+        <div id="reviewSection" class="hidden space-y-6">
+            <h3 class="text-2xl font-bold text-gray-900 border-b border-gray-200 pb-2 mb-6">Detailed Review</h3>
+            <div id="reviewContainer">
+                <!-- Review cards injected here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Submission Modal -->
+    <div id="submitModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
+                            <i class="fas fa-paper-plane text-indigo-600"></i>
+                        </div>
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Submit Quiz?</h3>
+                            <div class="mt-2">
+                                <p class="text-sm text-gray-500">Are you sure you want to submit your quiz? You will not be able to change your answers after submission.</p>
+                                <div class="mt-4 bg-gray-50 p-3 rounded border border-gray-200 flex justify-between">
+                                    <span class="text-sm font-medium text-gray-700">Answered:</span>
+                                    <span id="modalAnswered" class="text-sm font-bold text-indigo-600">0 / 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="modalConfirmBtn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Submit Quiz
+                    </button>
+                    <button type="button" id="modalCancelBtn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <!-- Quiz Logic Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizId = document.body.getAttribute('data-quiz-id');
+            
+            // State
+            let quizData = null;
+            let questions = [];
+            let currentQuestionIndex = 0;
+            
+            // Answers state: array of { questionId: String, selectedOptionIndex: Number, state: 'unvisited'|'visited'|'answered' }
+            let studentAnswers = [];
+            
+            // Timer state
+            let timeLimitSeconds = 0;
+            let timerInterval = null;
+            let timerRunning = false;
+
+            // DOM Elements
+            const screenLoading = document.getElementById('globalLoading');
+            const screenError = document.getElementById('errorState');
+            const screenStart = document.getElementById('screenStart');
+            const screenActive = document.getElementById('screenActive');
+            const screenResult = document.getElementById('screenResult');
+            
+            // Fetch Quiz Data securely on load
+            const init = async () => {
+                try {
+                    const res = await fetch(`/quiz/api/${quizId}/data`);
+                    if (!res.ok) throw new Error('Failed to load quiz data');
+                    
+                    const data = await res.json();
+                    quizData = data.quiz;
+                    questions = data.questions;
+                    
+                    // Initialize answer state
+                    studentAnswers = questions.map(q => ({
+                        questionId: q._id,
+                        selectedOptionIndex: null,
+                        state: 'unvisited' // unvisited, visited, answered
+                    }));
+                    
+                    populateStartScreen();
+                    
+                    screenLoading.classList.add('hidden');
+                    screenStart.classList.remove('hidden');
+                    
+                } catch (error) {
+                    console.error(error);
+                    screenLoading.classList.add('hidden');
+                    screenError.classList.remove('hidden');
+                }
+            };
+            
+            // Start Screen
+            const populateStartScreen = () => {
+                document.getElementById('startTitle').textContent = quizData.title;
+                document.getElementById('startDesc').textContent = quizData.description || 'No description provided.';
+                document.getElementById('startQCount').textContent = questions.length;
+                document.getElementById('startDuration').textContent = quizData.timeLimitMinutes > 0 ? `${quizData.timeLimitMinutes} mins` : 'Unlimited';
+                document.getElementById('startPassing').textContent = `${quizData.passingScore}%`;
+            };
+            
+            document.getElementById('btnStartQuiz').addEventListener('click', () => {
+                screenStart.classList.add('hidden');
+                screenActive.classList.remove('hidden');
+                
+                document.getElementById('activeQuizTitle').textContent = quizData.title;
+                
+                // Initialize Palette
+                renderPalette();
+                
+                // Jump to first question
+                goToQuestion(0);
+                
+                // Start Timer
+                if (quizData.timeLimitMinutes > 0) {
+                    timeLimitSeconds = quizData.timeLimitMinutes * 60;
+                    startTimer();
+                } else {
+                    document.getElementById('timerDisplay').classList.add('hidden');
+                }
+            });
+            
+            // Active Quiz Functions
+            const renderPalette = () => {
+                const paletteGrid = document.getElementById('paletteGrid');
+                paletteGrid.innerHTML = '';
+                
+                studentAnswers.forEach((ans, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = `palette-btn w-10 h-10 rounded font-bold text-sm border flex items-center justify-center`;
+                    btn.textContent = index + 1;
+                    
+                    // Apply visual state
+                    if (index === currentQuestionIndex) {
+                        btn.classList.add('palette-current');
+                    }
+                    
+                    if (ans.state === 'answered') {
+                        btn.classList.add('palette-answered');
+                    } else if (ans.state === 'visited') {
+                        btn.classList.add('palette-visited');
+                    } else {
+                        btn.classList.add('palette-unvisited');
+                    }
+                    
+                    btn.addEventListener('click', () => goToQuestion(index));
+                    paletteGrid.appendChild(btn);
+                });
+            };
+            
+            const goToQuestion = (index) => {
+                // Update previous question state if unvisited
+                if (studentAnswers[currentQuestionIndex].state === 'unvisited') {
+                    studentAnswers[currentQuestionIndex].state = 'visited';
+                }
+                
+                currentQuestionIndex = index;
+                
+                // Mark new current as visited if unvisited
+                if (studentAnswers[currentQuestionIndex].state === 'unvisited') {
+                    studentAnswers[currentQuestionIndex].state = 'visited';
+                }
+                
+                const q = questions[currentQuestionIndex];
+                const state = studentAnswers[currentQuestionIndex];
+                
+                // Update UI
+                document.getElementById('progressText').textContent = `Question ${index + 1} of ${questions.length}`;
+                document.getElementById('progressBar').style.width = `${((index + 1) / questions.length) * 100}%`;
+                
+                document.getElementById('qNumber').textContent = `Q${index + 1}.`;
+                document.getElementById('qText').textContent = q.questionText;
+                
+                // Render Options
+                const optionsContainer = document.getElementById('optionsContainer');
+                optionsContainer.innerHTML = '';
+                
+                const letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+                
+                q.options.forEach((opt, optIndex) => {
+                    const card = document.createElement('div');
+                    card.className = `option-card border rounded-lg p-4 flex items-center space-x-4 ${state.selectedOptionIndex === optIndex ? 'selected' : 'border-gray-200 bg-white'}`;
+                    
+                    card.innerHTML = `
+                        <div class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center font-bold text-sm ${state.selectedOptionIndex === optIndex ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-gray-50 text-gray-500'}">
+                            ${letters[optIndex]}
+                        </div>
+                        <div class="flex-grow text-gray-800 font-medium">${opt.text}</div>
+                    `;
+                    
+                    card.addEventListener('click', () => {
+                        studentAnswers[currentQuestionIndex].selectedOptionIndex = optIndex;
+                        studentAnswers[currentQuestionIndex].state = 'answered';
+                        
+                        // Re-render to update highlights and palette
+                        goToQuestion(currentQuestionIndex);
+                    });
+                    
+                    optionsContainer.appendChild(card);
+                });
+                
+                renderPalette();
+                
+                // Nav Buttons
+                document.getElementById('btnPrev').disabled = index === 0;
+                
+                if (index === questions.length - 1) {
+                    document.getElementById('btnNext').classList.add('hidden');
+                    document.getElementById('btnSubmit').classList.remove('hidden');
+                } else {
+                    document.getElementById('btnNext').classList.remove('hidden');
+                    document.getElementById('btnSubmit').classList.add('hidden');
+                }
+            };
+            
+            document.getElementById('btnPrev').addEventListener('click', () => {
+                if (currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1);
+            });
+            
+            document.getElementById('btnNext').addEventListener('click', () => {
+                if (currentQuestionIndex < questions.length - 1) goToQuestion(currentQuestionIndex + 1);
+            });
+            
+            // Timer Logic
+            const startTimer = () => {
+                timerRunning = true;
+                const timerDisplay = document.getElementById('timeRemaining');
+                const timerContainer = document.getElementById('timerDisplay');
+                
+                const updateTimer = () => {
+                    if (timeLimitSeconds <= 0) {
+                        clearInterval(timerInterval);
+                        timerRunning = false;
+                        timerDisplay.textContent = "00:00";
+                        autoSubmitQuiz();
+                        return;
+                    }
+                    
+                    timeLimitSeconds--;
+                    
+                    const m = Math.floor(timeLimitSeconds / 60);
+                    const s = timeLimitSeconds % 60;
+                    timerDisplay.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                    
+                    // Warning when < 1 minute
+                    if (timeLimitSeconds <= 60 && !timerContainer.classList.contains('bg-red-100')) {
+                        timerContainer.classList.remove('bg-gray-100', 'text-gray-800');
+                        timerContainer.classList.add('bg-red-100', 'text-red-700', 'animate-pulse');
+                    }
+                };
+                
+                updateTimer();
+                timerInterval = setInterval(updateTimer, 1000);
+            };
+            
+            // Submit Logic
+            const submitModal = document.getElementById('submitModal');
+            
+            document.getElementById('btnSubmit').addEventListener('click', () => {
+                const answeredCount = studentAnswers.filter(a => a.state === 'answered').length;
+                document.getElementById('modalAnswered').textContent = `${answeredCount} / ${questions.length}`;
+                submitModal.classList.remove('hidden');
+            });
+            
+            document.getElementById('modalCancelBtn').addEventListener('click', () => {
+                submitModal.classList.add('hidden');
+            });
+            
+            document.getElementById('modalConfirmBtn').addEventListener('click', () => {
+                submitModal.classList.add('hidden');
+                executeSubmission();
+            });
+            
+            const autoSubmitQuiz = () => {
+                alert("Time's up! Your quiz is being submitted automatically.");
+                executeSubmission();
+            };
+            
+            const executeSubmission = async () => {
+                if (timerRunning) {
+                    clearInterval(timerInterval);
+                    timerRunning = false;
+                }
+                
+                screenActive.classList.add('hidden');
+                screenLoading.classList.remove('hidden');
+                document.querySelector('#globalLoading p').textContent = "Submitting answers...";
+                
+                try {
+                    const payload = studentAnswers.map(a => ({
+                        questionId: a.questionId,
+                        selectedOptionIndex: a.selectedOptionIndex
+                    }));
+                    
+                    const res = await fetch(`/quiz/api/${quizId}/submit`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ answers: payload })
+                    });
+                    
+                    if (!res.ok) throw new Error('Submission failed');
+                    
+                    const responseData = await res.json();
+                    renderResult(responseData.result);
+                    
+                } catch (error) {
+                    console.error(error);
+                    screenLoading.classList.add('hidden');
+                    screenError.classList.remove('hidden');
+                    document.getElementById('errorMsg').textContent = "Failed to submit quiz. Please contact support.";
+                }
+            };
+            
+            // Result Screen Logic
+            const renderResult = (resultData) => {
+                screenLoading.classList.add('hidden');
+                screenResult.classList.remove('hidden');
+                
+                const banner = document.getElementById('resultBanner');
+                const badge = document.getElementById('statusBadge');
+                
+                if (resultData.passed) {
+                    banner.classList.add('bg-green-600');
+                    document.getElementById('resultIcon').className = 'fas fa-trophy text-6xl mb-4 text-green-200';
+                    document.getElementById('resultTitle').textContent = 'Congratulations!';
+                    document.getElementById('resultMsg').textContent = 'You passed the quiz successfully.';
+                    
+                    badge.classList.add('bg-green-100', 'text-green-800');
+                    badge.textContent = 'PASSED';
+                } else {
+                    banner.classList.add('bg-red-600');
+                    document.getElementById('resultIcon').className = 'fas fa-book-reader text-6xl mb-4 text-red-200';
+                    document.getElementById('resultTitle').textContent = 'Keep Practicing';
+                    document.getElementById('resultMsg').textContent = 'You did not meet the passing score this time.';
+                    
+                    badge.classList.add('bg-red-100', 'text-red-800');
+                    badge.textContent = 'FAILED';
+                }
+                
+                // Formatted score (e.g. 85%)
+                document.getElementById('scoreDisplay').textContent = `${Math.round(resultData.score)}%`;
+                document.getElementById('statCorrect').textContent = resultData.correctCount;
+                document.getElementById('statIncorrect').textContent = resultData.totalQuestions - resultData.correctCount;
+                document.getElementById('statTotal').textContent = resultData.totalQuestions;
+                document.getElementById('statPassing').textContent = `${quizData.passingScore}%`;
+                
+                // Review Section Generation
+                const reviewContainer = document.getElementById('reviewContainer');
+                reviewContainer.innerHTML = '';
+                
+                resultData.reviewData.forEach((rev, idx) => {
+                    const isCorrectAns = rev.isCorrect;
+                    const card = document.createElement('div');
+                    card.className = `p-6 rounded-lg border ${isCorrectAns ? 'review-correct' : 'review-incorrect'} shadow-sm mb-4`;
+                    
+                    let optionsHTML = '';
+                    rev.options.forEach((opt, oIdx) => {
+                        let optClass = 'text-gray-600';
+                        let iconHTML = '';
+                        
+                        if (opt.isCorrect) {
+                            optClass = 'text-green-700 font-bold bg-green-100 rounded px-2 py-1 inline-block my-1 w-full';
+                            iconHTML = '<i class="fas fa-check text-green-600 mr-2"></i>';
+                        } else if (rev.selectedOptionIndex === oIdx && !opt.isCorrect) {
+                            optClass = 'text-red-700 font-bold bg-red-100 rounded px-2 py-1 inline-block my-1 w-full line-through opacity-80';
+                            iconHTML = '<i class="fas fa-times text-red-600 mr-2"></i>';
+                        } else {
+                            optClass = 'my-1 px-2 py-1 inline-block w-full text-gray-700';
+                            iconHTML = '<span class="mr-6"></span>'; // spacer
+                        }
+                        
+                        optionsHTML += `<div>${iconHTML}<span class="${optClass}">${opt.text}</span></div>`;
+                    });
+                    
+                    const explanationHTML = rev.explanation ? `
+                        <div class="mt-4 p-3 bg-white/50 rounded text-sm text-gray-700 border border-black/5">
+                            <strong>Explanation:</strong> ${rev.explanation}
+                        </div>
+                    ` : '';
+                    
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between mb-4">
+                            <h4 class="font-bold text-gray-900"><span class="mr-2">Q${idx + 1}.</span> ${rev.questionText}</h4>
+                            <span class="text-xl">${isCorrectAns ? '✅' : '❌'}</span>
+                        </div>
+                        <div class="ml-6 space-y-1">
+                            ${optionsHTML}
+                        </div>
+                        ${explanationHTML}
+                    `;
+                    
+                    reviewContainer.appendChild(card);
+                });
+            };
+            
+            document.getElementById('btnReview').addEventListener('click', () => {
+                document.getElementById('reviewSection').classList.remove('hidden');
+                document.getElementById('reviewSection').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Warn before leaving active quiz
+            window.addEventListener('beforeunload', (e) => {
+                if (!screenActive.classList.contains('hidden') && !timerRunning === false) {
+                    e.preventDefault();
+                    e.returnValue = ''; // Standard requirement for modern browsers to show prompt
+                }
+            });
+
+            // Kickoff
+            init();
+        });
+    </script>
+</body>
+</html>
