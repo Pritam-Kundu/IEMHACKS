@@ -195,8 +195,7 @@
                                 </div>
                                 <h4 class="font-bold text-slate-800 text-lg"><%= course.title %></h4>
                                 <p class="text-sm text-slate-600 line-clamp-2 mt-2 mb-4"><%= course.description %></p>
-                                <form action="/api/enroll" method="POST">
-                                    <input type="hidden" name="courseId" value="<%= course._id %>">
+                                <form action="/student/courses/<%= course._id %>/enroll" method="POST">
                                     <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-medium hover:bg-indigo-700 transition-colors">Enroll Now</button>
                                 </form>
                             </div>

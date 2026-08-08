@@ -178,7 +178,7 @@
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <% topStudents.forEach((student, index) => { %>
-                                    <% const isCurrentUser = student._id.toString() === user._id.toString(); %>
+                                    <% const isCurrentUser = student.user && student.user._id.toString() === user._id.toString(); %>
                                     <tr class="hover:bg-slate-50 transition-colors <%= isCurrentUser ? 'bg-indigo-50/50' : '' %>">
                                         <td class="py-4 px-6">
                                             <% if (index === 0) { %>
@@ -193,9 +193,9 @@
                                         </td>
                                         <td class="py-4 px-6">
                                             <div class="flex items-center gap-3">
-                                                <img src="<%= student.user.profilePicture || '/images/default-avatar.png' %>" class="w-10 h-10 rounded-full border border-slate-200">
+                                                <img src="<%= (student.user && student.user.profilePicture) || '/images/default-avatar.png' %>" class="w-10 h-10 rounded-full border border-slate-200">
                                                 <div>
-                                                    <p class="font-semibold text-slate-800 <%= isCurrentUser ? 'text-indigo-700' : '' %>"><%= student.user.name %> <%= isCurrentUser ? '(You)' : '' %></p>
+                                                    <p class="font-semibold text-slate-800 <%= isCurrentUser ? 'text-indigo-700' : '' %>"><%= student.user ? student.user.name : 'Unknown User' %> <%= isCurrentUser ? '(You)' : '' %></p>
                                                 </div>
                                             </div>
                                         </td>

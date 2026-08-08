@@ -223,13 +223,41 @@ exports.getAITutor = async (req, res, next) => {
 exports.getProgress = async (req, res, next) => {
     try {
         const studentId = req.user._id;
-        const progressRecords = await Progress.find({ student: studentId })
-            .populate({
-                path: 'lesson',
-                populate: { path: 'course', select: 'title' }
-            })
-            .sort({ lastAccessed: -1 })
+        
+        // Find all enrollments for the student
+        const enrollments = await Enrollment.find({ student: studentId })
+            .populate('course')
             .lean();
+            
+        // Calculate progress for each enrolled course
+        const progressRecordsRaw = await Promise.all(enrollments.map(async (enrollment) => {
+            const course = enrollment.course;
+            if (!course) return null;
+            
+            // Count completed lessons for this course
+            const completedLessonsCount = await Progress.countDocuments({
+                student: studentId,
+                course: course._id,
+                status: 'completed'
+            });
+            
+            // Get last accessed date
+            const lastProgress = await Progress.findOne({
+                student: studentId,
+                course: course._id
+            }).sort({ lastAccessed: -1 }).lean();
+            
+            return {
+                course: {
+                    title: course.title,
+                    lessons: course.lessons || []
+                },
+                completedLessons: { length: completedLessonsCount },
+                lastAccessed: lastProgress ? lastProgress.lastAccessed : enrollment.enrolledAt
+            };
+        }));
+
+        const progressRecords = progressRecordsRaw.filter(Boolean);
 
         res.render('student/progress', {
             title: 'Progress | EduSmart',

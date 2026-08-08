@@ -79,6 +79,10 @@
                 <i class="fa-solid fa-medal w-5 text-center"></i>
                 <span>Badges</span>
             </a>
+            <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-download w-5 text-center"></i>
+                <span>Offline Videos</span>
+            </a>
         </nav>
 
         <div class="p-4 border-t border-slate-200">
@@ -143,11 +147,11 @@
             <h2 class="text-2xl font-bold text-slate-800 mb-6">My Achievements</h2>
             
             <% 
-                const earnedBadgeIds = (earnedBadges || []).map(eb => eb.badge ? eb.badge._id.toString() : '');
+                const earnedBadgeIds = (typeof earnedBadges !== 'undefined' && earnedBadges) ? earnedBadges.map(eb => eb.badge ? eb.badge._id.toString() : '') : [];
             %>
             
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                <% if (allBadges && allBadges.length > 0) { %>
+                <% if (typeof allBadges !== 'undefined' && allBadges && allBadges.length > 0) { %>
                     <% allBadges.forEach(badge => { %>
                         <% const isEarned = earnedBadgeIds.includes(badge._id.toString()); %>
                         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col items-center text-center transition hover:shadow-md <%= isEarned ? '' : 'opacity-70 grayscale hover:grayscale-0' %>">
