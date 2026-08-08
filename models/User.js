@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'active', 'rejected'],
+        default: 'active',
+        index: true
     }
 }, { 
     timestamps: true 
