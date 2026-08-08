@@ -1,42 +1,36 @@
-const { admin } = require('../config/firebase');
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
+const JWT_SECRET = process.env.JWT_SECRET || 'default_jwt_secret_for_development';
+
 /**
- * Middleware to verify Firebase session cookie/token and fetch the MongoDB User.
+ * Middleware to protect routes that require authentication
  */
 const requireAuth = async (req, res, next) => {
+    const sessionCookie = req.cookies.__session || '';
+
+    if (!sessionCookie) {
+        return res.redirect('/login');
+    }
+
     try {
-        const sessionCookie = req.cookies.__session;
-
-        if (!sessionCookie) {
-            return res.redirect('/login');
-        }
-
-        // Verify the session cookie with Firebase Admin
-        const decodedClaims = await admin.auth().verifySessionCookie(sessionCookie, true /** checkRevoked */);
-        
-        // Find user in MongoDB using firebaseUid
-        const user = await User.findOne({ firebaseUid: decodedClaims.uid });
+        const decodedToken = jwt.verify(sessionCookie, JWT_SECRET);
+        const user = await User.findById(decodedToken.uid);
 
         if (!user) {
-            // User exists in Firebase but not in MongoDB
-            // Clear cookie and redirect to login or signup
-            res.clearCookie('__session');
             return res.redirect('/login?error=profile_missing');
         }
 
         if (!user.isActive) {
-            res.clearCookie('__session');
             return res.redirect('/login?error=account_disabled');
         }
 
         // Attach user to request and locals for EJS templates
         req.user = user;
         res.locals.user = user;
-        
         next();
     } catch (error) {
-        console.error('Auth verification error:', error);
+        // Clear invalid cookie
         res.clearCookie('__session');
         return res.redirect('/login?error=session_invalid');
     }
@@ -72,8 +66,8 @@ const injectAuthUser = async (req, res, next) => {
     const sessionCookie = req.cookies.__session;
     if (sessionCookie) {
         try {
-            const decodedClaims = await admin.auth().verifySessionCookie(sessionCookie, true);
-            const user = await User.findOne({ firebaseUid: decodedClaims.uid });
+            const decodedToken = jwt.verify(sessionCookie, JWT_SECRET);
+            const user = await User.findById(decodedToken.uid);
             if (user) {
                 req.user = user;
                 res.locals.user = user;
@@ -95,9 +89,9 @@ const requireApiAuth = async (req, res, next) => {
             return res.status(401).json({ success: false, message: 'Unauthorized' });
         }
 
-        const idToken = authHeader.split('Bearer ')[1];
-        const decodedToken = await admin.auth().verifyIdToken(idToken);
-        const user = await User.findOne({ firebaseUid: decodedToken.uid });
+        const token = authHeader.split('Bearer ')[1];
+        const decodedToken = jwt.verify(token, JWT_SECRET);
+        const user = await User.findById(decodedToken.uid);
 
         if (!user) {
             return res.status(401).json({ success: false, message: 'User not found in system' });

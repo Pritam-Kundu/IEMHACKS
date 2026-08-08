@@ -8,11 +8,14 @@ router.get('/login', authController.renderLogin);
 // GET /signup - Render signup page
 router.get('/signup', authController.renderSignup);
 
-// POST /api/auth/sessionLogin - Verify Firebase token and set cookie
-router.post('/api/auth/sessionLogin', authController.sessionLogin);
+// POST /api/auth/login - Local login (email/password)
+router.post('/api/auth/login', authController.localLogin);
 
-// POST /api/auth/sessionSignup - Verify Firebase token and create new user
-router.post('/api/auth/sessionSignup', authController.sessionSignup);
+// POST /api/auth/signup - Local signup
+router.post('/api/auth/signup', authController.localSignup);
+
+// POST /api/auth/googleLogin - Firebase ID Token login
+router.post('/api/auth/googleLogin', authController.googleLogin);
 
 // POST or GET /logout - Clear session
 router.all('/logout', authController.logout);

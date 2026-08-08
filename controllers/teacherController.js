@@ -24,7 +24,7 @@ exports.getDashboard = async (req, res, next) => {
 
         // 2. Fetch Enrollments for these courses to count total unique students
         const enrollments = await Enrollment.find({ course: { $in: courseIds }, status: { $ne: 'dropped' } })
-            .populate('student', 'firstName lastName profilePicture')
+            .populate('student', 'name profilePicture')
             .populate('course', 'title')
             .lean();
 
@@ -51,7 +51,7 @@ exports.getDashboard = async (req, res, next) => {
 
         // 4. Quiz Attempts for Average Score
         const quizIds = quizzes.map(q => q._id);
-        const quizAttempts = await QuizAttempt.find({ quiz: { $in: quizIds } }).populate('student', 'firstName lastName').lean().catch(() => []);
+        const quizAttempts = await QuizAttempt.find({ quiz: { $in: quizIds } }).populate('student', 'name').lean().catch(() => []);
         let averageStudentScore = 0;
         if (quizAttempts.length > 0) {
             const totalScore = quizAttempts.reduce((acc, curr) => acc + curr.score, 0);
@@ -99,7 +99,7 @@ exports.getDashboard = async (req, res, next) => {
             const stuId = e.student._id.toString();
             if (weakStudentIds.includes(stuId) && !studentsNeedingAttentionMap.has(stuId)) {
                 studentsNeedingAttentionMap.set(stuId, {
-                    name: `${e.student.firstName} ${e.student.lastName}`,
+                    name: e.student.name,
                     profilePicture: e.student.profilePicture,
                     courseTitle: e.course.title,
                     issue: 'Low Quiz Score'

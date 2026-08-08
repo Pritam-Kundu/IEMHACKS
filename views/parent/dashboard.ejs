@@ -112,7 +112,7 @@
                     <a href="/parent/profile" class="flex items-center gap-3 cursor-pointer group">
                         <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
                         <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.firstName %> <%= user.lastName %></p>
+                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
                             <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
                         </div>
                     </a>
@@ -127,7 +127,7 @@
                 <!-- Child Selector & Welcome Section -->
                 <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
                     <div>
-                        <h2 class="text-2xl font-bold text-slate-800 mb-1">Good Morning, <%= user.firstName %>! 👋</h2>
+                        <h2 class="text-2xl font-bold text-slate-800 mb-1">Good Morning, <%= user.name %>! 👋</h2>
                         <p class="text-slate-500">Track your child's learning journey and academic progress.</p>
                     </div>
                     
@@ -227,7 +227,7 @@
                                                     <h4 class="font-bold text-slate-800"><%= course.title %></h4>
                                                     <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded"><%= course.progressPercent %>%</span>
                                                 </div>
-                                                <p class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-chalkboard-user mr-1"></i> <%= course.teacher ? `${course.teacher.firstName} ${course.teacher.lastName}` : 'Instructor' %></p>
+                                                <p class="text-xs text-slate-500 mb-3"><i class="fa-solid fa-chalkboard-user mr-1"></i> <%= course.teacher ? course.teacher.name : 'Instructor' %></p>
                                                 
                                                 <!-- Progress Bar -->
                                                 <div class="w-full bg-slate-100 rounded-full h-2 mb-1">

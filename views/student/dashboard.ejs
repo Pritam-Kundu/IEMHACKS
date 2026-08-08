@@ -119,7 +119,7 @@
                     <a href="/student/profile" class="flex items-center gap-3 cursor-pointer group">
                         <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
                         <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.firstName %> <%= user.lastName %></p>
+                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
                             <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
                         </div>
                     </a>
@@ -138,7 +138,7 @@
                 
                 <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                     <div>
-                        <h2 class="text-3xl font-bold mb-2">Good Morning, <%= user.firstName %>! 👋</h2>
+                        <h2 class="text-3xl font-bold mb-2">Good Morning, <%= user.name %>! 👋</h2>
                         <p class="text-indigo-100 text-lg max-w-xl">Keep Learning, Keep Growing! You're making great progress towards your learning goals.</p>
                     </div>
                     
@@ -238,7 +238,7 @@
                                             <h4 class="font-bold text-slate-800 mb-1 line-clamp-2" title="<%= enrollment.course.title %>"><%= enrollment.course.title %></h4>
                                             <p class="text-sm text-slate-500 mb-4 flex items-center gap-1.5 mt-auto">
                                                 <i class="fa-regular fa-user text-xs"></i>
-                                                <%= enrollment.course.teacher ? enrollment.course.teacher.firstName + ' ' + enrollment.course.teacher.lastName : 'Instructor' %>
+                                                <%= enrollment.course.teacher ? enrollment.course.teacher.name : 'Instructor' %>
                                             </p>
                                             
                                             <!-- Simple calculated progress for UI presentation -->

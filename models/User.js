@@ -3,8 +3,9 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
     firebaseUid: {
         type: String,
-        required: [true, 'Firebase UID is required'],
+        required: false, // Optional for local auth users
         unique: true,
+        sparse: true, // Allow multiple nulls/undefined
         index: true
     },
     email: {
@@ -15,22 +16,30 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
+    password: {
+        type: String,
+        select: false // Do not include password in queries by default
+    },
     role: {
         type: String,
-        enum: ['student', 'teacher', 'parent', 'admin'],
+        enum: ['student', 'child', 'teacher', 'parent', 'admin'],
         required: [true, 'Role is required'],
         index: true
     },
-    firstName: {
+    name: {
         type: String,
-        required: [true, 'First name is required'],
+        required: [true, 'Name is required'],
         trim: true
     },
-    lastName: {
-        type: String,
-        required: [true, 'Last name is required'],
-        trim: true
+    parentId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        default: null
     },
+    children: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }],
     profilePicture: {
         type: String,
         default: '/images/default-avatar.png'

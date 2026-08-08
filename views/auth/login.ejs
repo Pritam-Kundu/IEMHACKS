@@ -235,16 +235,25 @@ loginForm.addEventListener('submit', async (e) => {
     
     const email = emailInput.value.trim();
     const password = passwordInput.value;
-    const persistence = rememberMeCheckbox.checked ? browserLocalPersistence : browserSessionPersistence;
     
     try {
-        await setPersistence(auth, persistence);
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        await establishBackendSession(userCredential.user);
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            window.location.href = data.redirect || '/';
+        } else {
+            throw new Error(data.message || 'Failed to login.');
+        }
     } catch (error) {
         console.error(error);
         setLoading(false);
-        showAlert(getAuthErrorMessage(error));
+        showAlert(error.message || 'An unexpected error occurred. Please try again.');
     }
 });
 
@@ -257,13 +266,29 @@ googleLoginBtn.addEventListener('click', async () => {
         // Always use local persistence for popups by default
         await setPersistence(auth, browserLocalPersistence);
         const userCredential = await signInWithPopup(auth, googleProvider);
-        await establishBackendSession(userCredential.user);
+        
+        // Custom backend JWT bridge for Google
+        const idToken = await userCredential.user.getIdToken();
+        const response = await fetch('/api/auth/googleLogin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ idToken })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok && data.success) {
+            window.location.href = data.redirect || '/';
+        } else {
+            throw new Error(data.message || 'Failed to login with Google.');
+        }
     } catch (error) {
         console.error(error);
         setLoading(false);
+        await auth.signOut();
         // User closed popup
         if (error.code !== 'auth/popup-closed-by-user') {
-            showAlert(getAuthErrorMessage(error));
+            showAlert(getAuthErrorMessage(error) || error.message);
         }
     }
 });
