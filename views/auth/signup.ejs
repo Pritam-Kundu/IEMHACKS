@@ -19,9 +19,11 @@
         input:focus + button { color: #4f46e5; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
     
-    <div class="min-h-screen flex flex-col md:flex-row">
+    <%- include('../partials/navbar') %>
+
+    <div class="flex-1 flex flex-col md:flex-row">
         
         <!-- Left Side: Branding/Illustration (Hidden on mobile) -->
         <div class="hidden md:flex md:w-1/2 bg-indigo-600 text-white flex-col justify-center items-center p-12 relative overflow-hidden">
