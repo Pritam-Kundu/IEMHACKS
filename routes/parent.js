@@ -11,6 +11,8 @@ router.get('/progress', requireAuth, requireRole('parent'), parentController.get
 
 // Children List Route
 router.get('/children', requireAuth, requireRole('parent'), parentController.getChildren);
+router.get('/children/:childId', requireAuth, requireRole('parent'), parentController.getChildDetails);
+router.get('/api/children/:childId', requireAuth, requireRole('parent'), parentController.getChildDetailsApi);
 
 // Assignments Route
 router.get('/assignments', requireAuth, requireRole('parent'), parentController.getAssignments);
@@ -28,6 +30,9 @@ router.get('/achievements', requireAuth, requireRole('parent'), parentController
 router.get('/api/notifications', requireAuth, requireRole('parent'), parentController.getNotifications);
 router.patch('/api/notifications/read-all', requireAuth, requireRole('parent'), parentController.markAllNotificationsRead);
 router.patch('/api/notifications/:id/read', requireAuth, requireRole('parent'), parentController.markNotificationRead);
+
+// Profile Route
+router.get('/profile', requireAuth, requireRole('parent'), parentController.getProfilePage);
 
 // Settings Routes
 router.get('/settings', requireAuth, requireRole('parent'), parentController.getSettingsPage);

@@ -115,13 +115,69 @@
                             </div>
                         </div>
                     </div>
-                    <a href="/parent/profile" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
-                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
+                    <!-- Parent Profile -->
+                    <div class="relative" id="profileDropdownContainer">
+                        <button id="profileDropdownBtn" class="flex items-center gap-3 cursor-pointer group focus:outline-none" aria-label="Open profile menu" aria-expanded="false" aria-haspopup="true">
+                            <% 
+                                let profileInitials = '';
+                                if (!user.profilePicture || user.profilePicture === '/images/default-avatar.png') {
+                                    let names = user.name.split(' ');
+                                    profileInitials = names[0].charAt(0).toUpperCase() + (names.length > 1 ? names[names.length - 1].charAt(0).toUpperCase() : '');
+                                }
+                            %>
+                            <% if (profileInitials) { %>
+                                <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
+                                    <%= profileInitials %>
+                                </div>
+                            <% } else { %>
+                                <img src="<%= user.profilePicture %>" alt="Profile"
+                                    class="w-9 h-9 rounded-full object-cover border-2 border-emerald-100 group-hover:border-emerald-300 transition-colors">
+                            <% } %>
+                            <div class="hidden md:block text-left">
+                                <p class="text-sm font-semibold text-slate-800 leading-tight">
+                                    <%= user.name %>
+                                </p>
+                                <p class="text-xs text-slate-500 capitalize leading-tight mt-0.5">
+                                    <%= user.role %>
+                                </p>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-slate-400 text-xs ml-1 group-hover:text-slate-600 transition-colors hidden md:block"></i>
+                        </button>
+
+                        <!-- Profile Dropdown Panel -->
+                        <div id="profileDropdownPanel" class="hidden absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-slate-200 z-50 overflow-hidden transform origin-top-right transition-all">
+                            <div class="p-4 border-b border-slate-100 bg-slate-50 flex items-center gap-3">
+                                <% if (profileInitials) { %>
+                                    <div class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-lg border-2 border-emerald-100 shadow-sm shrink-0">
+                                        <%= profileInitials %>
+                                    </div>
+                                <% } else { %>
+                                    <img src="<%= user.profilePicture %>" alt="Profile"
+                                        class="w-12 h-12 rounded-full object-cover border-2 border-emerald-100 shadow-sm shrink-0">
+                                <% } %>
+                                <div class="overflow-hidden">
+                                    <p class="font-bold text-slate-800 truncate"><%= user.name %></p>
+                                    <p class="text-xs text-slate-500 truncate"><%= user.email %></p>
+                                    <p class="text-xs font-semibold text-emerald-600 capitalize mt-0.5"><%= user.role %></p>
+                                </div>
+                            </div>
+                            <div class="p-2 py-2">
+                                <a href="/parent/profile" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors">
+                                    <i class="fa-regular fa-user w-5 text-center text-slate-400"></i> Profile
+                                </a>
+                                <a href="/parent/settings" class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-emerald-600 transition-colors">
+                                    <i class="fa-solid fa-gear w-5 text-center text-slate-400"></i> Settings
+                                </a>
+                            </div>
+                            <div class="p-2 border-t border-slate-100">
+                                <form action="/logout" method="POST" class="w-full m-0">
+                                    <button type="submit" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors text-left">
+                                        <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
         </header>
@@ -157,9 +213,22 @@
                                     <button class="text-slate-400 hover:text-slate-600 transition-colors dropdown-btn p-1" data-child-id="<%= child.id %>">
                                         <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
                                     </button>
-                                    <div id="dropdown-<%= child.id %>" class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg hidden z-10">
-                                        <button onclick="confirmRemoveChild('<%= child.id %>', '<%= child.name %>')" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors rounded-lg flex items-center gap-2">
-                                            <i class="fa-solid fa-trash-can w-4"></i> Remove Connection
+                                    <div id="dropdown-<%= child.id %>" class="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-lg shadow-lg hidden z-10 py-1">
+                                        <a href="/parent/children/<%= child.id %>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                            <i class="fa-regular fa-id-card w-5 text-center text-slate-400"></i> View Details
+                                        </a>
+                                        <a href="/parent/progress?childId=<%= child.id %>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                            <i class="fa-solid fa-chart-line w-5 text-center text-slate-400"></i> View Progress
+                                        </a>
+                                        <a href="/parent/assignments?childId=<%= child.id %>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                            <i class="fa-solid fa-file-signature w-5 text-center text-slate-400"></i> View Assignments
+                                        </a>
+                                        <a href="/parent/achievements?childId=<%= child.id %>" class="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-emerald-600">
+                                            <i class="fa-solid fa-medal w-5 text-center text-slate-400"></i> View Achievements
+                                        </a>
+                                        <div class="border-t border-slate-100 my-1"></div>
+                                        <button onclick="confirmRemoveChild('<%= child.id %>', '<%= child.name %>')" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2">
+                                            <i class="fa-solid fa-trash-can w-4 text-center"></i> Remove Connection
                                         </button>
                                     </div>
                                 </div>
@@ -191,7 +260,7 @@
                             </div>
                             
                             <div class="p-4 bg-slate-50 border-t border-slate-100 flex gap-3">
-                                <a href="/parent/progress?childId=<%= child.id %>" class="flex-1 bg-white border border-slate-200 text-slate-700 font-medium py-2 rounded-lg text-center hover:bg-slate-100 hover:text-emerald-600 transition-colors text-sm">
+                                <a href="/parent/children/<%= child.id %>" class="flex-1 bg-white border border-slate-200 text-slate-700 font-medium py-2 rounded-lg text-center hover:bg-slate-100 hover:text-emerald-600 transition-colors text-sm">
                                     View Details
                                 </a>
                                 <a href="/parent/progress?childId=<%= child.id %>" class="flex-1 bg-emerald-600 text-white font-medium py-2 rounded-lg text-center hover:bg-emerald-700 transition-colors text-sm shadow-sm">
@@ -547,5 +616,46 @@
             }
         });
     </script>
+
+<script>
+    // Profile Dropdown Toggle
+    document.addEventListener('DOMContentLoaded', () => {
+        const profileBtn = document.getElementById('profileDropdownBtn');
+        const profilePanel = document.getElementById('profileDropdownPanel');
+        
+        if (profileBtn && profilePanel) {
+            profileBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isExpanded = profileBtn.getAttribute('aria-expanded') === 'true';
+                profileBtn.setAttribute('aria-expanded', !isExpanded);
+                profilePanel.classList.toggle('hidden');
+                
+                // Close notification panel if open
+                const notifPanel = document.getElementById('notificationPanel');
+                if (notifPanel && !notifPanel.classList.contains('hidden')) {
+                    notifPanel.classList.add('hidden');
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!profileBtn.contains(e.target) && !profilePanel.contains(e.target)) {
+                    profilePanel.classList.add('hidden');
+                    profileBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            // Close on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !profilePanel.classList.contains('hidden')) {
+                    profilePanel.classList.add('hidden');
+                    profileBtn.setAttribute('aria-expanded', 'false');
+                    profileBtn.focus();
+                }
+            });
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -101,10 +101,10 @@
                                     <i
                                         class="fas fa-arrow-right ml-2 transition-transform duration-300 group-hover:translate-x-1"></i>
                                 </a>
-                                <a href="#features"
-                                    class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300">
+                                <button id="watchDemoBtn"
+                                    class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
                                     <i class="fas fa-play-circle mr-2 text-indigo-500"></i> Watch Demo
-                                </a>
+                                </button>
                             </div>
 
                             <!-- Trust row -->
@@ -1152,7 +1152,96 @@
                         window.location.href = `/login?redirect=${redirectUrl}`;
                     });
                 });
+
+                // Video Modal Logic
+                document.addEventListener('DOMContentLoaded', () => {
+                    const watchDemoBtn = document.getElementById('watchDemoBtn');
+                    const videoModal = document.getElementById('videoModal');
+                    const closeModalBtn = document.getElementById('closeModalBtn');
+                    const demoVideo = document.getElementById('demoVideo');
+
+                    if (!watchDemoBtn || !videoModal || !closeModalBtn || !demoVideo) return;
+
+                    const closeModal = () => {
+                        videoModal.classList.add('hidden');
+                        videoModal.classList.remove('flex');
+                        demoVideo.pause();
+                        demoVideo.currentTime = 0;
+                    };
+
+                    const openModal = () => {
+                        videoModal.classList.remove('hidden');
+                        videoModal.classList.add('flex');
+                        // Attempt to play automatically
+                        const playPromise = demoVideo.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(error => {
+                                console.log("Autoplay prevented by browser:", error);
+                                // Show controls if autoplay fails (default behavior since controls are enabled)
+                            });
+                        }
+                    };
+
+                    watchDemoBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        openModal();
+                    });
+
+                    closeModalBtn.addEventListener('click', closeModal);
+
+                    // Close on outside click
+                    videoModal.addEventListener('click', (e) => {
+                        if (e.target === videoModal) {
+                            closeModal();
+                        }
+                    });
+
+                    // Close on Escape key
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'Escape' && !videoModal.classList.contains('hidden')) {
+                            closeModal();
+                        }
+                    });
+
+                    // Handle video errors
+                    demoVideo.addEventListener('error', (e) => {
+                        console.error('Error loading video:', e);
+                        const errorMsg = document.getElementById('videoErrorMsg');
+                        if (errorMsg) {
+                            errorMsg.classList.remove('hidden');
+                        }
+                        demoVideo.classList.add('hidden');
+                    });
+                });
             </script>
+<<<<<<< HEAD
+
+            <!-- Video Modal -->
+            <div id="videoModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/90 backdrop-blur-sm transition-opacity duration-300">
+                <div class="relative w-full max-w-5xl mx-4 rounded-2xl overflow-hidden bg-black shadow-2xl border border-gray-800">
+                    <!-- Close button -->
+                    <button id="closeModalBtn" aria-label="Close demo video" class="absolute top-4 right-4 z-[110] w-10 h-10 flex items-center justify-center rounded-full bg-black/60 text-white hover:bg-black hover:text-red-400 transition-colors focus:outline-none focus:ring-2 focus:ring-white/50 cursor-pointer">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                    
+                    <!-- Video player -->
+                    <div class="relative w-full aspect-video bg-black flex items-center justify-center">
+                        <video id="demoVideo" class="w-full h-full object-contain" controls playsinline preload="metadata">
+                            <source src="/uploads/Demo%20Video.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        <!-- Error Message -->
+                        <div id="videoErrorMsg" class="absolute inset-0 flex items-center justify-center hidden bg-gray-900">
+                            <div class="text-center text-white p-6">
+                                <i class="fas fa-exclamation-circle text-4xl mb-3 text-red-500"></i>
+                                <p class="text-lg font-medium">Demo video is currently unavailable.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+=======
             <script src="/js/voice/speechToText.js"></script>
             <script src="/js/voice/textToSpeech.js"></script>
+>>>>>>> d27e6058f29027417e8dfc4c45176f5e5356964b
 </body>
