@@ -53,6 +53,13 @@ const userSchema = new mongoose.Schema({
         enum: ['pending', 'active', 'rejected'],
         default: 'active',
         index: true
+    },
+    notificationPreferences: {
+        email: { type: Boolean, default: true },
+        assignments: { type: Boolean, default: true },
+        quizzes: { type: Boolean, default: true },
+        achievements: { type: Boolean, default: true },
+        courseUpdates: { type: Boolean, default: true }
     }
 }, { 
     timestamps: true 
