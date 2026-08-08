@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - EduSmart</title>
+    <meta name="description" content="Create an account on the EduSmart platform.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body class="login-body">
+    
+    <div class="login-wrapper">
+        <div class="login-card">
+            
+            <div class="login-header">
+                <h2>Create an Account</h2>
+                <p>Join EduSmart today!</p>
+            </div>
+
+            <!-- Role Selection -->
+            <div class="role-selection">
+                <a href="#" class="role-card active-role">
+                    <img src="assets/images/student.png" alt="Student Avatar" class="role-img">
+                    <span class="role-name">Student</span>
+                </a>
+                
+                <a href="#" class="role-card">
+                    <img src="assets/images/teacher.png" alt="Teacher Avatar" class="role-img">
+                    <span class="role-name">Teacher</span>
+                </a>
+                
+                <a href="#" class="role-card">
+                    <img src="assets/images/parent.png" alt="Parent Avatar" class="role-img">
+                    <span class="role-name">Parent</span>
+                </a>
+            </div>
+
+            <!-- Signup Form -->
+            <form class="auth-form" action="#" method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Create a password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 mt-2">Sign Up</button>
+            </form>
+
+            <div class="divider mt-4">
+                <span>or continue with</span>
+            </div>
+
+            <div class="sso-buttons">
+                <a href="#" class="btn btn-outline sso-btn w-100">
+                    <img src="https://img.icons8.com/color/24/000000/google-logo.png" alt="Google">
+                    Sign up with Google
+                </a>
+            </div>
+
+            <div class="login-footer mt-4">
+                <p>Already have an account? <a href="login.html" class="text-primary">Login</a></p>
+            </div>
+            
+        </div>
+    </div>
+
+</body>
+</html>
