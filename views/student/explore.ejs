@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="<%= language %>" dir="<%= direction %>">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,7 +55,7 @@
                 <i class="fa-solid fa-house w-5 text-center"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+            <a href="/student/courses" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
                 <i class="fa-solid fa-book-open w-5 text-center"></i>
                 <span>My Courses</span>
             </a>
@@ -75,9 +75,13 @@
                 <i class="fa-solid fa-trophy w-5 text-center"></i>
                 <span>Leaderboard</span>
             </a>
-            <a href="/student/badges" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+            <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-medal w-5 text-center"></i>
                 <span>Badges</span>
+            </a>
+            <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-download w-5 text-center"></i>
+                <span>Offline Videos</span>
             </a>
         </nav>
 
@@ -106,7 +110,7 @@
                     <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
-                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Badges</h1>
+                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Explore Courses</h1>
                     
                     <!-- Global Links -->
                     <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
@@ -118,19 +122,6 @@
                 </div>
                 
                 <div class="flex items-center gap-5">
-                    
-                    <!-- Language Switcher -->
-                    <div class="relative group mr-2">
-                        <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
-                            <i class="fa-solid fa-globe text-xl"></i>
-                            <%= locals.language === 'bn' ? 'বাংলা' : 'English' %>
-                        </button>
-                        <div class="absolute right-0 mt-0 w-32 bg-white border border-slate-200 rounded-md shadow-lg hidden group-hover:block z-50 overflow-hidden">
-                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'en' ? 'font-bold' : '' %>">English</button>
-                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'bn' ? 'font-bold' : '' %>">বাংলা</button>
-                        </div>
-                    </div>
-
                     <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
                         <i class="fa-regular fa-bell text-xl"></i>
                         <!-- Notification indicator (example active state) -->
@@ -152,15 +143,67 @@
         <!-- Dashboard Content -->
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6">My Achievements</h2>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-                <div class="flex justify-center gap-4 mb-6">
-                    <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-medal"></i></div>
-                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-star"></i></div>
-                    <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-trophy"></i></div>
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-800">Explore Courses</h2>
+                <a href="/student/courses" class="text-sm font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-2 transition-colors">
+                    <i class="fa-solid fa-arrow-left"></i> Back to My Courses
+                </a>
+            </div>
+
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                <h3 class="text-lg font-semibold text-slate-800 mb-4">Available Courses</h3>
+                
+                <!-- Filter Section -->
+                <div class="flex flex-col md:flex-row gap-4 mb-6">
+                    <div class="flex-1 relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fa-solid fa-magnifying-glass text-slate-400"></i>
+                        </div>
+                        <input type="text" id="courseSearch" placeholder="Search courses by title..." class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    </div>
+                    <div class="w-full md:w-48">
+                        <select id="subjectFilter" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-slate-700 bg-white">
+                            <option value="all">All Subjects</option>
+                            <% if (typeof subjects !== 'undefined') { %>
+                                <% subjects.forEach(sub => { %>
+                                    <option value="<%= sub.name %>"><%= sub.name %></option>
+                                <% }) %>
+                            <% } %>
+                        </select>
+                    </div>
+                    <div class="w-full md:w-48">
+                        <select id="levelFilter" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm text-slate-700 bg-white">
+                            <option value="all">All Levels</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-slate-700 mb-2">Achievement System Updating</h3>
-                <p class="text-slate-500 max-w-md mx-auto">We are adding hundreds of new badges to unlock based on your learning activity. Check back soon!</p>
+
+                <% if (availableCourses && availableCourses.length > 0) { %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="coursesGrid">
+                        <% availableCourses.forEach(course => { %>
+                            <div class="course-card border border-slate-200 rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+                                 data-title="<%= course.title.toLowerCase() %>" 
+                                 data-subject="<%= course.subject ? course.subject.name : '' %>" 
+                                 data-level="<%= course.level || 'beginner' %>">
+                                <div class="mb-3">
+                                    <span class="inline-block px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full mb-2"><%= course.subject ? course.subject.name : 'General' %></span>
+                                    <span class="inline-block px-2 py-1 bg-slate-100 text-slate-600 text-xs font-semibold rounded-full capitalize mb-2"><%= course.level || 'beginner' %></span>
+                                </div>
+                                <h4 class="font-bold text-slate-800 text-lg"><%= course.title %></h4>
+                                <p class="text-sm text-slate-600 line-clamp-2 mt-2 mb-4"><%= course.description %></p>
+                                <form action="/api/enroll" method="POST">
+                                    <input type="hidden" name="courseId" value="<%= course._id %>">
+                                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded font-medium hover:bg-indigo-700 transition-colors">Enroll Now</button>
+                                </form>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <p class="text-slate-500">No new courses available to enroll right now.</p>
+                <% } %>
             </div>
         </div>
         
@@ -192,6 +235,38 @@
             if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
+            // Course Filtering Logic
+            const searchInput = document.getElementById('courseSearch');
+            const subjectFilter = document.getElementById('subjectFilter');
+            const levelFilter = document.getElementById('levelFilter');
+            const courseCards = document.querySelectorAll('.course-card');
+
+            const filterCourses = () => {
+                const searchTerm = searchInput ? searchInput.value.toLowerCase() : '';
+                const subject = subjectFilter ? subjectFilter.value : 'all';
+                const level = levelFilter ? levelFilter.value : 'all';
+
+                courseCards.forEach(card => {
+                    const cardTitle = card.getAttribute('data-title');
+                    const cardSubject = card.getAttribute('data-subject');
+                    const cardLevel = card.getAttribute('data-level');
+
+                    const matchesSearch = cardTitle.includes(searchTerm);
+                    const matchesSubject = subject === 'all' || cardSubject === subject;
+                    const matchesLevel = level === 'all' || cardLevel === level;
+
+                    if (matchesSearch && matchesSubject && matchesLevel) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            };
+
+            if (searchInput) searchInput.addEventListener('input', filterCourses);
+            if (subjectFilter) subjectFilter.addEventListener('change', filterCourses);
+            if (levelFilter) levelFilter.addEventListener('change', filterCourses);
+
             /**
              * Phase 13 Preparation: IndexedDB Initialization 
              * This provides the architecture placeholder for offline caching.
@@ -203,6 +278,5 @@
             }
         });
     </script>
-    <%- include('../partials/language-modal') %>
 </body>
 </html>

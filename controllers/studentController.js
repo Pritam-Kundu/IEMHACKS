@@ -4,6 +4,7 @@ const QuizAttempt = require('../models/QuizAttempt');
 const StudentProfile = require('../models/StudentProfile');
 const Course = require('../models/Course');
 const Badge = require('../models/Badge');
+const Subject = require('../models/Subject');
 
 /**
  * Controller to handle Student Dashboard data fetching
@@ -120,20 +121,40 @@ exports.getCourses = async (req, res, next) => {
                 ]
             }).lean();
 
-        // All courses
-        const allCourses = await Course.find({ isActive: true })
+        res.render('student/courses', {
+            title: 'My Courses | EduSmart',
+            enrollments,
+            user: req.user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+exports.getExploreCourses = async (req, res, next) => {
+    try {
+        const studentId = req.user._id;
+
+        // Enrolled courses (to filter them out)
+        const enrollments = await Enrollment.find({ student: studentId, status: { $ne: 'dropped' } }).lean();
+
+        // All courses (published)
+        const allCourses = await Course.find({ isPublished: true })
             .populate('teacher', 'name profilePicture')
             .populate('subject', 'name')
             .lean();
 
+        // Fetch all subjects for the filter dropdown
+        const subjects = await Subject.find().sort({ name: 1 }).lean();
+
         // Filter out courses already enrolled in
-        const enrolledCourseIds = enrollments.map(e => e.course._id.toString());
+        const enrolledCourseIds = enrollments.map(e => e.course.toString());
         const availableCourses = allCourses.filter(c => !enrolledCourseIds.includes(c._id.toString()));
 
-        res.render('student/courses', {
-            title: 'My Courses | EduSmart',
-            enrollments,
+        res.render('student/explore', {
+            title: 'Explore Courses | EduSmart',
             availableCourses,
+            subjects,
             user: req.user
         });
     } catch (error) {
