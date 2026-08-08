@@ -1,23 +1,30 @@
-// const admin = require('firebase-admin');
+const admin = require('firebase-admin');
 
-// const initializeFirebaseAdmin = () => {
-//     try {
-//         admin.initializeApp({
-//             credential: admin.credential.cert({
-//                 projectId: process.env.FIREBASE_PROJECT_ID,
-//                 clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-//                 // Handle escaped newlines in private key
-//                 privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n')
-//             })
-//         });
-//         console.log('Firebase Admin Initialized Successfully');
-//     } catch (error) {
-//         console.error('Firebase Admin Initialization Error:', error.message);
-//     }
-// };
+// Initialize Firebase Admin only if credentials are provided in the environment
+const initializeFirebaseAdmin = () => {
+    try {
+        if (!process.env.FIREBASE_PROJECT_ID || !process.env.FIREBASE_CLIENT_EMAIL || !process.env.FIREBASE_PRIVATE_KEY) {
+            console.warn('Firebase Admin credentials missing in .env. Authentication middleware will fail if accessed.');
+            return null;
+        }
 
-// module.exports = { admin, initializeFirebaseAdmin };
+        const app = admin.initializeApp({
+            credential: admin.credential.cert({
+                projectId: process.env.FIREBASE_PROJECT_ID,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+                // Handle escaped newlines in private key which often happens when passed via .env
+                privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+            })
+        });
+        
+        console.log('Firebase Admin Initialized Successfully');
+        return app;
+    } catch (error) {
+        console.error('Firebase Admin Initialization Error:', error.message);
+        return null;
+    }
+};
 
-// Placeholder for Firebase Admin SDK initialization.
-// Uncomment and configure once credentials are added to .env
-module.exports = {};
+const app = initializeFirebaseAdmin();
+
+module.exports = { admin, app };
