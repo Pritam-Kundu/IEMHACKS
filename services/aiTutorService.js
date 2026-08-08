@@ -92,7 +92,7 @@ const getTeacherContext = async (userId) => {
 /**
  * Handle a chat message and generate a response
  */
-const processMessage = async (userId, role, messageText, conversationId = null, contextParams = {}) => {
+const processMessage = async (userId, role, messageText, conversationId = null, contextParams = {}, attachments = []) => {
     let conversation;
     
     // 1. Resolve or Create Conversation
@@ -148,7 +148,7 @@ const processMessage = async (userId, role, messageText, conversationId = null, 
     }
 
     // 5. Generate AI Response
-    const aiResponseText = await geminiService.generateResponse(history, messageText, systemInstruction);
+    const aiResponseText = await geminiService.generateResponse(history, messageText, systemInstruction, attachments);
 
     // 6. Save AI Message
     const aiMessage = new AIMessage({
@@ -164,7 +164,7 @@ const processMessage = async (userId, role, messageText, conversationId = null, 
     };
 };
 
-const processMessageStream = async function* (userId, role, messageText, conversationId = null, contextParams = {}) {
+const processMessageStream = async function* (userId, role, messageText, conversationId = null, contextParams = {}, attachments = []) {
     let conversation;
     
     if (conversationId) {
@@ -212,7 +212,7 @@ const processMessageStream = async function* (userId, role, messageText, convers
         console.warn("Could not fetch full context data:", err.message);
     }
 
-    const responseStream = await geminiService.generateResponseStream(history, messageText, systemInstruction);
+    const responseStream = await geminiService.generateResponseStream(history, messageText, systemInstruction, attachments);
     
     yield { type: 'meta', conversationId: conversation._id };
 

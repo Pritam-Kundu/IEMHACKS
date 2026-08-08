@@ -16,7 +16,7 @@ const MODEL_NAME = process.env.GEMINI_MODEL || "gemini-3.5-flash";
  * @param {String} systemInstruction - The persona and context instructions for the AI
  * @returns {String} The text response from Gemini
  */
-const generateResponse = async (history, newMessage, systemInstruction) => {
+const generateResponse = async (history, newMessage, systemInstruction, attachments = []) => {
     try {
         if (!process.env.GEMINI_API_KEY) {
             throw new Error("Gemini API key is not configured.");
@@ -39,9 +39,28 @@ const generateResponse = async (history, newMessage, systemInstruction) => {
             history: formattedHistory
         });
 
+        let messageParts = [];
+        if (newMessage) {
+            messageParts.push(newMessage);
+        }
+        
+        if (attachments && attachments.length > 0) {
+            attachments.forEach(att => {
+                messageParts.push({
+                    inlineData: {
+                        data: att.data,
+                        mimeType: att.mimeType
+                    }
+                });
+            });
+        }
+
+        // If it's a single string, we can just pass the string, else we pass the array of parts
+        const finalMessage = messageParts.length === 1 && typeof messageParts[0] === 'string' ? messageParts[0] : messageParts;
+
         // Send the new message
         const response = await chat.sendMessage({
-            message: newMessage
+            message: finalMessage
         });
 
         return response.text;
@@ -51,7 +70,7 @@ const generateResponse = async (history, newMessage, systemInstruction) => {
     }
 };
 
-const generateResponseStream = async (history, newMessage, systemInstruction) => {
+const generateResponseStream = async (history, newMessage, systemInstruction, attachments = []) => {
     try {
         if (!process.env.GEMINI_API_KEY) {
             throw new Error("Gemini API key is not configured.");
@@ -71,9 +90,27 @@ const generateResponseStream = async (history, newMessage, systemInstruction) =>
             history: formattedHistory
         });
 
+        let messageParts = [];
+        if (newMessage) {
+            messageParts.push(newMessage);
+        }
+        
+        if (attachments && attachments.length > 0) {
+            attachments.forEach(att => {
+                messageParts.push({
+                    inlineData: {
+                        data: att.data,
+                        mimeType: att.mimeType
+                    }
+                });
+            });
+        }
+
+        const finalMessage = messageParts.length === 1 && typeof messageParts[0] === 'string' ? messageParts[0] : messageParts;
+
         // Use sendMessageStream for streaming
         const responseStream = await chat.sendMessageStream({
-            message: newMessage
+            message: finalMessage
         });
 
         return responseStream;

@@ -4,10 +4,11 @@ exports.chat = async (req, res) => {
     try {
         const userId = req.user.id;
         const role = req.user.role;
-        const { message, conversationId, contextParams, stream } = req.body;
+        const { message, conversationId, contextParams, stream, attachments } = req.body;
 
-        if (!message) {
-            return res.status(400).json({ error: "Message is required." });
+        // Message can be empty if there are attachments
+        if (!message && (!attachments || attachments.length === 0)) {
+            return res.status(400).json({ error: "Message or attachment is required." });
         }
 
         if (stream) {
@@ -19,9 +20,10 @@ exports.chat = async (req, res) => {
                 const streamGenerator = await aiTutorService.processMessageStream(
                     userId,
                     role,
-                    message,
+                    message || "", // Ensure message is at least empty string
                     conversationId,
-                    contextParams || {}
+                    contextParams || {},
+                    attachments || []
                 );
 
                 for await (const chunk of streamGenerator) {
@@ -38,9 +40,10 @@ exports.chat = async (req, res) => {
             const response = await aiTutorService.processMessage(
                 userId,
                 role,
-                message,
+                message || "",
                 conversationId,
-                contextParams || {}
+                contextParams || {},
+                attachments || []
             );
 
             res.json({

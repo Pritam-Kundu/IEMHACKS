@@ -29,10 +29,49 @@
             background-color: #f1f5f9; 
             color: #334155; 
         }
-        
-        /* Utility */
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Sophisticated AI Tutor Styles */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255,255,255,0.8);
+        }
+
+        /* Message Animations */
+        @keyframes messagePop {
+            0% { opacity: 0; transform: translateY(15px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .message-enter {
+            animation: messagePop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        /* Thinking Dots Animation */
+        .typing-dot {
+            animation: typingDot 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typingDot {
+            0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* Sleek Scrollbar */
+        .sleek-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .sleek-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .sleek-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(203, 213, 225, 0.5);
+            border-radius: 20px;
+        }
+        .sleek-scrollbar:hover::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.8);
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
@@ -45,7 +84,7 @@
         <div class="p-6 flex items-center justify-between">
             <a href="/student/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
                 <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart</span>
+                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-blue-600 ml-1 font-semibold uppercase tracking-normal">Student</span></span>
             </a>
             <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -144,46 +183,68 @@
         
         <!-- Dashboard Content -->
 
-        <div class="flex-1 flex flex-col overflow-hidden p-4 sm:p-6 lg:p-8 h-full">
+        <div class="flex-1 flex flex-col overflow-hidden p-4 sm:p-6 lg:p-8 h-full bg-slate-50/50">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-bold text-slate-800">EduSmart AI Tutor</h2>
-                <div class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold border border-purple-200">
-                    <i class="fa-solid fa-bolt mr-1"></i> Gemini Powered
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800 tracking-tight">EduSmart AI Tutor</h2>
+                    <p class="text-sm text-slate-500 mt-1">Your intelligent learning companion</p>
+                </div>
+                <div class="px-4 py-1.5 bg-gradient-to-r from-purple-100 to-indigo-100 text-indigo-700 rounded-full text-xs font-bold border border-indigo-200/50 shadow-sm flex items-center gap-2">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                    </span>
+                    Gemini Powered
                 </div>
             </div>
             
-            <div class="flex-1 bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col overflow-hidden relative min-h-[400px]">
+            <div class="flex-1 bg-white/80 rounded-2xl shadow-sm border border-slate-200/60 flex flex-col overflow-hidden relative min-h-[400px] backdrop-blur-sm">
                 <!-- Chat History Area -->
-                <div class="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50" id="chatContainer">
+                <div class="flex-1 overflow-y-auto p-6 space-y-6 sleek-scrollbar bg-gradient-to-br from-transparent to-indigo-50/20" id="chatContainer">
                     
                     <!-- AI Welcome Message -->
-                    <div class="flex items-start gap-4 max-w-3xl">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-md">
-                            <i class="fa-solid fa-robot"></i>
+                    <div class="flex items-start gap-4 max-w-3xl message-enter">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0 shadow-md ring-2 ring-white">
+                            <i class="fa-solid fa-sparkles text-sm"></i>
                         </div>
-                        <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm">
-                            <p class="text-slate-700 font-medium mb-1">EduSmart Tutor</p>
-                            <p class="text-slate-600 leading-relaxed">Hello <%= user.name %>! 👋 I'm your personal AI tutor. I can help you understand difficult concepts, explain math problems, or prepare for your upcoming quizzes. What would you like to learn today?</p>
+                        <div class="bg-white border border-slate-100 p-5 rounded-2xl rounded-tl-sm shadow-sm">
+                            <p class="text-slate-800 font-semibold mb-2 flex items-center gap-2">EduSmart Tutor <span class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">AI</span></p>
+                            <p class="text-slate-600 leading-relaxed text-[15px]">Hello <%= user.name %>! 👋 I'm your personal AI tutor. I can help you understand difficult concepts, explain math problems, or prepare for your upcoming quizzes. What would you like to learn today?</p>
                         </div>
                     </div>
                     
                 </div>
                 
                 <!-- Chat Input Area -->
-                <div class="p-4 bg-white border-t border-slate-200">
-                    <form id="aiTutorForm" class="flex items-end gap-3 max-w-4xl mx-auto">
-                        <div class="flex-1 relative flex items-center">
-                            <button type="button" id="micBtn" class="absolute left-3 text-slate-400 hover:text-indigo-600 transition-colors z-10" aria-label="Start voice input" title="Start voice input">
-                                <i class="fa-solid fa-microphone"></i>
-                            </button>
-                            <textarea id="promptInput" rows="1" class="w-full bg-slate-100 border-0 rounded-2xl py-3 pl-10 pr-12 focus:ring-2 focus:ring-indigo-500 resize-none max-h-32" placeholder="Ask a question about your courses..."></textarea>
-                            <button type="button" class="absolute right-3 text-slate-400 hover:text-indigo-600 transition-colors z-10">
-                                <i class="fa-solid fa-paperclip"></i>
+                <div class="p-4 glass-panel relative z-10">
+                    <form id="aiTutorForm" class="flex flex-col gap-3 max-w-4xl mx-auto">
+                        <!-- Image Preview Area -->
+                        <div id="imagePreviewContainer" class="hidden flex flex-wrap gap-2 px-2"></div>
+                        
+                        <div class="flex items-end gap-3 w-full">
+                            <div class="flex-1 relative flex items-center bg-white rounded-2xl border border-slate-200 shadow-sm transition-all focus-within:shadow-md focus-within:border-indigo-300">
+                                <button type="button" id="micBtn" class="absolute left-4 text-slate-400 hover:text-indigo-600 transition-colors z-10" aria-label="Start voice input" title="Start voice input">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                                <textarea id="promptInput" rows="1" class="w-full bg-transparent border-0 py-3.5 pl-12 pr-20 focus:ring-0 focus:outline-none resize-none max-h-32 text-slate-700 placeholder-slate-400 sleek-scrollbar" placeholder="Ask a question or upload a photo..."></textarea>
+                                
+                                <div class="absolute right-3 flex items-center gap-1 z-10">
+                                    <button type="button" id="cameraBtn" class="text-slate-400 hover:text-indigo-600 transition-colors p-1.5 rounded-md hover:bg-slate-100" title="Take a photo">
+                                        <i class="fa-solid fa-camera"></i>
+                                    </button>
+                                    <button type="button" id="attachBtn" class="text-slate-400 hover:text-indigo-600 transition-colors p-1.5 rounded-md hover:bg-slate-100" title="Attach file">
+                                        <i class="fa-solid fa-paperclip"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-12 h-12 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-2xl flex items-center justify-center shadow-md transition-all hover:shadow-lg transform hover:-translate-y-0.5 shrink-0">
+                                <i class="fa-solid fa-paper-plane"></i>
                             </button>
                         </div>
-                        <button type="submit" class="w-12 h-12 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full flex items-center justify-center shadow-md transition-colors shrink-0">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
+
+                        <!-- Hidden File Inputs -->
+                        <input type="file" id="fileInput" accept="image/*,application/pdf" class="hidden" multiple>
+                        <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden">
                     </form>
                 </div>
             </div>
@@ -237,22 +298,22 @@
                 return html;
             };
 
-            const appendMessage = (sender, text) => {
+            const appendMessage = (sender, text, attachmentsList = []) => {
                 const isAI = sender === 'ai';
                 
                 const wrapper = document.createElement('div');
-                wrapper.className = `flex items-start gap-4 max-w-3xl ${isAI ? '' : 'ml-auto flex-row-reverse'}`;
+                wrapper.className = `flex items-start gap-4 max-w-3xl message-enter ${isAI ? '' : 'ml-auto flex-row-reverse'}`;
                 
                 let iconHtml = '';
                 if (isAI) {
                     iconHtml = `
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-md">
-                            <i class="fa-solid fa-robot"></i>
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0 shadow-md ring-2 ring-white">
+                            <i class="fa-solid fa-sparkles text-sm"></i>
                         </div>
                     `;
                 } else {
                     iconHtml = `
-                        <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 shrink-0 shadow-sm border border-slate-300">
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0 shadow-sm border border-slate-200 ring-2 ring-white">
                             <i class="fa-solid fa-user"></i>
                         </div>
                     `;
@@ -261,21 +322,34 @@
                 let speakerHtml = '';
                 if (isAI && text) {
                     speakerHtml = `
-                        <div class="flex items-center gap-2 mt-2">
-                            <button type="button" class="tts-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
+                        <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-100/50">
+                            <button type="button" class="tts-btn text-xs font-semibold text-slate-400 hover:text-indigo-600 flex items-center gap-1.5 transition-colors uppercase tracking-wider" aria-label="Read this response aloud" title="Read this response aloud">
                                 <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
                             </button>
-                            <button type="button" class="tts-pause-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors hidden" aria-label="Pause speech" title="Pause speech">
+                            <button type="button" class="tts-pause-btn text-xs font-semibold text-slate-400 hover:text-indigo-600 flex items-center gap-1.5 transition-colors uppercase tracking-wider hidden" aria-label="Pause speech" title="Pause speech">
                                 <i class="fa-solid fa-pause"></i> <span>Pause</span>
                             </button>
                         </div>
                     `;
                 }
 
+                let attachHtml = '';
+                if (attachmentsList && attachmentsList.length > 0) {
+                    attachHtml = `<div class="flex flex-wrap gap-2 mb-2">` + 
+                        attachmentsList.map(url => {
+                            if (url.startsWith('data:image')) {
+                                return `<img src="${url}" class="max-w-[200px] max-h-[200px] rounded-lg border border-white/20 object-cover" />`;
+                            } else {
+                                return `<div class="bg-black/10 px-3 py-2 rounded-lg text-sm flex items-center gap-2 border border-white/20"><i class="fa-solid fa-file-pdf"></i> Document</div>`;
+                            }
+                        }).join('') + 
+                    `</div>`;
+                }
+
                 const bubbleHtml = `
-                    <div class="${isAI ? 'bg-white border border-slate-200 rounded-tl-none' : 'bg-indigo-600 text-white rounded-tr-none'} p-4 rounded-2xl shadow-sm">
-                        ${isAI ? '<p class="text-slate-700 font-medium mb-1">EduSmart Tutor</p>' : ''}
-                        <div class="${isAI ? 'text-slate-600' : 'text-indigo-50'} leading-relaxed overflow-x-auto whitespace-pre-wrap">${isAI ? parseMarkdown(text) : text}</div>
+                    <div class="${isAI ? 'bg-white border border-slate-100 rounded-tl-sm' : 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-tr-sm border border-indigo-500'} p-5 rounded-2xl shadow-sm">
+                        ${isAI ? '<p class="text-slate-800 font-semibold mb-2 flex items-center gap-2">EduSmart Tutor <span class="text-[10px] bg-indigo-50 text-indigo-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">AI</span></p>' : ''}
+                        <div class="${isAI ? 'text-slate-600' : 'text-indigo-50'} leading-relaxed overflow-x-auto whitespace-pre-wrap text-[15px]">${attachHtml}${isAI ? parseMarkdown(text) : text}</div>
                         ${speakerHtml}
                     </div>
                 `;
@@ -289,15 +363,15 @@
             const appendLoading = () => {
                 const wrapper = document.createElement('div');
                 wrapper.id = "ai-loading";
-                wrapper.className = "flex items-start gap-4 max-w-3xl";
+                wrapper.className = "flex items-start gap-4 max-w-3xl message-enter";
                 wrapper.innerHTML = `
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shrink-0 shadow-md">
-                        <i class="fa-solid fa-robot"></i>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white shrink-0 shadow-md ring-2 ring-white">
+                        <i class="fa-solid fa-sparkles text-sm"></i>
                     </div>
-                    <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm flex gap-1 items-center h-14">
-                        <div class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                        <div class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                        <div class="w-2 h-2 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
+                    <div class="bg-white border border-slate-100 p-5 rounded-2xl rounded-tl-sm shadow-sm flex items-center gap-2 h-[68px]">
+                        <div class="w-2 h-2 bg-indigo-400 rounded-full typing-dot"></div>
+                        <div class="w-2 h-2 bg-indigo-400 rounded-full typing-dot"></div>
+                        <div class="w-2 h-2 bg-indigo-400 rounded-full typing-dot"></div>
                     </div>
                 `;
                 chatContainer.appendChild(wrapper);
@@ -450,11 +524,88 @@
                 }
             });
 
+            // File Attachment Logic
+            const fileInput = document.getElementById('fileInput');
+            const cameraInput = document.getElementById('cameraInput');
+            const attachBtn = document.getElementById('attachBtn');
+            const cameraBtn = document.getElementById('cameraBtn');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            
+            let currentAttachments = [];
+
+            const handleFiles = (files) => {
+                Array.from(files).forEach(file => {
+                    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+                        alert('Unsupported file type. Please upload images or PDFs.');
+                        return;
+                    }
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const base64Data = e.target.result.split(',')[1];
+                        const id = Date.now().toString(36) + Math.random().toString(36).substr(2);
+                        
+                        currentAttachments.push({
+                            id,
+                            data: base64Data,
+                            mimeType: file.type,
+                            dataUrl: e.target.result
+                        });
+                        
+                        renderPreviews();
+                    };
+                    reader.readAsDataURL(file);
+                });
+            };
+
+            const renderPreviews = () => {
+                imagePreviewContainer.innerHTML = '';
+                if (currentAttachments.length > 0) {
+                    imagePreviewContainer.classList.remove('hidden');
+                    currentAttachments.forEach(att => {
+                        const previewWrapper = document.createElement('div');
+                        previewWrapper.className = 'relative w-16 h-16 rounded-lg overflow-hidden border border-slate-200 shadow-sm group';
+                        
+                        if (att.mimeType.startsWith('image/')) {
+                            previewWrapper.innerHTML = `
+                                <img src="${att.dataUrl}" class="w-full h-full object-cover" />
+                                <button type="button" class="absolute top-1 right-1 bg-black/60 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeAttachment('${att.id}')">
+                                    <i class="fa-solid fa-times"></i>
+                                </button>
+                            `;
+                        } else {
+                            previewWrapper.innerHTML = `
+                                <div class="w-full h-full bg-slate-100 flex items-center justify-center text-slate-500">
+                                    <i class="fa-solid fa-file-pdf text-xl"></i>
+                                </div>
+                                <button type="button" class="absolute top-1 right-1 bg-black/60 hover:bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity" onclick="removeAttachment('${att.id}')">
+                                    <i class="fa-solid fa-times"></i>
+                                </button>
+                            `;
+                        }
+                        imagePreviewContainer.appendChild(previewWrapper);
+                    });
+                } else {
+                    imagePreviewContainer.classList.add('hidden');
+                }
+            };
+
+            window.removeAttachment = (id) => {
+                currentAttachments = currentAttachments.filter(att => att.id !== id);
+                renderPreviews();
+            };
+
+            if (attachBtn) attachBtn.addEventListener('click', () => fileInput.click());
+            if (cameraBtn) cameraBtn.addEventListener('click', () => cameraInput.click());
+            
+            if (fileInput) fileInput.addEventListener('change', (e) => { handleFiles(e.target.files); fileInput.value = ''; });
+            if (cameraInput) cameraInput.addEventListener('change', (e) => { handleFiles(e.target.files); cameraInput.value = ''; });
+
             // Enter to submit (Shift+Enter for newline)
             promptInput.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    if(promptInput.value.trim() !== '') {
+                    if(promptInput.value.trim() !== '' || currentAttachments.length > 0) {
                         aiTutorForm.dispatchEvent(new Event('submit'));
                     }
                 }
@@ -463,11 +614,20 @@
             aiTutorForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const text = promptInput.value.trim();
-                if (!text) return;
+                
+                // Allow submitting if there's text OR attachments
+                if (!text && currentAttachments.length === 0) return;
+
+                // Extract attachments and render them locally in bubble
+                const sentAttachments = [...currentAttachments];
+                const previewUrls = sentAttachments.map(a => a.dataUrl);
 
                 // Append user message
-                appendMessage('user', text);
+                appendMessage('user', text, previewUrls);
+                
                 promptInput.value = '';
+                currentAttachments = [];
+                renderPreviews();
                 
                 // Disable input and show loading
                 promptInput.disabled = true;
@@ -483,7 +643,11 @@
                         body: JSON.stringify({
                             message: text,
                             conversationId: conversationId,
-                            stream: true
+                            stream: true,
+                            attachments: sentAttachments.map(a => ({
+                                data: a.data,
+                                mimeType: a.mimeType
+                            }))
                         })
                     });
 
