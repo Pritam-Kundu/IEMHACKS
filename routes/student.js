@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth, requireRole } = require('../middleware/authMiddleware');
+const studentController = require('../controllers/studentController');
 
-router.get('/dashboard', requireAuth, requireRole('student'), (req, res) => {
-    res.send(`<h1>Student Dashboard</h1><p>Welcome, ${req.user.firstName}</p><a href="/logout">Logout</a>`);
-});
+// Student Dashboard Route (Protected & Role-based Authorization)
+router.get('/dashboard', requireAuth, requireRole('student'), studentController.getDashboard);
 
 module.exports = router;

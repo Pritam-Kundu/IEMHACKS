@@ -13,10 +13,19 @@ const progressSchema = new mongoose.Schema({
         required: true,
         index: true
     },
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Course',
+        required: true,
+        index: true
+    },
     status: {
         type: String,
         enum: ['not_started', 'in_progress', 'completed'],
         default: 'not_started'
+    },
+    completedAt: {
+        type: Date
     },
     lastAccessed: {
         type: Date,

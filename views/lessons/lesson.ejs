@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= lesson.title %> - EduSmart</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .sidebar-scroll {
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+        .content-scroll {
+            max-height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+        /* Markdown / Rich Text Styles */
+        .lesson-content h1 { font-size: 2rem; font-weight: bold; margin-bottom: 1rem; color: #1e1b4b; }
+        .lesson-content h2 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 0.75rem; color: #312e81; }
+        .lesson-content p { margin-bottom: 1rem; line-height: 1.6; }
+        .lesson-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
+        .lesson-content pre { background-color: #1e293b; color: #f8fafc; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; margin-bottom: 1rem; }
+        .lesson-content code { font-family: monospace; background-color: #f1f5f9; padding: 0.1rem 0.3rem; border-radius: 0.25rem; color: #b91c1c; }
+        .lesson-content pre code { background-color: transparent; color: inherit; padding: 0; }
+        .lesson-content blockquote { border-left: 4px solid #4f46e5; padding-left: 1rem; font-style: italic; color: #4b5563; margin-bottom: 1rem; }
+        
+        #aiModal { display: none; }
+        #aiModal.active { display: flex; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Navbar -->
+    <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50 h-16 flex items-center justify-between px-4 lg:px-8">
+        <div class="flex items-center gap-4">
+            <!-- Mobile Sidebar Toggle -->
+            <button id="sidebarToggle" class="lg:hidden text-slate-600 hover:text-indigo-600">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <a href="/student/dashboard" class="flex items-center gap-2">
+                <i class="fas fa-rocket text-indigo-600 text-xl"></i>
+                <span class="font-bold text-xl text-slate-900 hidden sm:block">EduSmart</span>
+            </a>
+        </div>
+        
+        <!-- Offline Indicator -->
+        <div id="offlineIndicator" class="hidden items-center gap-2 bg-amber-100 text-amber-800 px-3 py-1 rounded-full text-sm font-medium">
+            <i class="fas fa-wifi-slash"></i> Offline Mode
+        </div>
+
+        <div class="flex items-center gap-4">
+            <button id="aiTutorBtn" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-4 py-2 rounded-full font-medium text-sm transition-colors flex items-center gap-2">
+                <i class="fas fa-robot"></i> <span class="hidden sm:inline">Ask AI Tutor</span>
+            </button>
+            <a href="/student/dashboard" class="text-slate-600 hover:text-indigo-600 font-medium text-sm hidden sm:block">Dashboard</a>
+            <div class="h-8 w-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                <%= user.firstName.charAt(0) %><%= user.lastName.charAt(0) %>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Layout -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="w-72 bg-white border-r border-slate-200 flex flex-col absolute lg:relative z-40 h-full transition-transform transform -translate-x-full lg:translate-x-0 shadow-xl lg:shadow-none">
+            <div class="p-4 border-b border-slate-200">
+                <h3 class="font-bold text-slate-800 text-lg line-clamp-1"><%= course.title %></h3>
+                <div class="mt-2">
+                    <div class="flex justify-between text-xs text-slate-500 mb-1">
+                        <span>Course Progress</span>
+                        <span id="progressPercentageText"><%= progressPercentage %>%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2">
+                        <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: <%= progressPercentage %>%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-scroll p-4 space-y-1">
+                <div class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Course Content</div>
+                
+                <% navLessons.forEach(function(navItem) { %>
+                    <a href="/lessons/<%= navItem._id %>" 
+                       class="flex items-start gap-3 p-3 rounded-lg transition-colors group
+                       <%= navItem.isCurrent ? 'bg-indigo-50 border border-indigo-100' : 'hover:bg-slate-50' %>">
+                        
+                        <!-- Status Icon -->
+                        <div class="mt-0.5">
+                            <% if (navItem.status === 'completed') { %>
+                                <i class="fas fa-check-circle text-green-500 text-base"></i>
+                            <% } else if (navItem.isCurrent || navItem.status === 'in_progress') { %>
+                                <i class="fas fa-dot-circle text-indigo-500 text-base"></i>
+                            <% } else { %>
+                                <i class="far fa-circle text-slate-300 text-base group-hover:text-slate-400"></i>
+                            <% } %>
+                        </div>
+                        
+                        <div>
+                            <div class="text-xs font-medium <%= navItem.isCurrent ? 'text-indigo-600' : 'text-slate-500' %> mb-0.5">
+                                Lesson <%= navItem.order %>
+                            </div>
+                            <div class="text-sm font-medium leading-snug line-clamp-2 <%= navItem.isCurrent ? 'text-indigo-900' : 'text-slate-700' %>">
+                                <%= navItem.title %>
+                            </div>
+                        </div>
+                    </a>
+                <% }); %>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col bg-slate-50 relative w-full content-scroll">
+            
+            <!-- Breadcrumbs -->
+            <div class="bg-white px-6 py-3 border-b border-slate-200">
+                <nav class="flex text-sm text-slate-500">
+                    <ol class="flex items-center space-x-2">
+                        <li><a href="/student/dashboard" class="hover:text-indigo-600">Courses</a></li>
+                        <li><span class="text-slate-400">/</span></li>
+                        <li class="line-clamp-1"><%= course.title %></li>
+                        <li><span class="text-slate-400">/</span></li>
+                        <li class="line-clamp-1 text-slate-800 font-medium"><%= lesson.title %></li>
+                    </ol>
+                </nav>
+            </div>
+
+            <!-- Content Container -->
+            <div class="flex-1 p-4 lg:p-8 max-w-4xl mx-auto w-full">
+                
+                <!-- Lesson Header -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-semibold px-2.5 py-0.5 rounded uppercase">
+                            Lesson <%= lesson.order %>
+                        </span>
+                        <% if (lesson.durationMinutes) { %>
+                        <span class="text-slate-500 text-sm flex items-center gap-1">
+                            <i class="far fa-clock"></i> <%= lesson.durationMinutes %> min
+                        </span>
+                        <% } %>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-extrabold text-slate-900 mb-4"><%= lesson.title %></h1>
+                    <% if (lesson.description) { %>
+                        <p class="text-lg text-slate-600"><%= lesson.description %></p>
+                    <% } %>
+                    
+                    <!-- Controls (TTS) -->
+                    <div class="mt-4 flex gap-2">
+                        <button id="ttsBtn" class="text-slate-600 hover:text-indigo-600 bg-white border border-slate-200 hover:border-indigo-200 px-3 py-1.5 rounded shadow-sm text-sm font-medium transition-colors flex items-center gap-2">
+                            <i class="fas fa-volume-up"></i> Listen to Lesson
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Video Section (If exists) -->
+                <% if (lesson.videoUrl) { %>
+                <div class="mb-8 rounded-xl overflow-hidden shadow-lg bg-black aspect-video relative">
+                    <!-- Basic embed assuming YouTube/Vimeo style URL. In reality, requires URL parsing. -->
+                    <iframe src="<%= lesson.videoUrl %>" 
+                            class="absolute top-0 left-0 w-full h-full border-0"
+                            allowfullscreen></iframe>
+                </div>
+                <% } %>
+
+                <!-- Lesson Content -->
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 mb-8">
+                    <div id="lessonContent" class="lesson-content">
+                        <!-- Content rendered from server -->
+                        <%- lesson.content %>
+                    </div>
+                </div>
+
+                <!-- Bottom Navigation / Completion Controls -->
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mt-8 mb-12">
+                    
+                    <!-- Previous -->
+                    <div>
+                        <% if (prevLesson) { %>
+                            <a href="/lessons/<%= prevLesson._id %>" class="flex items-center gap-2 text-slate-600 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                                <i class="fas fa-arrow-left"></i> Previous
+                            </a>
+                        <% } %>
+                    </div>
+
+                    <!-- Mark Complete Action -->
+                    <div class="flex-1 flex justify-center">
+                        <button id="markCompleteBtn" 
+                                class="<%= currentProgress && currentProgress.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-200 cursor-default' : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-md' %> 
+                                       px-8 py-3 rounded-full font-bold transition-all flex items-center gap-2">
+                            <% if (currentProgress && currentProgress.status === 'completed') { %>
+                                <i class="fas fa-check-circle"></i> Completed
+                            <% } else { %>
+                                Mark as Complete
+                            <% } %>
+                        </button>
+                    </div>
+
+                    <!-- Next -->
+                    <div>
+                        <% if (nextLesson) { %>
+                            <a href="/lessons/<%= nextLesson._id %>" id="nextLessonBtn" class="flex items-center gap-2 text-slate-600 hover:text-indigo-600 font-medium px-4 py-2 rounded-lg hover:bg-indigo-50 transition-colors">
+                                Next <i class="fas fa-arrow-right"></i>
+                            </a>
+                        <% } else { %>
+                            <span class="text-slate-400 font-medium px-4 py-2">Course Completed 🎉</span>
+                        <% } %>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+        
+        <!-- Overlay for mobile sidebar -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden"></div>
+    </div>
+
+    <!-- AI Tutor Modal -->
+    <div id="aiModal" class="fixed inset-0 bg-slate-900/40 z-[60] items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg flex flex-col h-[600px] max-h-full animate-fade-in-up">
+            <!-- Header -->
+            <div class="flex items-center justify-between p-4 border-b border-slate-200 bg-indigo-50 rounded-t-2xl">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg">
+                        <i class="fas fa-robot text-xl"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-slate-800">EduSmart AI Tutor</h3>
+                        <p class="text-xs text-slate-500">Ask a question about this lesson</p>
+                    </div>
+                </div>
+                <button id="closeAiModal" class="text-slate-400 hover:text-slate-600 p-2">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <!-- Chat Area -->
+            <div id="aiChatArea" class="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50">
+                <!-- Welcome message -->
+                <div class="flex gap-3">
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                        <i class="fas fa-robot text-indigo-600 text-sm"></i>
+                    </div>
+                    <div class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700">
+                        Hi! I'm your AI Tutor. What would you like to know about <strong><%= lesson.title %></strong>?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Input Area -->
+            <div class="p-4 border-t border-slate-200 bg-white rounded-b-2xl">
+                <form id="aiForm" class="flex gap-2">
+                    <input type="text" id="aiInput" placeholder="Type your question..." required
+                           class="flex-1 border border-slate-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-full w-10 h-10 flex items-center justify-center shrink-0 transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Data injected from backend
+        const LESSON_ID = "<%= lesson._id %>";
+        const COURSE_ID = "<%= course._id %>";
+        const LESSON_TITLE = "<%- lesson.title.replace(/"/g, '\\"') %>";
+        let isCompleted = <%= currentProgress && currentProgress.status === 'completed' ? 'true' : 'false' %>;
+        
+        // DOM Elements
+        const markCompleteBtn = document.getElementById('markCompleteBtn');
+        const progressBar = document.getElementById('progressBar');
+        const progressPercentageText = document.getElementById('progressPercentageText');
+        const offlineIndicator = document.getElementById('offlineIndicator');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const ttsBtn = document.getElementById('ttsBtn');
+        
+        // AI Tutor Elements
+        const aiModal = document.getElementById('aiModal');
+        const aiTutorBtn = document.getElementById('aiTutorBtn');
+        const closeAiModal = document.getElementById('closeAiModal');
+        const aiForm = document.getElementById('aiForm');
+        const aiInput = document.getElementById('aiInput');
+        const aiChatArea = document.getElementById('aiChatArea');
+
+        // ==========================================
+        // UI INTERACTIONS
+        // ==========================================
+
+        // Mobile Sidebar Toggle
+        const toggleSidebar = () => {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarOverlay.classList.toggle('hidden');
+        };
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // AI Modal Toggle
+        aiTutorBtn.addEventListener('click', () => {
+            aiModal.classList.add('active');
+            aiInput.focus();
+        });
+        
+        closeAiModal.addEventListener('click', () => {
+            aiModal.classList.remove('active');
+        });
+        
+        // Close modal on outside click
+        aiModal.addEventListener('click', (e) => {
+            if (e.target === aiModal) aiModal.classList.remove('active');
+        });
+
+        // ==========================================
+        // TEXT-TO-SPEECH (Web Speech API)
+        // ==========================================
+        let synth = window.speechSynthesis;
+        let isPlaying = false;
+        
+        ttsBtn.addEventListener('click', () => {
+            if (!synth) {
+                alert("Your browser does not support Text-to-Speech.");
+                return;
+            }
+            
+            if (synth.speaking) {
+                if (synth.paused) {
+                    synth.resume();
+                    ttsBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Audio';
+                    isPlaying = true;
+                } else {
+                    synth.pause();
+                    ttsBtn.innerHTML = '<i class="fas fa-play"></i> Resume Audio';
+                    isPlaying = false;
+                }
+                return;
+            }
+            
+            // Get content text, strip HTML
+            const contentDiv = document.getElementById('lessonContent');
+            const textToRead = LESSON_TITLE + ". . " + contentDiv.innerText;
+            
+            const utterance = new SpeechSynthesisUtterance(textToRead);
+            utterance.rate = 0.9; // Slightly slower for learning
+            
+            utterance.onend = () => {
+                ttsBtn.innerHTML = '<i class="fas fa-volume-up"></i> Listen to Lesson';
+                isPlaying = false;
+            };
+            
+            synth.speak(utterance);
+            ttsBtn.innerHTML = '<i class="fas fa-pause"></i> Pause Audio';
+            isPlaying = true;
+        });
+
+        // Cancel speech when leaving page
+        window.addEventListener('beforeunload', () => {
+            if (synth) synth.cancel();
+        });
+
+        // ==========================================
+        // MARK AS COMPLETE LOGIC
+        // ==========================================
+        markCompleteBtn.addEventListener('click', async () => {
+            if (isCompleted) return; // Already completed
+            
+            // UI Loading state
+            const originalContent = markCompleteBtn.innerHTML;
+            markCompleteBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            markCompleteBtn.disabled = true;
+            
+            if (!navigator.onLine) {
+                // Handle Offline mode
+                await saveProgressOffline();
+                updateUIForCompletion(100); // We'll fake course progress bump or leave it
+                return;
+            }
+
+            try {
+                const response = await fetch(`/lessons/${LESSON_ID}/progress`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    updateUIForCompletion(data.progressPercentage);
+                } else {
+                    throw new Error(data.error || 'Failed to update progress');
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Unable to update your progress right now. Please try again.");
+                markCompleteBtn.innerHTML = originalContent;
+                markCompleteBtn.disabled = false;
+            }
+        });
+
+        function updateUIForCompletion(newPercentage) {
+            isCompleted = true;
+            
+            // Update Button
+            markCompleteBtn.className = 'bg-green-100 text-green-700 border border-green-200 cursor-default px-8 py-3 rounded-full font-bold transition-all flex items-center gap-2';
+            markCompleteBtn.innerHTML = '<i class="fas fa-check-circle"></i> Completed';
+            
+            // Update Sidebar current item icon
+            const currentSidebarItem = document.querySelector(`a[href="/lessons/${LESSON_ID}"] i`);
+            if (currentSidebarItem) {
+                currentSidebarItem.className = 'fas fa-check-circle text-green-500 text-base';
+            }
+            
+            // Update Progress Bar if percentage provided
+            if (newPercentage !== undefined) {
+                progressBar.style.width = newPercentage + '%';
+                progressPercentageText.textContent = newPercentage + '%';
+            }
+        }
+
+        // ==========================================
+        // AI TUTOR LOGIC
+        // ==========================================
+        aiForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const query = aiInput.value.trim();
+            if (!query) return;
+            
+            // Add User message to UI
+            appendAiMessage(query, 'user');
+            aiInput.value = '';
+            
+            // Add loading state
+            const loadingId = appendAiMessage('<i class="fas fa-ellipsis-h fa-fade"></i>', 'ai');
+            
+            try {
+                // Call backend AI endpoint if it exists, else mock for now
+                // Placeholder fetch:
+                /*
+                const response = await fetch('/api/ai/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, context: LESSON_TITLE })
+                });
+                const data = await response.json();
+                */
+                
+                // MOCK RESPONSE (Since no AI endpoint was explicitly specified to exist yet)
+                setTimeout(() => {
+                    document.getElementById(loadingId).innerHTML = `I understand you're asking about "${query}". As your AI tutor for ${LESSON_TITLE}, I'm here to help you understand the core concepts. (Note: Real AI backend integration pending).`;
+                    aiChatArea.scrollTop = aiChatArea.scrollHeight;
+                }, 1000);
+                
+            } catch (error) {
+                document.getElementById(loadingId).innerText = "Sorry, I couldn't process that right now.";
+            }
+        });
+
+        function appendAiMessage(htmlContent, sender) {
+            const id = 'msg-' + Date.now();
+            const wrapper = document.createElement('div');
+            
+            if (sender === 'user') {
+                wrapper.className = 'flex gap-3 flex-row-reverse';
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center shrink-0">
+                        <i class="fas fa-user text-slate-500 text-sm"></i>
+                    </div>
+                    <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-sm">
+                        ${htmlContent}
+                    </div>
+                `;
+            } else {
+                wrapper.className = 'flex gap-3';
+                wrapper.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                        <i class="fas fa-robot text-indigo-600 text-sm"></i>
+                    </div>
+                    <div id="${id}" class="bg-white border border-slate-200 p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700">
+                        ${htmlContent}
+                    </div>
+                `;
+            }
+            
+            aiChatArea.appendChild(wrapper);
+            aiChatArea.scrollTop = aiChatArea.scrollHeight;
+            return id;
+        }
+
+        // ==========================================
+        // OFFLINE & INDEXEDDB LOGIC
+        // ==========================================
+        const DB_NAME = 'EduSmart_OfflineDB';
+        const DB_VERSION = 1;
+        
+        let db;
+        
+        // Initialize DB
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains('lessons')) {
+                db.createObjectStore('lessons', { keyPath: 'id' });
+            }
+            if (!db.objectStoreNames.contains('pendingProgress')) {
+                db.createObjectStore('pendingProgress', { keyPath: 'lessonId' });
+            }
+        };
+        
+        request.onsuccess = (e) => {
+            db = e.target.result;
+            // If online, cache the current lesson page HTML/Data
+            if (navigator.onLine) {
+                cacheCurrentLesson();
+                syncPendingProgress();
+            } else {
+                showOfflineMode();
+            }
+        };
+
+        // Cache lesson data for offline viewing
+        function cacheCurrentLesson() {
+            if (!db) return;
+            const content = document.documentElement.outerHTML;
+            const transaction = db.transaction(['lessons'], 'readwrite');
+            const store = transaction.objectStore('lessons');
+            
+            // Store the full HTML string or data object
+            store.put({
+                id: LESSON_ID,
+                title: LESSON_TITLE,
+                courseId: COURSE_ID,
+                html: content,
+                timestamp: Date.now()
+            });
+        }
+        
+        // Save progress locally if offline
+        async function saveProgressOffline() {
+            if (!db) return;
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(['pendingProgress'], 'readwrite');
+                const store = tx.objectStore('pendingProgress');
+                store.put({
+                    lessonId: LESSON_ID,
+                    courseId: COURSE_ID,
+                    timestamp: Date.now()
+                });
+                tx.oncomplete = () => resolve();
+                tx.onerror = (e) => reject(e);
+            });
+        }
+        
+        // Sync pending progress when coming back online
+        function syncPendingProgress() {
+            if (!db) return;
+            const tx = db.transaction(['pendingProgress'], 'readonly');
+            const store = tx.objectStore('pendingProgress');
+            const request = store.getAll();
+            
+            request.onsuccess = async () => {
+                const pending = request.result;
+                if (pending.length > 0) {
+                    console.log(`Syncing ${pending.length} offline progress items...`);
+                    // In reality, loop through and POST them.
+                    // For brevity:
+                    for (const item of pending) {
+                        try {
+                            await fetch(`/lessons/${item.lessonId}/progress`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+                            // Remove from IndexedDB on success
+                            const delTx = db.transaction(['pendingProgress'], 'readwrite');
+                            delTx.objectStore('pendingProgress').delete(item.lessonId);
+                        } catch (e) {
+                            console.error('Failed to sync', item.lessonId);
+                        }
+                    }
+                }
+            };
+        }
+        
+        function showOfflineMode() {
+            offlineIndicator.classList.remove('hidden');
+            offlineIndicator.classList.add('flex');
+            
+            // Disable AI tutor
+            aiTutorBtn.disabled = true;
+            aiTutorBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            aiTutorBtn.title = "AI Tutor is unavailable offline";
+        }
+        
+        // Network Event Listeners
+        window.addEventListener('offline', showOfflineMode);
+        window.addEventListener('online', () => {
+            offlineIndicator.classList.add('hidden');
+            offlineIndicator.classList.remove('flex');
+            aiTutorBtn.disabled = false;
+            aiTutorBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            aiTutorBtn.title = "";
+            syncPendingProgress();
+        });
+        
+    </script>
+</body>
+</html>

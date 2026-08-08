@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { requireAuth, requireRole } = require('../middleware/authMiddleware');
+const parentController = require('../controllers/parentController');
 
-router.get('/dashboard', requireAuth, requireRole('parent'), (req, res) => {
-    res.send(`<h1>Parent Dashboard</h1><p>Welcome, ${req.user.firstName}</p><a href="/logout">Logout</a>`);
-});
+// Parent Dashboard Route (Protected & Role-based Authorization)
+router.get('/dashboard', requireAuth, requireRole('parent'), parentController.getDashboard);
 
 module.exports = router;
