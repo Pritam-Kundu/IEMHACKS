@@ -43,9 +43,9 @@
     <!-- Sidebar -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
         <div class="p-6 flex items-center justify-between">
-            <a href="/student/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
+            <a href="/" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
                 <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart</span>
+                <span class="font-mono text-2xl font-bold tracking-tight text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase font-sans tracking-normal">Pro</span></span>
             </a>
             <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -53,38 +53,46 @@
         </div>
 
         <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-            <a href="/student/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-house w-5 text-center"></i>
+            <a href="/teacher/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+                <i class="fa-solid fa-layer-group w-5 text-center"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+            <a href="/teacher/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-book-open w-5 text-center"></i>
                 <span>My Courses</span>
             </a>
-            <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+            <a href="/teacher/students" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Students</span>
+            </a>
+            <a href="/teacher/lessons" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i>
+                <span>Lessons</span>
+            </a>
+            <a href="/teacher/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
                 <span>Quizzes</span>
             </a>
-            <a href="/student/ai-tutor" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+            <a href="/teacher/assignments" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-file-pen w-5 text-center"></i>
+                <span>Assignments</span>
+            </a>
+            <a href="/teacher/ai-tutor" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
                 <i class="fa-solid fa-robot w-5 text-center"></i>
                 <span>AI Tutor</span>
             </a>
-            <a href="/student/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                <span>Progress</span>
+            <a href="/teacher/analytics" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Analytics</span>
             </a>
-            <a href="/student/leaderboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-trophy w-5 text-center"></i>
-                <span>Leaderboard</span>
-            </a>
-            <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-medal w-5 text-center"></i>
-                <span>Badges</span>
+            <a href="/teacher/reports" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                <span>Reports</span>
             </a>
         </nav>
 
         <div class="p-4 border-t border-slate-200">
-            <a href="/student/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+            <a href="/teacher/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-gear w-5 text-center"></i>
                 <span>Settings</span>
             </a>
@@ -126,10 +134,10 @@
                         <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
                     </button>
                     
-                    <a href="/student/profile" class="flex items-center gap-3 cursor-pointer group">
+                    <a href="/teacher/profile" class="flex items-center gap-3 cursor-pointer group">
                         <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
                         <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
+                            <p class="text-sm font-semibold text-slate-800">Prof. <%= user.lastName %></p>
                             <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
                         </div>
                     </a>
@@ -159,7 +167,7 @@
                         </div>
                         <div class="bg-white border border-slate-200 p-4 rounded-2xl rounded-tl-none shadow-sm">
                             <p class="text-slate-700 font-medium mb-1">EduSmart Tutor</p>
-                            <p class="text-slate-600 leading-relaxed">Hello <%= user.name %>! 👋 I'm your personal AI tutor. I can help you understand difficult concepts, explain math problems, or prepare for your upcoming quizzes. What would you like to learn today?</p>
+                            <p class="text-slate-600 leading-relaxed">Hello Prof. <%= user.lastName %>! 👋 I'm your teaching assistant. I can help you with lesson planning, grading rubrics, generating practice questions, and educational strategies. How can I help you today?</p>
                         </div>
                     </div>
                     
@@ -257,14 +265,9 @@
                 let speakerHtml = '';
                 if (isAI && text) {
                     speakerHtml = `
-                        <div class="flex items-center gap-2 mt-2">
-                            <button type="button" class="tts-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
-                                <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
-                            </button>
-                            <button type="button" class="tts-pause-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors hidden" aria-label="Pause speech" title="Pause speech">
-                                <i class="fa-solid fa-pause"></i> <span>Pause</span>
-                            </button>
-                        </div>
+                        <button type="button" class="tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
+                            <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                        </button>
                     `;
                 }
 
@@ -302,13 +305,12 @@
             };
 
             // Initialize Voice Utilities
-            const userLang = 'en-US'; // Can be dynamically set based on user profile if available
+            const userLang = 'en-US'; 
             
             const stt = new EduSmartSpeechToText({
                 language: userLang,
                 onResult: (res) => {
-                    // Update input with interim or final results
-                    let currentVal = promptInput.value.replace(/\s*\[.*\]$/, ''); // Remove previous interim
+                    let currentVal = promptInput.value.replace(/\s*\[.*\]$/, ''); 
                     if (res.final) {
                         promptInput.value = currentVal + (currentVal ? ' ' : '') + res.final;
                     } else if (res.interim) {
@@ -326,7 +328,6 @@
                         micBtn.setAttribute('aria-label', 'Stop voice input');
                         micBtn.setAttribute('title', 'Stop voice input');
                     } else {
-                        // Clean up interim markers if any
                         promptInput.value = promptInput.value.replace(/\s*\[.*\]$/, '');
                         
                         micBtn.classList.remove('text-red-500');
@@ -354,17 +355,11 @@
             // Delegate TTS button clicks
             chatContainer.addEventListener('click', (e) => {
                 const btn = e.target.closest('.tts-btn');
-                const pauseBtn = e.target.closest('.tts-pause-btn');
-
                 if (btn) {
-                    const bubble = btn.closest('.p-4');
-                    const textContainer = bubble ? bubble.querySelector('.text-slate-600') : null;
-                    const currentPauseBtn = bubble ? bubble.querySelector('.tts-pause-btn') : null;
-
+                    const textContainer = btn.parentElement.querySelector('.text-slate-600');
                     if (textContainer) {
                         const isCurrentlyPlaying = btn.classList.contains('playing');
                         
-                        // Reset all buttons
                         document.querySelectorAll('.tts-btn').forEach(b => {
                             b.classList.remove('playing', 'text-indigo-600');
                             b.classList.add('text-slate-500');
@@ -373,15 +368,6 @@
                             const span = b.querySelector('span');
                             if(span) span.innerText = 'Listen';
                             b.setAttribute('aria-label', 'Read this response aloud');
-                        });
-                        document.querySelectorAll('.tts-pause-btn').forEach(b => {
-                            b.classList.add('hidden');
-                            b.classList.remove('paused');
-                            const i = b.querySelector('i');
-                            if(i) i.className = 'fa-solid fa-pause';
-                            const span = b.querySelector('span');
-                            if(span) span.innerText = 'Pause';
-                            b.setAttribute('aria-label', 'Pause speech');
                         });
 
                         if (isCurrentlyPlaying) {
@@ -394,10 +380,6 @@
                             const span = btn.querySelector('span');
                             if(span) span.innerText = 'Stop';
                             btn.setAttribute('aria-label', 'Stop reading');
-
-                            if (currentPauseBtn) {
-                                currentPauseBtn.classList.remove('hidden');
-                            }
                             
                             tts.onStateChange = (state) => {
                                 if (state === 'STOPPED' || state === 'ERROR') {
@@ -408,40 +390,11 @@
                                     const bspan = btn.querySelector('span');
                                     if(bspan) bspan.innerText = 'Listen';
                                     btn.setAttribute('aria-label', 'Read this response aloud');
-                                    
-                                    if (currentPauseBtn) {
-                                        currentPauseBtn.classList.add('hidden');
-                                        currentPauseBtn.classList.remove('paused');
-                                        const pi = currentPauseBtn.querySelector('i');
-                                        if (pi) pi.className = 'fa-solid fa-pause';
-                                        const pspan = currentPauseBtn.querySelector('span');
-                                        if (pspan) pspan.innerText = 'Pause';
-                                    }
                                 }
                             };
                             
                             tts.speak(textContainer.innerText);
                         }
-                    }
-                } else if (pauseBtn) {
-                    const isPaused = pauseBtn.classList.contains('paused');
-                    
-                    if (isPaused) {
-                        tts.resume();
-                        pauseBtn.classList.remove('paused');
-                        const i = pauseBtn.querySelector('i');
-                        if(i) i.className = 'fa-solid fa-pause';
-                        const span = pauseBtn.querySelector('span');
-                        if(span) span.innerText = 'Pause';
-                        pauseBtn.setAttribute('aria-label', 'Pause speech');
-                    } else {
-                        tts.pause();
-                        pauseBtn.classList.add('paused');
-                        const i = pauseBtn.querySelector('i');
-                        if(i) i.className = 'fa-solid fa-play';
-                        const span = pauseBtn.querySelector('span');
-                        if(span) span.innerText = 'Resume';
-                        pauseBtn.setAttribute('aria-label', 'Resume speech');
                     }
                 }
             });
@@ -532,17 +485,11 @@
                                         chatContainer.scrollTop = chatContainer.scrollHeight;
                                     }
                                     
-                                    // Make sure TTS button is added if it was a streamed response
                                     if (!aiBubble.querySelector('.tts-btn') && fullText.length > 0) {
                                         const speakerHtml = `
-                                            <div class="flex items-center gap-2 mt-2">
-                                                <button type="button" class="tts-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
-                                                    <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
-                                                </button>
-                                                <button type="button" class="tts-pause-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors hidden" aria-label="Pause speech" title="Pause speech">
-                                                    <i class="fa-solid fa-pause"></i> <span>Pause</span>
-                                                </button>
-                                            </div>
+                                            <button type="button" class="tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
+                                                <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                                            </button>
                                         `;
                                         textContainer.insertAdjacentHTML('afterend', speakerHtml);
                                     }

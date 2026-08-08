@@ -14,7 +14,7 @@ const aiConversationSchema = new mongoose.Schema({
     },
     context: {
         type: String,
-        enum: ['student', 'parent', 'home', 'lesson', 'quiz'],
+        enum: ['student', 'parent', 'teacher', 'home', 'lesson', 'quiz'],
         default: 'student'
     },
     lesson: {

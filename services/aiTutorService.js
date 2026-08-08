@@ -36,6 +36,15 @@ You should help parents understand:
 - What learning habits they should improve
 Do not invent academic data. If data is unavailable, state that you don't have enough learning data to determine that yet.`;
 
+const TEACHER_SYSTEM_PROMPT = `You are EduSmart AI, an educational assistant helping teachers with their workflow.
+You can help teachers with:
+- Lesson planning and curriculum design
+- Creating grading rubrics
+- Generating practice questions and quizzes
+- Explaining educational strategies and pedagogies
+- Analyzing student performance trends (conceptually)
+Keep your answers professional, concise, and pedagogical.`;
+
 const getStudentContext = async (userId) => {
     const profile = await StudentProfile.findOne({ user: userId });
     let contextStr = `Student Information:\n`;
@@ -75,6 +84,11 @@ const getParentContext = async (parentId, childId) => {
     return contextStr;
 };
 
+const getTeacherContext = async (userId) => {
+    const user = await User.findById(userId);
+    return `Teacher Information:\nName: ${user ? user.name : 'Unknown'}\nRole: Teacher`;
+};
+
 /**
  * Handle a chat message and generate a response
  */
@@ -93,7 +107,7 @@ const processMessage = async (userId, role, messageText, conversationId = null, 
         conversation = new AIConversation({
             user: userId,
             title: messageText.substring(0, 30) + (messageText.length > 30 ? '...' : ''),
-            context: role === 'parent' ? 'parent' : 'student',
+            context: role,
             selectedStudent: contextParams.studentId || null,
             course: contextParams.courseId || null,
             lesson: contextParams.lessonId || null
@@ -115,7 +129,7 @@ const processMessage = async (userId, role, messageText, conversationId = null, 
     await userMessage.save();
 
     // 4. Build Context & System Prompt
-    let systemInstruction = role === 'parent' ? PARENT_SYSTEM_PROMPT : STUDENT_SYSTEM_PROMPT;
+    let systemInstruction = role === 'teacher' ? TEACHER_SYSTEM_PROMPT : (role === 'parent' ? PARENT_SYSTEM_PROMPT : STUDENT_SYSTEM_PROMPT);
     let dataContext = '';
 
     try {
@@ -123,6 +137,8 @@ const processMessage = async (userId, role, messageText, conversationId = null, 
             dataContext = await getStudentContext(userId);
         } else if (role === 'parent') {
             dataContext = await getParentContext(userId, conversation.selectedStudent || contextParams.studentId);
+        } else if (role === 'teacher') {
+            dataContext = await getTeacherContext(userId);
         }
         
         // Append context to system instruction
@@ -161,7 +177,7 @@ const processMessageStream = async function* (userId, role, messageText, convers
         conversation = new AIConversation({
             user: userId,
             title: messageText.substring(0, 30) + (messageText.length > 30 ? '...' : ''),
-            context: role === 'parent' ? 'parent' : 'student',
+            context: role,
             selectedStudent: contextParams.studentId || null,
             course: contextParams.courseId || null,
             lesson: contextParams.lessonId || null
@@ -180,7 +196,7 @@ const processMessageStream = async function* (userId, role, messageText, convers
     });
     await userMessage.save();
 
-    let systemInstruction = role === 'parent' ? PARENT_SYSTEM_PROMPT : STUDENT_SYSTEM_PROMPT;
+    let systemInstruction = role === 'teacher' ? TEACHER_SYSTEM_PROMPT : (role === 'parent' ? PARENT_SYSTEM_PROMPT : STUDENT_SYSTEM_PROMPT);
     let dataContext = '';
 
     try {
@@ -188,6 +204,8 @@ const processMessageStream = async function* (userId, role, messageText, convers
             dataContext = await getStudentContext(userId);
         } else if (role === 'parent') {
             dataContext = await getParentContext(userId, conversation.selectedStudent || contextParams.studentId);
+        } else if (role === 'teacher') {
+            dataContext = await getTeacherContext(userId);
         }
         systemInstruction += `\n\n--- Context Data ---\n${dataContext}`;
     } catch (err) {
@@ -214,27 +232,6 @@ const processMessageStream = async function* (userId, role, messageText, convers
     await aiMessage.save();
 };
 
-const processPublicMessageStream = async function* (messageText) {
-    const systemInstruction = `You are EduSmart AI, a friendly and patient educational tutor.
-Your goal is to help students understand concepts rather than simply providing answers.
-Explain difficult concepts in simple language.
-Keep your answers relatively short (1-2 paragraphs max) since this is a preview chat on the landing page.
-Do not ask for personal information.`;
-
-    const history = []; // No history for public chat
-
-    const responseStream = await geminiService.generateResponseStream(history, messageText, systemInstruction);
-    
-    yield { type: 'meta', conversationId: 'public' };
-
-    for await (const chunk of responseStream) {
-        if (chunk.text) {
-            yield { type: 'chunk', text: chunk.text };
-        }
-    }
-    // Note: We do not save public messages to the database to prevent spam/abuse
-};
-
 const getConversations = async (userId) => {
     return await AIConversation.find({ user: userId }).sort({ updatedAt: -1 }).limit(20);
 };
@@ -250,7 +247,6 @@ const getConversationMessages = async (conversationId, userId) => {
 module.exports = {
     processMessage,
     processMessageStream,
-    processPublicMessageStream,
     getConversations,
     getConversationMessages
 };

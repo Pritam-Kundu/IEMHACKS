@@ -58,40 +58,6 @@ exports.chat = async (req, res) => {
     }
 };
 
-exports.publicChat = async (req, res) => {
-    try {
-        const { message } = req.body;
-
-        if (!message) {
-            return res.status(400).json({ error: "Message is required." });
-        }
-
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-
-        try {
-            const streamGenerator = await aiTutorService.processPublicMessageStream(message);
-
-            for await (const chunk of streamGenerator) {
-                res.write(`data: ${JSON.stringify(chunk)}\n\n`);
-            }
-            res.write('data: [DONE]\n\n');
-            res.end();
-        } catch (streamError) {
-            console.error("AI Controller Public Stream Error:", streamError);
-            res.write(`data: ${JSON.stringify({ type: 'error', message: streamError.message || 'Stream error' })}\n\n`);
-            res.end();
-        }
-    } catch (error) {
-        console.error("AI Controller Public Error:", error);
-        res.status(500).json({
-            success: false,
-            error: `API Error: ${error.message || 'Unknown error'}.`
-        });
-    }
-};
-
 exports.getHistory = async (req, res) => {
     try {
         const userId = req.user.id;
