@@ -55,7 +55,7 @@
                 <i class="fa-solid fa-layer-group w-5 text-center"></i>
                 <span>Dashboard</span>
             </a>
-            <a href="/teacher/courses" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+            <a href="/teacher/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-book-open w-5 text-center"></i>
                 <span>My Courses</span>
             </a>
@@ -67,7 +67,7 @@
                 <i class="fa-solid fa-chalkboard-user w-5 text-center"></i>
                 <span>Lessons</span>
             </a>
-            <a href="/teacher/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+            <a href="/teacher/quizzes" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
                 <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
                 <span>Quizzes</span>
             </a>
@@ -94,7 +94,6 @@
                 <i class="fa-solid fa-gear w-5 text-center"></i>
                 <span>Settings</span>
             </a>
-            <!-- Using existing logout flow -->
             <form action="/auth/logout" method="POST" class="w-full mt-1">
                 <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
@@ -114,20 +113,15 @@
                     <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
-                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Create Course</h1>
-                    
-                    <!-- Global Links -->
-                    <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
-                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Home</a>
-                        <a href="/#features" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Features</a>
-                        <a href="/#how-it-works" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">How it Works</a>
-                        <a href="/#about" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">About</a>
+                    <div class="flex items-center text-sm font-medium text-slate-500">
+                        <a href="/teacher/quizzes" class="hover:text-indigo-600 transition-colors">Quizzes</a>
+                        <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
+                        <span class="text-slate-800 font-semibold">Create</span>
                     </div>
                 </div>
                 
                 <div class="flex items-center gap-5">
                     
-                    <!-- Language Switcher -->
                     <div class="relative group mr-2">
                         <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
                             <i class="fa-solid fa-globe text-xl"></i>
@@ -150,12 +144,12 @@
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-6 sm:p-8 border-b border-slate-200 bg-slate-50">
-                        <h2 class="text-2xl font-bold text-slate-800">Create New Course</h2>
-                        <p class="text-slate-500 mt-1">Design a new learning experience for your students.</p>
+                        <h2 class="text-2xl font-bold text-slate-800">Create New Quiz</h2>
+                        <p class="text-slate-500 mt-1">Design an assessment to test your students' knowledge.</p>
                     </div>
                     
                     <div class="p-6 sm:p-8">
-                        <form id="createCourseForm" class="space-y-6">
+                        <form id="createQuizForm" class="space-y-6">
                             <!-- Error Alert -->
                             <div id="errorAlert" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
                                 <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
@@ -165,72 +159,58 @@
                             <!-- Success Alert -->
                             <div id="successAlert" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
                                 <i class="fa-solid fa-circle-check mt-0.5"></i>
-                                <span id="successMessage">Course created successfully! Redirecting...</span>
+                                <span id="successMessage">Quiz created successfully! Redirecting...</span>
                             </div>
 
                             <div class="space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Course -->
+                                    <div>
+                                        <label for="course" class="block text-sm font-semibold text-slate-700 mb-1">Select Course <span class="text-red-500">*</span></label>
+                                        <select id="course" name="course" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
+                                            <option value="" disabled selected>Choose a course</option>
+                                            <% if (courses && courses.length > 0) { %>
+                                                <% courses.forEach(c => { %>
+                                                    <option value="<%= c._id %>"><%= c.title %></option>
+                                                <% }) %>
+                                            <% } else { %>
+                                                <option value="" disabled>No courses available</option>
+                                            <% } %>
+                                        </select>
+                                    </div>
+                                    <!-- Lesson -->
+                                    <div>
+                                        <label for="lesson" class="block text-sm font-semibold text-slate-700 mb-1">Select Lesson <span class="text-red-500">*</span></label>
+                                        <select id="lesson" name="lesson" required disabled class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-slate-50 cursor-not-allowed">
+                                            <option value="" disabled selected>Select a course first</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <!-- Title -->
                                 <div>
-                                    <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">Course Title <span class="text-red-500">*</span></label>
-                                    <input type="text" id="title" name="title" required placeholder="e.g. Advanced Java Programming" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                    <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">Quiz Title <span class="text-red-500">*</span></label>
+                                    <input type="text" id="title" name="title" required placeholder="e.g. End of Chapter 1 Quiz" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
                                 </div>
 
                                 <!-- Description -->
                                 <div>
-                                    <label for="description" class="block text-sm font-semibold text-slate-700 mb-1">Description <span class="text-red-500">*</span></label>
-                                    <textarea id="description" name="description" required rows="4" placeholder="Briefly describe what students will learn..." class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800"></textarea>
+                                    <label for="description" class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                                    <textarea id="description" name="description" rows="2" placeholder="Briefly describe what this quiz covers..." class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800"></textarea>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <!-- Category / Subject -->
+                                    <!-- Passing Score -->
                                     <div>
-                                        <label for="subject" class="block text-sm font-semibold text-slate-700 mb-1">Category <span class="text-red-500">*</span></label>
-                                        <select id="subject" name="subject" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
-                                            <option value="" disabled selected>Select Category</option>
-                                            <% if (subjects && subjects.length > 0) { %>
-                                                <% subjects.forEach(sub => { %>
-                                                    <option value="<%= sub._id %>"><%= sub.name %></option>
-                                                <% }) %>
-                                            <% } else { %>
-                                                <option value="" disabled>No categories available</option>
-                                            <% } %>
-                                        </select>
+                                        <label for="passingScore" class="block text-sm font-semibold text-slate-700 mb-1">Passing Score (%) <span class="text-red-500">*</span></label>
+                                        <input type="number" id="passingScore" name="passingScore" min="1" max="100" value="60" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
                                     </div>
-
-                                    <!-- Difficulty Level -->
+                                    <!-- Time Limit -->
                                     <div>
-                                        <label for="level" class="block text-sm font-semibold text-slate-700 mb-1">Difficulty <span class="text-red-500">*</span></label>
-                                        <select id="level" name="level" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
-                                            <option value="" disabled selected>Select Difficulty</option>
-                                            <option value="beginner">Beginner</option>
-                                            <option value="intermediate">Intermediate</option>
-                                            <option value="advanced">Advanced</option>
-                                        </select>
+                                        <label for="timeLimitMinutes" class="block text-sm font-semibold text-slate-700 mb-1">Time Limit (Minutes)</label>
+                                        <input type="number" id="timeLimitMinutes" name="timeLimitMinutes" min="0" value="0" placeholder="0 for unlimited" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                        <p class="text-xs text-slate-500 mt-1">Leave as 0 for no time limit.</p>
                                     </div>
-                                </div>
-
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <!-- Duration -->
-                                    <div>
-                                        <label for="duration" class="block text-sm font-semibold text-slate-700 mb-1">Duration (Optional)</label>
-                                        <input type="text" id="duration" name="duration" placeholder="e.g. 8 weeks" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
-                                    </div>
-
-                                    <!-- Status -->
-                                    <div>
-                                        <label for="status" class="block text-sm font-semibold text-slate-700 mb-1">Course Status</label>
-                                        <select id="status" name="status" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
-                                            <option value="draft" selected>Draft (Hidden)</option>
-                                            <option value="published">Published (Visible)</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Thumbnail -->
-                                <div>
-                                    <label for="thumbnail" class="block text-sm font-semibold text-slate-700 mb-1">Thumbnail URL (Optional)</label>
-                                    <input type="url" id="thumbnail" name="thumbnail" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
-                                    <p class="text-xs text-slate-500 mt-1">Leave empty to use the default course thumbnail.</p>
                                 </div>
                             </div>
                             
@@ -238,9 +218,9 @@
                             
                             <!-- Action Buttons -->
                             <div class="flex items-center justify-end gap-3 pt-2">
-                                <a href="/teacher/dashboard" class="px-5 py-2.5 rounded-lg text-slate-600 font-semibold hover:bg-slate-100 transition-colors">Cancel</a>
+                                <a href="/teacher/quizzes" class="px-5 py-2.5 rounded-lg text-slate-600 font-semibold hover:bg-slate-100 transition-colors">Cancel</a>
                                 <button type="submit" id="submitBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold shadow-sm transition-colors flex items-center justify-center min-w-[140px]">
-                                    <span>Create Course</span>
+                                    <span>Create Quiz</span>
                                 </button>
                             </div>
                         </form>
@@ -253,6 +233,9 @@
 
     <!-- Page Specific Scripts -->
     <script>
+        // Inject lessons data from the server
+        const allLessons = <%- JSON.stringify(lessons || []) %>;
+
         document.addEventListener('DOMContentLoaded', () => {
             // Sidebar Toggle Logic for Mobile
             const sidebar = document.getElementById('sidebar');
@@ -278,8 +261,34 @@
             if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
+            // Dynamic Lesson Select based on Course
+            const courseSelect = document.getElementById('course');
+            const lessonSelect = document.getElementById('lesson');
+
+            courseSelect.addEventListener('change', (e) => {
+                const selectedCourseId = e.target.value;
+                const filteredLessons = allLessons.filter(lesson => lesson.course === selectedCourseId);
+                
+                lessonSelect.innerHTML = '<option value="" disabled selected>Choose a lesson</option>';
+                
+                if (filteredLessons.length > 0) {
+                    filteredLessons.forEach(lesson => {
+                        const option = document.createElement('option');
+                        option.value = lesson._id;
+                        option.textContent = lesson.title;
+                        lessonSelect.appendChild(option);
+                    });
+                    lessonSelect.disabled = false;
+                    lessonSelect.classList.remove('bg-slate-50', 'cursor-not-allowed');
+                } else {
+                    lessonSelect.innerHTML = '<option value="" disabled selected>No lessons found</option>';
+                    lessonSelect.disabled = true;
+                    lessonSelect.classList.add('bg-slate-50', 'cursor-not-allowed');
+                }
+            });
+
             // Form Submission Logic
-            const form = document.getElementById('createCourseForm');
+            const form = document.getElementById('createQuizForm');
             const submitBtn = document.getElementById('submitBtn');
             const errorAlert = document.getElementById('errorAlert');
             const errorMessage = document.getElementById('errorMessage');
@@ -297,12 +306,12 @@
                 const data = Object.fromEntries(formData.entries());
                 
                 // Client-side validation
-                if (!data.title.trim() || !data.description.trim() || !data.subject || !data.level) {
+                if (!data.title.trim() || !data.course || !data.lesson) {
                     errorMessage.textContent = 'Please fill in all required fields.';
                     errorAlert.classList.remove('hidden');
                     return;
                 }
-                
+
                 // Loading state
                 const originalBtnText = submitBtn.innerHTML;
                 submitBtn.disabled = true;
@@ -310,7 +319,7 @@
                 submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Creating...';
 
                 try {
-                    const response = await fetch('/teacher/courses', {
+                    const response = await fetch('/teacher/quizzes', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -322,12 +331,12 @@
 
                     if (response.ok && result.success) {
                         successAlert.classList.remove('hidden');
-                        // Redirect after brief delay
+                        // Redirect after brief delay (to edit page to add questions!)
                         setTimeout(() => {
-                            window.location.href = '/teacher/courses';
+                            window.location.href = `/teacher/quizzes/${result.quiz._id}/edit`;
                         }, 1000);
                     } else {
-                        errorMessage.textContent = result.message || 'Failed to create course. Please try again.';
+                        errorMessage.textContent = result.message || 'Failed to create quiz. Please try again.';
                         errorAlert.classList.remove('hidden');
                         
                         // Re-enable button
@@ -336,7 +345,7 @@
                         submitBtn.innerHTML = originalBtnText;
                     }
                 } catch (error) {
-                    console.error('Create course error:', error);
+                    console.error('Create quiz error:', error);
                     errorMessage.textContent = 'A network error occurred. Please try again.';
                     errorAlert.classList.remove('hidden');
                     

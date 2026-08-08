@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="<%= language %>" dir="<%= direction %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Tailwind CSS (CDN for rapid hackathon setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Dashboard-specific custom styles */
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Sidebar styling */
+        .sidebar-active { 
+            background-color: #e0e7ff; 
+            color: #4f46e5; 
+            font-weight: 600; 
+            border-right: 4px solid #4f46e5; 
+        }
+        .sidebar-item { transition: all 0.2s ease-in-out; }
+        .sidebar-item:hover:not(.sidebar-active) { 
+            background-color: #f1f5f9; 
+            color: #334155; 
+        }
+        
+        /* Utility */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800">
+
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 flex items-center justify-between">
+            <a href="/teacher/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
+                <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-indigo-600 ml-1 font-semibold uppercase tracking-normal">Teacher</span></span>
+            </a>
+            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            <a href="/teacher/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/teacher/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-book-open w-5 text-center"></i>
+                <span>My Courses</span>
+            </a>
+            <a href="/teacher/students" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Students</span>
+            </a>
+            <a href="/teacher/lessons" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i>
+                <span>Lessons</span>
+            </a>
+            <a href="/teacher/quizzes" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+                <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
+                <span>Quizzes</span>
+            </a>
+            <a href="/teacher/assignments" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-file-pen w-5 text-center"></i>
+                <span>Assignments</span>
+            </a>
+            <a href="/teacher/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-robot w-5 text-center"></i>
+                <span>AI Tutor</span>
+            </a>
+            <a href="/teacher/analytics" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/teacher/reports" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-200">
+            <a href="/teacher/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-gear w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+            <form action="/auth/logout" method="POST" class="w-full mt-1">
+                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full">
+        
+        <!-- Top Header -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center text-sm font-medium text-slate-500">
+                        <a href="/teacher/quizzes" class="hover:text-indigo-600 transition-colors">Quizzes</a>
+                        <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
+                        <span class="text-slate-800 font-semibold truncate max-w-[150px] sm:max-w-xs"><%= quiz.title %></span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-5">
+                    
+                    <div class="relative group mr-2">
+                        <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
+                            <i class="fa-solid fa-globe text-xl"></i>
+                            <%= locals.language === 'bn' ? 'বাংলা' : 'English' %>
+                        </button>
+                        <div class="absolute right-0 mt-0 w-32 bg-white border border-slate-200 rounded-md shadow-lg hidden group-hover:block z-50 overflow-hidden">
+                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'en' ? 'font-bold' : '' %>">English</button>
+                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'bn' ? 'font-bold' : '' %>">বাংলা</button>
+                        </div>
+                    </div>
+
+                    <%- include('../partials/teacher-header-controls') %>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-32">
+            
+            <div class="max-w-4xl mx-auto space-y-8">
+                <!-- Quiz Details Section -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Quiz Settings</h2>
+                            <p class="text-slate-500 mt-1">Update general settings for this quiz.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 sm:p-8">
+                        <form id="editQuizForm" class="space-y-6">
+                            <!-- Error Alert -->
+                            <div id="quizErrorAlert" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
+                                <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
+                                <span id="quizErrorMessage">Please check your inputs.</span>
+                            </div>
+
+                            <!-- Success Alert -->
+                            <div id="quizSuccessAlert" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
+                                <i class="fa-solid fa-circle-check mt-0.5"></i>
+                                <span id="quizSuccessMessage">Quiz updated successfully!</span>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Course -->
+                                    <div>
+                                        <label for="course" class="block text-sm font-semibold text-slate-700 mb-1">Course <span class="text-red-500">*</span></label>
+                                        <select id="course" name="course" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
+                                            <% courses.forEach(c => { %>
+                                                <option value="<%= c._id %>" <%= quiz.course._id.toString() === c._id.toString() ? 'selected' : '' %>><%= c.title %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                    <!-- Lesson -->
+                                    <div>
+                                        <label for="lesson" class="block text-sm font-semibold text-slate-700 mb-1">Lesson <span class="text-red-500">*</span></label>
+                                        <select id="lesson" name="lesson" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
+                                            <% lessons.filter(l => l.course.toString() === quiz.course._id.toString()).forEach(l => { %>
+                                                <option value="<%= l._id %>" <%= quiz.lesson && quiz.lesson.toString() === l._id.toString() ? 'selected' : '' %>><%= l.title %></option>
+                                            <% }) %>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Title -->
+                                <div>
+                                    <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">Quiz Title <span class="text-red-500">*</span></label>
+                                    <input type="text" id="title" name="title" value="<%= quiz.title %>" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                </div>
+
+                                <!-- Description -->
+                                <div>
+                                    <label for="description" class="block text-sm font-semibold text-slate-700 mb-1">Description</label>
+                                    <textarea id="description" name="description" rows="2" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800"><%= quiz.description %></textarea>
+                                </div>
+
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <!-- Passing Score -->
+                                    <div>
+                                        <label for="passingScore" class="block text-sm font-semibold text-slate-700 mb-1">Passing Score (%) <span class="text-red-500">*</span></label>
+                                        <input type="number" id="passingScore" name="passingScore" min="1" max="100" value="<%= quiz.passingScore %>" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                    </div>
+                                    <!-- Time Limit -->
+                                    <div>
+                                        <label for="timeLimitMinutes" class="block text-sm font-semibold text-slate-700 mb-1">Time Limit (Minutes)</label>
+                                        <input type="number" id="timeLimitMinutes" name="timeLimitMinutes" min="0" value="<%= quiz.timeLimitMinutes || 0 %>" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center justify-end mt-6">
+                                <button type="submit" id="updateQuizBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold shadow-sm transition-colors flex items-center justify-center">
+                                    <span>Save Settings</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Questions Section -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 sm:p-8 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">Questions (<%= questions.length %>)</h2>
+                            <p class="text-slate-500 mt-1">Manage the questions in this quiz.</p>
+                        </div>
+                        <button onclick="openQuestionModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-semibold shadow-sm transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i>
+                            <span class="hidden sm:inline">Add Question</span>
+                        </button>
+                    </div>
+
+                    <div class="p-6 sm:p-8">
+                        <% if (questions && questions.length > 0) { %>
+                            <div class="space-y-4">
+                                <% questions.forEach((q, index) => { %>
+                                    <div class="border border-slate-200 rounded-xl p-5 hover:border-indigo-200 transition-colors group bg-white">
+                                        <div class="flex justify-between items-start gap-4">
+                                            <div class="flex-1">
+                                                <h4 class="font-bold text-slate-800 text-lg mb-3">
+                                                    <span class="text-indigo-600 mr-1"><%= index + 1 %>.</span> <%= q.questionText %>
+                                                </h4>
+                                                
+                                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pl-6">
+                                                    <% q.options.forEach((opt, optIndex) => { %>
+                                                        <div class="flex items-center gap-2 p-2 rounded-md <%= opt.isCorrect ? 'bg-green-50 border border-green-200 text-green-800' : 'bg-slate-50 border border-slate-100 text-slate-700' %>">
+                                                            <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold <%= opt.isCorrect ? 'bg-green-200 text-green-700' : 'bg-slate-200 text-slate-500' %>">
+                                                                <%= String.fromCharCode(65 + optIndex) %>
+                                                            </div>
+                                                            <span class="text-sm <%= opt.isCorrect ? 'font-semibold' : '' %>"><%= opt.text %></span>
+                                                            <% if (opt.isCorrect) { %>
+                                                                <i class="fa-solid fa-check text-green-500 ml-auto mr-1"></i>
+                                                            <% } %>
+                                                        </div>
+                                                    <% }) %>
+                                                </div>
+
+                                                <% if (q.explanation) { %>
+                                                    <div class="mt-4 pl-6 text-sm text-slate-500 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                                                        <strong class="text-slate-700"><i class="fa-solid fa-lightbulb text-amber-400 mr-1"></i> Explanation:</strong> <%= q.explanation %>
+                                                    </div>
+                                                <% } %>
+                                            </div>
+                                            
+                                            <div class="flex items-center gap-2 flex-shrink-0">
+                                                <button onclick="openEditQuestionModal('<%= q._id %>')" class="w-8 h-8 rounded bg-slate-100 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 flex items-center justify-center transition-colors" title="Edit Question">
+                                                    <i class="fa-solid fa-pen"></i>
+                                                </button>
+                                                <button onclick="deleteQuestion('<%= q._id %>')" class="w-8 h-8 rounded bg-slate-100 text-slate-500 hover:text-red-600 hover:bg-red-50 flex items-center justify-center transition-colors" title="Delete Question">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } else { %>
+                            <div class="text-center py-12 px-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50">
+                                <i class="fa-regular fa-folder-open text-4xl text-slate-300 mb-3"></i>
+                                <h3 class="text-lg font-medium text-slate-800">No questions yet</h3>
+                                <p class="text-slate-500 text-sm mt-1 mb-4">Start building your quiz by adding some questions.</p>
+                                <button onclick="openQuestionModal()" class="inline-flex items-center gap-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+                                    <i class="fa-solid fa-plus"></i> Add First Question
+                                </button>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Add/Edit Question Modal -->
+    <div id="questionModal" class="fixed inset-0 bg-slate-900/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+                <h3 id="questionModalTitle" class="text-xl font-bold text-slate-800">Add New Question</h3>
+                <button onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto flex-1">
+                <form id="questionForm" class="space-y-6">
+                    <input type="hidden" id="questionId" name="questionId">
+                    
+                    <div>
+                        <label for="questionText" class="block text-sm font-semibold text-slate-700 mb-1">Question Text <span class="text-red-500">*</span></label>
+                        <textarea id="questionText" name="questionText" required rows="3" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800" placeholder="e.g. What is the powerhouse of the cell?"></textarea>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-end mb-2">
+                            <label class="block text-sm font-semibold text-slate-700">Options <span class="text-red-500">*</span></label>
+                            <span class="text-xs text-slate-500">Select the correct answer(s) using the radio buttons</span>
+                        </div>
+                        
+                        <div id="optionsContainer" class="space-y-3">
+                            <!-- Options will be dynamically injected here -->
+                        </div>
+                        
+                        <button type="button" onclick="addOptionField()" class="mt-3 text-sm text-indigo-600 font-semibold hover:text-indigo-800 flex items-center gap-1">
+                            <i class="fa-solid fa-plus-circle"></i> Add Option
+                        </button>
+                    </div>
+
+                    <div>
+                        <label for="explanation" class="block text-sm font-semibold text-slate-700 mb-1">Explanation (Optional)</label>
+                        <textarea id="explanation" name="explanation" rows="2" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800" placeholder="Explain why the correct answer is right..."></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="p-6 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
+                <button onclick="closeQuestionModal()" class="px-5 py-2.5 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold rounded-lg transition-colors">Cancel</button>
+                <button type="button" id="saveQuestionBtn" class="px-6 py-2.5 bg-indigo-600 text-white hover:bg-indigo-700 font-semibold rounded-lg transition-colors shadow-sm flex items-center gap-2">
+                    <span>Save Question</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Specific Scripts -->
+    <script>
+        const quizId = '<%= quiz._id %>';
+        const allLessons = <%- JSON.stringify(lessons || []) %>;
+        // Keep a JS copy of questions for easy editing
+        const allQuestions = <%- JSON.stringify(questions || []) %>;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sidebar Toggle Logic for Mobile
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const openSidebarBtn = document.getElementById('openSidebarBtn');
+            const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+            
+            const toggleSidebar = () => {
+                const isOpen = !sidebar.classList.contains('-translate-x-full');
+                
+                if (isOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                    document.body.classList.add('overflow-hidden');
+                }
+            };
+            
+            if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
+            if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            // Dynamic Lesson Select based on Course
+            const courseSelect = document.getElementById('course');
+            const lessonSelect = document.getElementById('lesson');
+
+            courseSelect.addEventListener('change', (e) => {
+                const selectedCourseId = e.target.value;
+                const filteredLessons = allLessons.filter(lesson => lesson.course === selectedCourseId);
+                
+                lessonSelect.innerHTML = '<option value="" disabled selected>Choose a lesson</option>';
+                
+                if (filteredLessons.length > 0) {
+                    filteredLessons.forEach(lesson => {
+                        const option = document.createElement('option');
+                        option.value = lesson._id;
+                        option.textContent = lesson.title;
+                        lessonSelect.appendChild(option);
+                    });
+                    lessonSelect.disabled = false;
+                } else {
+                    lessonSelect.innerHTML = '<option value="" disabled selected>No lessons found</option>';
+                    lessonSelect.disabled = true;
+                }
+            });
+
+            // Quiz Update Logic
+            const editQuizForm = document.getElementById('editQuizForm');
+            const updateQuizBtn = document.getElementById('updateQuizBtn');
+            const quizErrorAlert = document.getElementById('quizErrorAlert');
+            const quizErrorMessage = document.getElementById('quizErrorMessage');
+            const quizSuccessAlert = document.getElementById('quizSuccessAlert');
+
+            editQuizForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                quizErrorAlert.classList.add('hidden');
+                quizSuccessAlert.classList.add('hidden');
+                
+                const formData = new FormData(editQuizForm);
+                const data = Object.fromEntries(formData.entries());
+                
+                const originalBtnText = updateQuizBtn.innerHTML;
+                updateQuizBtn.disabled = true;
+                updateQuizBtn.classList.add('opacity-70');
+                updateQuizBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...';
+
+                try {
+                    const response = await fetch(`/teacher/quizzes/${quizId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(data)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        quizSuccessAlert.classList.remove('hidden');
+                        setTimeout(() => quizSuccessAlert.classList.add('hidden'), 3000);
+                    } else {
+                        quizErrorMessage.textContent = result.message || 'Failed to update quiz.';
+                        quizErrorAlert.classList.remove('hidden');
+                    }
+                } catch (error) {
+                    quizErrorMessage.textContent = 'A network error occurred.';
+                    quizErrorAlert.classList.remove('hidden');
+                } finally {
+                    updateQuizBtn.disabled = false;
+                    updateQuizBtn.classList.remove('opacity-70');
+                    updateQuizBtn.innerHTML = originalBtnText;
+                }
+            });
+
+            // Handle Question Save
+            document.getElementById('saveQuestionBtn').addEventListener('click', saveQuestion);
+        });
+
+        // Question Modal Management
+        const questionModal = document.getElementById('questionModal');
+        const questionForm = document.getElementById('questionForm');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const modalTitle = document.getElementById('questionModalTitle');
+
+        function openQuestionModal() {
+            modalTitle.textContent = 'Add New Question';
+            document.getElementById('questionId').value = '';
+            document.getElementById('questionText').value = '';
+            document.getElementById('explanation').value = '';
+            
+            // Clear options and add 4 defaults
+            optionsContainer.innerHTML = '';
+            addOptionField('', true); // 1st option correct by default
+            addOptionField('');
+            addOptionField('');
+            addOptionField('');
+
+            questionModal.classList.remove('hidden');
+        }
+
+        function openEditQuestionModal(qId) {
+            const question = allQuestions.find(q => q._id === qId);
+            if (!question) return;
+
+            modalTitle.textContent = 'Edit Question';
+            document.getElementById('questionId').value = question._id;
+            document.getElementById('questionText').value = question.questionText;
+            document.getElementById('explanation').value = question.explanation || '';
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((opt, index) => {
+                addOptionField(opt.text, opt.isCorrect);
+            });
+
+            questionModal.classList.remove('hidden');
+        }
+
+        function closeQuestionModal() {
+            questionModal.classList.add('hidden');
+        }
+
+        function addOptionField(text = '', isCorrect = false) {
+            const index = optionsContainer.children.length;
+            const optionHtml = `
+                <div class="flex items-center gap-3 option-row">
+                    <div class="flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 font-bold text-slate-500 text-sm">
+                        ${String.fromCharCode(65 + index)}
+                    </div>
+                    <div class="flex-1 relative">
+                        <input type="text" class="option-text w-full px-4 py-2 rounded-lg border ${isCorrect ? 'border-green-400 focus:border-green-500 focus:ring-green-500 bg-green-50' : 'border-slate-300 focus:border-indigo-500 focus:ring-indigo-500'} focus:ring-1 outline-none transition-all pr-12" placeholder="Option text..." value="${text.replace(/"/g, '&quot;')}" required>
+                    </div>
+                    <div class="flex items-center bg-slate-100 rounded-lg p-1">
+                        <input type="radio" name="correctOption" class="w-5 h-5 text-green-600 focus:ring-green-500 cursor-pointer mx-2" ${isCorrect ? 'checked' : ''} onchange="updateOptionStyles()">
+                    </div>
+                    <button type="button" onclick="this.closest('.option-row').remove(); updateOptionLabels();" class="text-slate-400 hover:text-red-500 p-2 transition-colors">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            optionsContainer.insertAdjacentHTML('beforeend', optionHtml);
+            updateOptionStyles();
+        }
+
+        function updateOptionLabels() {
+            const rows = optionsContainer.querySelectorAll('.option-row');
+            rows.forEach((row, index) => {
+                const label = row.querySelector('.w-8.h-8');
+                label.textContent = String.fromCharCode(65 + index);
+            });
+        }
+
+        function updateOptionStyles() {
+            const rows = optionsContainer.querySelectorAll('.option-row');
+            rows.forEach(row => {
+                const input = row.querySelector('.option-text');
+                const radio = row.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    input.classList.add('border-green-400', 'bg-green-50');
+                    input.classList.remove('border-slate-300');
+                } else {
+                    input.classList.remove('border-green-400', 'bg-green-50');
+                    input.classList.add('border-slate-300');
+                }
+            });
+        }
+
+        async function saveQuestion() {
+            const qId = document.getElementById('questionId').value;
+            const questionText = document.getElementById('questionText').value.trim();
+            const explanation = document.getElementById('explanation').value.trim();
+            
+            if (!questionText) {
+                alert('Question text is required');
+                return;
+            }
+
+            const rows = optionsContainer.querySelectorAll('.option-row');
+            if (rows.length < 2) {
+                alert('At least 2 options are required');
+                return;
+            }
+
+            let hasCorrect = false;
+            const options = Array.from(rows).map(row => {
+                const text = row.querySelector('.option-text').value.trim();
+                const isCorrect = row.querySelector('input[type="radio"]').checked;
+                if (isCorrect) hasCorrect = true;
+                return { text, isCorrect };
+            });
+
+            if (!hasCorrect) {
+                alert('Please select a correct option');
+                return;
+            }
+
+            const payload = { questionText, options, explanation };
+            const method = qId ? 'PUT' : 'POST';
+            const url = qId 
+                ? `/teacher/quizzes/${quizId}/questions/${qId}`
+                : `/teacher/quizzes/${quizId}/questions`;
+
+            const btn = document.getElementById('saveQuestionBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...';
+
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload(); // Quickest way to reflect changes
+                } else {
+                    alert(data.message || 'Failed to save question');
+                }
+            } catch (error) {
+                alert('Network error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function deleteQuestion(qId) {
+            if (!confirm('Are you sure you want to delete this question?')) return;
+            
+            try {
+                const response = await fetch(`/teacher/quizzes/${quizId}/questions/${qId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Failed to delete');
+                }
+            } catch (error) {
+                alert('Network error');
+            }
+        }
+    </script>
+    <%- include('../partials/teacher-header-scripts') %>
+    <%- include('../partials/language-modal') %>
+</body>
+</html>

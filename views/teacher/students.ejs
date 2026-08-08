@@ -43,7 +43,7 @@
         <div class="p-6 flex items-center justify-between">
             <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity">
                 <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-xl">E</div>
-                <span class="text-xl font-bold text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase">Pro</span></span>
+                <span class="text-xl font-bold text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase">Teacher</span></span>
             </a>
             <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -108,7 +108,7 @@
     <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full">
         
         <!-- Top Header -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
             <div class="flex items-center justify-between px-6 py-4">
                 <div class="flex items-center gap-4">
                     <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
@@ -139,18 +139,7 @@
                         </div>
                     </div>
 
-                    <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    
-                    <a href="/teacher/settings" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800">Prof. <%= user.lastName %></p>
-                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
-                        </div>
-                    </a>
+                    <%- include('../partials/teacher-header-controls') %>
                 </div>
             </div>
         </header>
@@ -159,11 +148,33 @@
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <div class="flex items-center justify-between mb-6">
                 <h2 class="text-2xl font-bold text-slate-800">Students</h2>
-                <div class="relative">
+            <form action="/teacher/students" method="GET" class="flex flex-col sm:flex-row items-center gap-3 mb-6 w-full sm:w-auto">
+                <div class="relative w-full sm:w-64">
                     <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" placeholder="Search students..." class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full sm:w-64">
+                    <input type="text" name="search" value="<%= searchQuery || '' %>" placeholder="Search students..." class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full">
                 </div>
-            </div>
+                
+                <div class="w-full sm:w-auto flex gap-3">
+                    <select name="course" class="border border-slate-200 rounded-lg text-sm py-2 px-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
+                        <option value="">All Courses</option>
+                        <% if (locals.courses) { %>
+                            <% courses.forEach(c => { %>
+                                <option value="<%= c._id %>" <%= filterCourseId === c._id.toString() ? 'selected' : '' %>><%= c.title %></option>
+                            <% }) %>
+                        <% } %>
+                    </select>
+                    
+                    <button type="submit" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors border border-slate-200">
+                        Filter
+                    </button>
+                    <% if (searchQuery || filterCourseId) { %>
+                        <a href="/teacher/students" class="flex items-center justify-center text-slate-500 hover:text-red-500 px-2 py-2 transition-colors" title="Clear Filters">
+                            <i class="fa-solid fa-xmark"></i>
+                        </a>
+                    <% } %>
+                </div>
+            </form>
+        </div>
 
             <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 <% if (students && students.length > 0) { %>
@@ -208,7 +219,7 @@
                                             </div>
                                         </td>
                                         <td class="p-4 text-right">
-                                            <a href="#" class="text-indigo-600 hover:text-indigo-900 font-medium">View Profile</a>
+                                            <a href="/teacher/students/<%= item.student._id %>" class="text-indigo-600 hover:text-indigo-900 font-medium">View Profile</a>
                                         </td>
                                     </tr>
                                 <% }) %>
@@ -254,6 +265,7 @@
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
         });
     </script>
+    <%- include('../partials/teacher-header-scripts') %>
     <%- include('../partials/language-modal') %>
 </body>
 </html>

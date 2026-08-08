@@ -114,7 +114,7 @@
                     <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
-                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Create Course</h1>
+                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Edit Course</h1>
                     
                     <!-- Global Links -->
                     <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
@@ -150,12 +150,12 @@
             <div class="max-w-4xl mx-auto">
                 <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-6 sm:p-8 border-b border-slate-200 bg-slate-50">
-                        <h2 class="text-2xl font-bold text-slate-800">Create New Course</h2>
-                        <p class="text-slate-500 mt-1">Design a new learning experience for your students.</p>
+                        <h2 class="text-2xl font-bold text-slate-800">Edit Course: <%= course.title %></h2>
+                        <p class="text-slate-500 mt-1">Update your course details below.</p>
                     </div>
                     
                     <div class="p-6 sm:p-8">
-                        <form id="createCourseForm" class="space-y-6">
+                        <form id="editCourseForm" class="space-y-6" data-course-id="<%= course._id %>">
                             <!-- Error Alert -->
                             <div id="errorAlert" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
                                 <i class="fa-solid fa-circle-exclamation mt-0.5"></i>
@@ -165,20 +165,20 @@
                             <!-- Success Alert -->
                             <div id="successAlert" class="hidden bg-emerald-50 border border-emerald-200 text-emerald-600 px-4 py-3 rounded-lg text-sm font-medium flex items-start gap-3">
                                 <i class="fa-solid fa-circle-check mt-0.5"></i>
-                                <span id="successMessage">Course created successfully! Redirecting...</span>
+                                <span id="successMessage">Course updated successfully! Redirecting...</span>
                             </div>
 
                             <div class="space-y-4">
                                 <!-- Title -->
                                 <div>
                                     <label for="title" class="block text-sm font-semibold text-slate-700 mb-1">Course Title <span class="text-red-500">*</span></label>
-                                    <input type="text" id="title" name="title" required placeholder="e.g. Advanced Java Programming" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                    <input type="text" id="title" name="title" required value="<%= course.title %>" placeholder="e.g. Advanced Java Programming" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
                                 </div>
 
                                 <!-- Description -->
                                 <div>
                                     <label for="description" class="block text-sm font-semibold text-slate-700 mb-1">Description <span class="text-red-500">*</span></label>
-                                    <textarea id="description" name="description" required rows="4" placeholder="Briefly describe what students will learn..." class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800"></textarea>
+                                    <textarea id="description" name="description" required rows="4" placeholder="Briefly describe what students will learn..." class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800"><%= course.description %></textarea>
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -189,7 +189,7 @@
                                             <option value="" disabled selected>Select Category</option>
                                             <% if (subjects && subjects.length > 0) { %>
                                                 <% subjects.forEach(sub => { %>
-                                                    <option value="<%= sub._id %>"><%= sub.name %></option>
+                                                    <option value="<%= sub._id %>" <%= course.subject && course.subject.toString() === sub._id.toString() ? 'selected' : '' %>><%= sub.name %></option>
                                                 <% }) %>
                                             <% } else { %>
                                                 <option value="" disabled>No categories available</option>
@@ -202,9 +202,9 @@
                                         <label for="level" class="block text-sm font-semibold text-slate-700 mb-1">Difficulty <span class="text-red-500">*</span></label>
                                         <select id="level" name="level" required class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
                                             <option value="" disabled selected>Select Difficulty</option>
-                                            <option value="beginner">Beginner</option>
-                                            <option value="intermediate">Intermediate</option>
-                                            <option value="advanced">Advanced</option>
+                                            <option value="beginner" <%= course.level === 'beginner' ? 'selected' : '' %>>Beginner</option>
+                                            <option value="intermediate" <%= course.level === 'intermediate' ? 'selected' : '' %>>Intermediate</option>
+                                            <option value="advanced" <%= course.level === 'advanced' ? 'selected' : '' %>>Advanced</option>
                                         </select>
                                     </div>
                                 </div>
@@ -213,15 +213,15 @@
                                     <!-- Duration -->
                                     <div>
                                         <label for="duration" class="block text-sm font-semibold text-slate-700 mb-1">Duration (Optional)</label>
-                                        <input type="text" id="duration" name="duration" placeholder="e.g. 8 weeks" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                        <input type="text" id="duration" name="duration" value="<%= course.duration || '' %>" placeholder="e.g. 8 weeks" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
                                     </div>
 
                                     <!-- Status -->
                                     <div>
                                         <label for="status" class="block text-sm font-semibold text-slate-700 mb-1">Course Status</label>
                                         <select id="status" name="status" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800 bg-white">
-                                            <option value="draft" selected>Draft (Hidden)</option>
-                                            <option value="published">Published (Visible)</option>
+                                            <option value="draft" <%= !course.isPublished ? 'selected' : '' %>>Draft (Hidden)</option>
+                                            <option value="published" <%= course.isPublished ? 'selected' : '' %>>Published (Visible)</option>
                                         </select>
                                     </div>
                                 </div>
@@ -229,7 +229,7 @@
                                 <!-- Thumbnail -->
                                 <div>
                                     <label for="thumbnail" class="block text-sm font-semibold text-slate-700 mb-1">Thumbnail URL (Optional)</label>
-                                    <input type="url" id="thumbnail" name="thumbnail" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                                    <input type="url" id="thumbnail" name="thumbnail" value="<%= course.thumbnail === '/images/default-course.png' ? '' : course.thumbnail %>" placeholder="https://example.com/image.jpg" class="w-full px-4 py-2.5 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
                                     <p class="text-xs text-slate-500 mt-1">Leave empty to use the default course thumbnail.</p>
                                 </div>
                             </div>
@@ -240,7 +240,7 @@
                             <div class="flex items-center justify-end gap-3 pt-2">
                                 <a href="/teacher/dashboard" class="px-5 py-2.5 rounded-lg text-slate-600 font-semibold hover:bg-slate-100 transition-colors">Cancel</a>
                                 <button type="submit" id="submitBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-semibold shadow-sm transition-colors flex items-center justify-center min-w-[140px]">
-                                    <span>Create Course</span>
+                                    <span>Update Course</span>
                                 </button>
                             </div>
                         </form>
@@ -279,7 +279,7 @@
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
             // Form Submission Logic
-            const form = document.getElementById('createCourseForm');
+            const form = document.getElementById('editCourseForm');
             const submitBtn = document.getElementById('submitBtn');
             const errorAlert = document.getElementById('errorAlert');
             const errorMessage = document.getElementById('errorMessage');
@@ -307,11 +307,12 @@
                 const originalBtnText = submitBtn.innerHTML;
                 submitBtn.disabled = true;
                 submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
-                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Creating...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Updating...';
 
                 try {
-                    const response = await fetch('/teacher/courses', {
-                        method: 'POST',
+                    const courseId = form.getAttribute('data-course-id');
+                    const response = await fetch(`/teacher/courses/${courseId}`, {
+                        method: 'PUT',
                         headers: {
                             'Content-Type': 'application/json'
                         },
@@ -327,7 +328,7 @@
                             window.location.href = '/teacher/courses';
                         }, 1000);
                     } else {
-                        errorMessage.textContent = result.message || 'Failed to create course. Please try again.';
+                        errorMessage.textContent = result.message || 'Failed to update course. Please try again.';
                         errorAlert.classList.remove('hidden');
                         
                         // Re-enable button
@@ -336,7 +337,7 @@
                         submitBtn.innerHTML = originalBtnText;
                     }
                 } catch (error) {
-                    console.error('Create course error:', error);
+                    console.error('Update course error:', error);
                     errorMessage.textContent = 'A network error occurred. Please try again.';
                     errorAlert.classList.remove('hidden');
                     

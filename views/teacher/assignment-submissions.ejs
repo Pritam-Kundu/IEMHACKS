@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="<%= language %>" dir="<%= direction %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Tailwind CSS (CDN for rapid hackathon setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Dashboard-specific custom styles */
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        
+        /* Sidebar styling */
+        .sidebar-active { 
+            background-color: #e0e7ff; 
+            color: #4f46e5; 
+            font-weight: 600; 
+            border-right: 4px solid #4f46e5; 
+        }
+        .sidebar-item { transition: all 0.2s ease-in-out; }
+        .sidebar-item:hover:not(.sidebar-active) { 
+            background-color: #f1f5f9; 
+            color: #334155; 
+        }
+        
+        /* Utility */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden text-slate-800">
+
+    <!-- Mobile sidebar overlay -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="p-6 flex items-center justify-between">
+            <a href="/teacher/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
+                <i class="fa-solid fa-graduation-cap text-2xl"></i>
+                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-indigo-600 ml-1 font-semibold uppercase tracking-normal">Teacher</span></span>
+            </a>
+            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
+            <a href="/teacher/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="/teacher/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-book-open w-5 text-center"></i>
+                <span>My Courses</span>
+            </a>
+            <a href="/teacher/students" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-users w-5 text-center"></i>
+                <span>Students</span>
+            </a>
+            <a href="/teacher/lessons" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i>
+                <span>Lessons</span>
+            </a>
+            <a href="/teacher/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
+                <span>Quizzes</span>
+            </a>
+            <a href="/teacher/assignments" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
+                <i class="fa-solid fa-file-pen w-5 text-center"></i>
+                <span>Assignments</span>
+            </a>
+            <a href="/teacher/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-robot w-5 text-center"></i>
+                <span>AI Tutor</span>
+            </a>
+            <a href="/teacher/analytics" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                <span>Analytics</span>
+            </a>
+            <a href="/teacher/reports" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-regular fa-file-lines w-5 text-center"></i>
+                <span>Reports</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-200">
+            <a href="/teacher/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
+                <i class="fa-solid fa-gear w-5 text-center"></i>
+                <span>Settings</span>
+            </a>
+            <form action="/auth/logout" method="POST" class="w-full mt-1">
+                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                    <span>Logout</span>
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full">
+        
+        <!-- Top Header -->
+        <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
+            <div class="flex items-center justify-between px-6 py-4">
+                <div class="flex items-center gap-4">
+                    <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <div class="flex items-center text-sm font-medium text-slate-500">
+                        <a href="/teacher/assignments" class="hover:text-indigo-600 transition-colors">Assignments</a>
+                        <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
+                        <span class="text-slate-800 font-semibold truncate max-w-[150px] sm:max-w-xs"><%= assignment.title %></span>
+                        <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
+                        <span class="text-slate-800 font-semibold">Submissions</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-5">
+                    
+                    <div class="relative group mr-2">
+                        <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
+                            <i class="fa-solid fa-globe text-xl"></i>
+                            <%= locals.language === 'bn' ? 'বাংলা' : 'English' %>
+                        </button>
+                        <div class="absolute right-0 mt-0 w-32 bg-white border border-slate-200 rounded-md shadow-lg hidden group-hover:block z-50 overflow-hidden">
+                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'en' ? 'font-bold' : '' %>">English</button>
+                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'bn' ? 'font-bold' : '' %>">বাংলা</button>
+                        </div>
+                    </div>
+
+                    <%- include('../partials/teacher-header-controls') %>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-slate-800"><%= assignment.title %></h2>
+                    <p class="text-slate-500 mt-1">Total Points: <span class="font-bold text-slate-700"><%= assignment.totalPoints || 100 %></span></p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <% if (submissions && submissions.length > 0) { %>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
+                                    <th class="p-4 font-semibold">Student</th>
+                                    <th class="p-4 font-semibold">Submitted On</th>
+                                    <th class="p-4 font-semibold">Status</th>
+                                    <th class="p-4 font-semibold text-right">Score</th>
+                                    <th class="p-4 font-semibold text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                <% submissions.forEach(sub => { %>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="p-4">
+                                            <div class="flex items-center gap-3">
+                                                <img src="<%= sub.student.profilePicture || '/images/default-avatar.png' %>" class="w-8 h-8 rounded-full object-cover">
+                                                <div>
+                                                    <p class="font-bold text-slate-800"><%= sub.student.firstName %> <%= sub.student.lastName %></p>
+                                                    <p class="text-xs text-slate-500"><%= sub.student.email %></p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="p-4 text-slate-600">
+                                            <%= new Date(sub.submittedAt).toLocaleDateString() %> <%= new Date(sub.submittedAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) %>
+                                        </td>
+                                        <td class="p-4">
+                                            <% if (sub.status === 'graded') { %>
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                                    <i class="fa-solid fa-check"></i> Graded
+                                                </span>
+                                            <% } else { %>
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700">
+                                                    <i class="fa-solid fa-clock"></i> Pending
+                                                </span>
+                                            <% } %>
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <% if (sub.status === 'graded') { %>
+                                                <span class="font-bold text-slate-800"><%= sub.score %></span> <span class="text-slate-400">/ <%= assignment.totalPoints %></span>
+                                            <% } else { %>
+                                                <span class="text-slate-400">-</span>
+                                            <% } %>
+                                        </td>
+                                        <td class="p-4 text-right">
+                                            <button 
+                                                onclick='openGradeModal(<%= JSON.stringify({
+                                                    id: sub._id, 
+                                                    studentName: sub.student.firstName + " " + sub.student.lastName,
+                                                    content: sub.content || "",
+                                                    fileUrl: sub.fileUrl || "",
+                                                    score: sub.score || "",
+                                                    feedback: sub.feedback || ""
+                                                }) %>)' 
+                                                class="px-3 py-1.5 rounded-lg font-medium text-sm transition-colors <%= sub.status === 'graded' ? 'bg-slate-100 text-slate-600 hover:bg-slate-200' : 'bg-indigo-600 text-white hover:bg-indigo-700' %>">
+                                                <%= sub.status === 'graded' ? 'Edit Grade' : 'Grade' %>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="p-8 text-center max-w-2xl mx-auto py-12">
+                        <i class="fa-solid fa-inbox text-5xl text-slate-300 mb-4"></i>
+                        <h3 class="text-lg font-bold text-slate-800 mb-2">No Submissions Yet</h3>
+                        <p class="text-slate-500">Students have not submitted their work for this assignment yet.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <!-- Grade Modal -->
+    <div id="gradeModal" class="fixed inset-0 bg-slate-900/50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full flex flex-col max-h-[90vh]">
+            <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                <h3 class="text-lg font-bold text-slate-800">Grade Submission - <span id="studentNameDisplay" class="text-indigo-600"></span></h3>
+                <button onclick="closeGradeModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto">
+                <div class="mb-6">
+                    <h4 class="text-sm font-semibold text-slate-700 mb-2">Student's Submission:</h4>
+                    <div id="submissionContentDisplay" class="p-4 bg-slate-50 rounded-lg border border-slate-200 text-sm text-slate-700 min-h-[100px] whitespace-pre-wrap"></div>
+                    
+                    <div id="fileAttachmentDisplay" class="mt-3 hidden">
+                        <a href="#" target="_blank" id="fileLink" class="inline-flex items-center gap-2 px-3 py-2 bg-indigo-50 text-indigo-700 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors">
+                            <i class="fa-solid fa-paperclip"></i> View Attached File
+                        </a>
+                    </div>
+                </div>
+
+                <hr class="border-slate-200 my-6">
+
+                <form id="gradeForm" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="scoreInput" class="block text-sm font-semibold text-slate-700 mb-1">Score (Out of <%= assignment.totalPoints %>) <span class="text-red-500">*</span></label>
+                            <input type="number" id="scoreInput" name="score" required min="0" max="<%= assignment.totalPoints %>" class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="feedbackInput" class="block text-sm font-semibold text-slate-700 mb-1">Feedback</label>
+                        <textarea id="feedbackInput" name="feedback" rows="3" placeholder="Great job on..." class="w-full px-4 py-2 rounded-lg border border-slate-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all text-slate-800"></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <div class="px-6 py-4 border-t border-slate-200 flex justify-end gap-3 bg-slate-50 rounded-b-xl">
+                <button onclick="closeGradeModal()" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 font-semibold transition-colors">Cancel</button>
+                <button id="saveGradeBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors">Save Grade</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page Specific Scripts -->
+    <script>
+        const assignmentId = '<%= assignment._id %>';
+        let currentSubmissionId = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sidebar Toggle Logic for Mobile
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+            const openSidebarBtn = document.getElementById('openSidebarBtn');
+            const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+            
+            const toggleSidebar = () => {
+                const isOpen = !sidebar.classList.contains('-translate-x-full');
+                
+                if (isOpen) {
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarOverlay.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                } else {
+                    sidebar.classList.remove('-translate-x-full');
+                    sidebarOverlay.classList.remove('hidden');
+                    document.body.classList.add('overflow-hidden');
+                }
+            };
+            
+            if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
+            if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
+            if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+        });
+
+        // Grading Modal Logic
+        const gradeModal = document.getElementById('gradeModal');
+        const studentNameDisplay = document.getElementById('studentNameDisplay');
+        const submissionContentDisplay = document.getElementById('submissionContentDisplay');
+        const fileAttachmentDisplay = document.getElementById('fileAttachmentDisplay');
+        const fileLink = document.getElementById('fileLink');
+        const scoreInput = document.getElementById('scoreInput');
+        const feedbackInput = document.getElementById('feedbackInput');
+        const saveGradeBtn = document.getElementById('saveGradeBtn');
+        const gradeForm = document.getElementById('gradeForm');
+
+        function openGradeModal(data) {
+            currentSubmissionId = data.id;
+            
+            // Populate data
+            studentNameDisplay.textContent = data.studentName;
+            submissionContentDisplay.textContent = data.content || 'No text content provided.';
+            
+            if (data.fileUrl) {
+                fileLink.href = data.fileUrl;
+                fileAttachmentDisplay.classList.remove('hidden');
+            } else {
+                fileAttachmentDisplay.classList.add('hidden');
+            }
+
+            scoreInput.value = data.score !== null ? data.score : '';
+            feedbackInput.value = data.feedback || '';
+
+            gradeModal.classList.remove('hidden');
+        }
+
+        function closeGradeModal() {
+            currentSubmissionId = null;
+            gradeModal.classList.add('hidden');
+            gradeForm.reset();
+        }
+
+        saveGradeBtn.addEventListener('click', async () => {
+            if (!gradeForm.checkValidity()) {
+                gradeForm.reportValidity();
+                return;
+            }
+
+            const score = scoreInput.value;
+            const feedback = feedbackInput.value;
+
+            const originalText = saveGradeBtn.innerHTML;
+            saveGradeBtn.disabled = true;
+            saveGradeBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Saving...';
+
+            try {
+                const response = await fetch(`/teacher/assignments/${assignmentId}/submissions/${currentSubmissionId}/grade`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ score, feedback })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    window.location.reload();
+                } else {
+                    alert(result.message || 'Failed to grade submission');
+                }
+            } catch (error) {
+                console.error('Error grading:', error);
+                alert('A network error occurred. Please try again.');
+            } finally {
+                saveGradeBtn.disabled = false;
+                saveGradeBtn.innerHTML = originalText;
+            }
+        });
+    </script>
+    <%- include('../partials/teacher-header-scripts') %>
+    <%- include('../partials/language-modal') %>
+</body>
+</html>
