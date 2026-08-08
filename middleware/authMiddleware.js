@@ -85,8 +85,39 @@ const injectAuthUser = async (req, res, next) => {
     next();
 };
 
+/**
+ * Middleware for API routes using Bearer token
+ */
+const requireApiAuth = async (req, res, next) => {
+    try {
+        const authHeader = req.headers.authorization;
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return res.status(401).json({ success: false, message: 'Unauthorized' });
+        }
+
+        const idToken = authHeader.split('Bearer ')[1];
+        const decodedToken = await admin.auth().verifyIdToken(idToken);
+        const user = await User.findOne({ firebaseUid: decodedToken.uid });
+
+        if (!user) {
+            return res.status(401).json({ success: false, message: 'User not found in system' });
+        }
+
+        if (!user.isActive) {
+            return res.status(403).json({ success: false, message: 'Account is disabled' });
+        }
+
+        req.user = user;
+        next();
+    } catch (error) {
+        console.error('API Auth Error:', error);
+        return res.status(401).json({ success: false, message: 'Invalid or expired token' });
+    }
+};
+
 module.exports = {
     requireAuth,
     requireRole,
-    injectAuthUser
+    injectAuthUser,
+    requireApiAuth
 };

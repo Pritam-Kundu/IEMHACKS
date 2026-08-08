@@ -131,6 +131,11 @@
                         <p class="text-slate-500">Track your child's learning journey and academic progress.</p>
                     </div>
                     
+                    <div class="flex items-center gap-4 shrink-0">
+                        <button onclick="document.getElementById('linkStudentModal').classList.remove('hidden')" class="text-sm font-semibold text-emerald-600 bg-emerald-50 hover:bg-emerald-100 px-3 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            <i class="fa-solid fa-plus"></i> Add Child
+                        </button>
+                    
                     <% if (children.length > 1) { %>
                         <div class="bg-white border border-slate-200 rounded-xl p-2 shadow-sm shrink-0 flex items-center">
                             <span class="text-sm text-slate-500 px-3 font-medium">Viewing progress for:</span>
@@ -372,12 +377,43 @@
                     </div>
                     <h2 class="text-2xl font-bold text-slate-800 mb-2">Welcome to EduSmart Family!</h2>
                     <p class="text-slate-500 mb-8">No student profile is linked to your account yet. Connect your child's account to start monitoring their academic progress, assignments, and achievements.</p>
-                    <button class="bg-emerald-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm">Link Student Account</button>
+                    <button onclick="document.getElementById('linkStudentModal').classList.remove('hidden')" class="bg-emerald-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-emerald-700 transition-colors shadow-sm">Link Student Account</button>
                 </div>
             <% } %>
             
         </div>
+        
+        <!-- Link Student Account Modal -->
+        <div id="linkStudentModal" class="fixed inset-0 bg-slate-900/50 z-50 hidden flex items-center justify-center transition-opacity">
+            <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-6 transform transition-transform mx-4">
+                <h3 class="text-xl font-bold text-slate-800 mb-2">Add Your Child</h3>
+                <p class="text-slate-500 text-sm mb-6">Enter your child's registered email address to connect their account.</p>
+                
+                <form id="linkStudentForm">
+                    <div class="mb-4">
+                        <label for="childEmail" class="block text-sm font-medium text-slate-700 mb-1">Child's Email Address</label>
+                        <input type="email" id="childEmail" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500" placeholder="student@example.com">
+                    </div>
+                    
+                    <div id="linkStudentError" class="hidden mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg border border-red-100"></div>
+                    <div id="linkStudentSuccess" class="hidden mb-4 p-3 bg-emerald-50 text-emerald-600 text-sm rounded-lg border border-emerald-100">Child added successfully. Refreshing...</div>
+                    
+                    <div class="flex justify-end gap-3 mt-6">
+                        <button type="button" onclick="document.getElementById('linkStudentModal').classList.add('hidden')" class="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded-lg transition-colors">Cancel</button>
+                        <button type="submit" id="submitLinkBtn" class="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2">
+                            <span id="submitLinkBtnText">Add Child</span>
+                            <i id="submitLinkSpinner" class="fa-solid fa-spinner fa-spin hidden"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </main>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="/js/firebase-config.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -404,6 +440,93 @@
             if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
             if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+            // Link Student Account Logic
+            if (!firebase.apps.length) {
+                firebase.initializeApp(window.FIREBASE_CONFIG);
+            }
+
+            const linkForm = document.getElementById('linkStudentForm');
+            const submitBtn = document.getElementById('submitLinkBtn');
+            const submitBtnText = document.getElementById('submitLinkBtnText');
+            const submitSpinner = document.getElementById('submitLinkSpinner');
+            const errorDiv = document.getElementById('linkStudentError');
+            const successDiv = document.getElementById('linkStudentSuccess');
+
+            if (linkForm) {
+                linkForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    
+                    const email = document.getElementById('childEmail').value.trim();
+                    if (!email) {
+                        showError("Please enter your child's email address.");
+                        return;
+                    }
+
+                    // Reset state
+                    errorDiv.classList.add('hidden');
+                    successDiv.classList.add('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                    submitBtnText.textContent = "Adding child...";
+                    submitSpinner.classList.remove('hidden');
+
+                    try {
+                        // Wait for firebase auth state to resolve
+                        const currentUser = await new Promise((resolve) => {
+                            const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+                                unsubscribe();
+                                resolve(user);
+                            });
+                        });
+
+                        if (!currentUser) {
+                            showError("You must be logged in to perform this action.");
+                            resetBtn();
+                            return;
+                        }
+
+                        const idToken = await currentUser.getIdToken();
+
+                        const response = await fetch('/parent/api/children/link', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${idToken}`
+                            },
+                            body: JSON.stringify({ email })
+                        });
+
+                        const data = await response.json();
+
+                        if (!response.ok || !data.success) {
+                            throw new Error(data.message || 'Failed to link account.');
+                        }
+
+                        // Success
+                        successDiv.classList.remove('hidden');
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1500);
+
+                    } catch (err) {
+                        showError(err.message || "An unexpected error occurred.");
+                        resetBtn();
+                    }
+                });
+            }
+
+            function showError(msg) {
+                errorDiv.textContent = msg;
+                errorDiv.classList.remove('hidden');
+            }
+
+            function resetBtn() {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+                submitBtnText.textContent = "Add Child";
+                submitSpinner.classList.add('hidden');
+            }
         });
     </script>
 </body>

@@ -4,6 +4,9 @@ const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
 const Submission = require('../models/Submission');
 const Assignment = require('../models/Assignment');
+const Badge = require('../models/Badge');
+const User = require('../models/User');
+const ParentProfile = require('../models/ParentProfile');
 
 /**
  * Controller to handle Parent Dashboard data fetching
@@ -143,5 +146,67 @@ exports.getDashboard = async (req, res, next) => {
     } catch (error) {
         console.error('Parent Dashboard Error:', error);
         next(error);
+    }
+};
+
+/**
+ * Controller to link a student account by email
+ */
+exports.linkStudentAccount = async (req, res) => {
+    try {
+        const parentId = req.user._id;
+        
+        // Parent role check
+        if (req.user.role !== 'parent') {
+            return res.status(403).json({ success: false, message: 'Only parents can link student accounts.' });
+        }
+
+        let { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ success: false, message: 'Please enter your child\'s email address.' });
+        }
+
+        email = email.trim().toLowerCase();
+
+        // Find User
+        const studentUser = await User.findOne({ email });
+        if (!studentUser) {
+            return res.status(404).json({ success: false, message: 'No EduSmart student account was found with this email address.' });
+        }
+
+        if (studentUser.role !== 'student') {
+            return res.status(403).json({ success: false, message: 'This email is not registered as a student account.' });
+        }
+
+        // Find Student Profile
+        const studentProfile = await StudentProfile.findOne({ user: studentUser._id });
+        if (!studentProfile) {
+            return res.status(404).json({ success: false, message: 'Student profile is not available for this account. Please ask the student to complete their profile.' });
+        }
+
+        // Find Parent Profile
+        const parentProfile = await ParentProfile.findOne({ user: parentId });
+        if (!parentProfile) {
+            return res.status(404).json({ success: false, message: 'Parent profile not found.' });
+        }
+
+        // Check if already linked
+        if (parentProfile.children.includes(studentUser._id) || studentProfile.parents.includes(parentId)) {
+            return res.status(400).json({ success: false, message: 'This student is already linked to your account.' });
+        }
+
+        // Create relationships
+        parentProfile.children.push(studentUser._id);
+        studentProfile.parents.push(parentId);
+
+        await Promise.all([
+            parentProfile.save(),
+            studentProfile.save()
+        ]);
+
+        return res.status(200).json({ success: true, message: 'Child added successfully.' });
+    } catch (error) {
+        console.error('Link Student Error:', error);
+        return res.status(500).json({ success: false, message: 'An unexpected error occurred while linking the account.' });
     }
 };

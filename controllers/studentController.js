@@ -3,6 +3,7 @@ const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
 const StudentProfile = require('../models/StudentProfile');
 const Course = require('../models/Course');
+const Badge = require('../models/Badge');
 
 /**
  * Controller to handle Student Dashboard data fetching

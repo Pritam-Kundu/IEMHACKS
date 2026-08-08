@@ -6,6 +6,7 @@ const Submission = require('../models/Submission');
 const User = require('../models/User');
 const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
+const Subject = require('../models/Subject');
 
 /**
  * Controller to handle Teacher Dashboard data fetching
