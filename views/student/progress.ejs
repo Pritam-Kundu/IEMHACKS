@@ -43,7 +43,7 @@
         <div class="p-6 flex items-center justify-between">
             <a href="/student/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
                 <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-blue-600 ml-1 font-semibold uppercase tracking-normal">Student</span></span>
+                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase font-sans tracking-normal">Student</span></span>
             </a>
             <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -135,19 +135,7 @@
                         </div>
                     </div>
 
-                    <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                        <!-- Notification indicator (example active state) -->
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    
-                    <a href="/student/settings" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
-                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
-                        </div>
-                    </a>
+                    <%- include('../partials/student-header-controls') %>
                 </div>
             </div>
         </header>
@@ -157,14 +145,48 @@
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <h2 class="text-2xl font-bold text-slate-800 mb-6">My Progress</h2>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-                <div class="w-24 h-24 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                    <i class="fa-solid fa-chart-line"></i>
+            
+            <% if (progressRecords && progressRecords.length > 0) { %>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <% progressRecords.forEach(record => { %>
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                            <h3 class="text-lg font-bold text-slate-800 mb-2"><%= record.course.title %></h3>
+                            <p class="text-sm text-slate-500 mb-4">Last accessed: <%= new Date(record.lastAccessed).toLocaleDateString() %></p>
+                            
+                            <% 
+                                // To calculate accurate total progress
+                                const totalLessons = record.course.lessons ? record.course.lessons.length : 0;
+                                const completedCount = record.completedLessons.length;
+                                const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+                            %>
+                            
+                            <div class="mb-2 flex justify-between text-sm">
+                                <span class="font-medium text-slate-700">Course Completion</span>
+                                <span class="font-bold text-indigo-600"><%= progressPct %>%</span>
+                            </div>
+                            <div class="w-full bg-slate-100 rounded-full h-2.5 mb-4">
+                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= progressPct %>%"></div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center text-sm border-t border-slate-100 pt-4 mt-4">
+                                <div class="text-slate-600">
+                                    <span class="font-bold text-slate-800"><%= completedCount %></span> / <%= totalLessons %> Lessons Completed
+                                </div>
+                                <a href="/student/courses/<%= record.course._id %>" class="text-indigo-600 hover:text-indigo-800 font-medium">Continue <i class="fa-solid fa-arrow-right ml-1"></i></a>
+                            </div>
+                        </div>
+                    <% }) %>
                 </div>
-                <h3 class="text-xl font-bold text-slate-700 mb-2">Detailed Analytics Coming Soon</h3>
-                <p class="text-slate-500 max-w-md mx-auto">We are working on bringing you detailed charts and analytics to track your learning journey across all your subjects.</p>
-                <a href="/student/dashboard" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">Return to Dashboard</a>
-            </div>
+            <% } else { %>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+                    <div class="w-24 h-24 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-700 mb-2">No Progress Data Yet</h3>
+                    <p class="text-slate-500 max-w-md mx-auto">Enroll in a course and start learning to see your progress here.</p>
+                    <a href="/student/courses" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">Browse Courses</a>
+                </div>
+            <% } %>
         </div>
         
         <!-- Page Specific Scripts -->
@@ -207,5 +229,6 @@
         });
     </script>
     <%- include('../partials/language-modal') %>
+    <%- include('../partials/student-header-scripts') %>
 </body>
 </html>

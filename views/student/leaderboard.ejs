@@ -43,7 +43,7 @@
         <div class="p-6 flex items-center justify-between">
             <a href="/student/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
                 <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-blue-600 ml-1 font-semibold uppercase tracking-normal">Student</span></span>
+                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase font-sans tracking-normal">Student</span></span>
             </a>
             <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -135,19 +135,7 @@
                         </div>
                     </div>
 
-                    <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                        <!-- Notification indicator (example active state) -->
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    
-                    <a href="/student/settings" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
-                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
-                        </div>
-                    </a>
+                    <%- include('../partials/student-header-controls') %>
                 </div>
             </div>
         </header>
@@ -157,13 +145,74 @@
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <h2 class="text-2xl font-bold text-slate-800 mb-6">Global Leaderboard</h2>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-                <div class="w-24 h-24 bg-yellow-50 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                    <i class="fa-solid fa-trophy"></i>
+            
+            <div class="bg-indigo-600 text-white rounded-xl shadow-md p-6 mb-8 flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-medium opacity-90">Your Current Rank</h3>
+                    <div class="text-4xl font-bold mt-1">
+                        <%= userRank ? '#' + userRank : 'Unranked' %>
+                    </div>
                 </div>
-                <h3 class="text-xl font-bold text-slate-700 mb-2">Compete with your Peers</h3>
-                <p class="text-slate-500 max-w-md mx-auto">The leaderboard feature is currently being finalized. Soon you'll be able to see how your scores compare with other students!</p>
-                <a href="/student/dashboard" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">Return to Dashboard</a>
+                <div class="text-right">
+                    <h3 class="text-lg font-medium opacity-90">Total Points</h3>
+                    <div class="text-3xl font-bold mt-1 text-yellow-300">
+                        <i class="fa-solid fa-star text-xl mr-1"></i> <%= userTotalPoints || 0 %>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-6 border-b border-slate-200 bg-slate-50">
+                    <h3 class="text-lg font-bold text-slate-800">Top 10 Students</h3>
+                </div>
+                
+                <% if (topStudents && topStudents.length > 0) { %>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="text-xs uppercase text-slate-500 bg-white border-b border-slate-200">
+                                    <th class="py-4 px-6 font-semibold">Rank</th>
+                                    <th class="py-4 px-6 font-semibold">Student</th>
+                                    <th class="py-4 px-6 font-semibold text-right">Points</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <% topStudents.forEach((student, index) => { %>
+                                    <% const isCurrentUser = student._id.toString() === user._id.toString(); %>
+                                    <tr class="hover:bg-slate-50 transition-colors <%= isCurrentUser ? 'bg-indigo-50/50' : '' %>">
+                                        <td class="py-4 px-6">
+                                            <% if (index === 0) { %>
+                                                <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-600 flex items-center justify-center font-bold text-sm"><i class="fa-solid fa-crown"></i></div>
+                                            <% } else if (index === 1) { %>
+                                                <div class="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm">2</div>
+                                            <% } else if (index === 2) { %>
+                                                <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center font-bold text-sm">3</div>
+                                            <% } else { %>
+                                                <div class="w-8 h-8 flex items-center justify-center font-bold text-sm text-slate-500"><%= index + 1 %></div>
+                                            <% } %>
+                                        </td>
+                                        <td class="py-4 px-6">
+                                            <div class="flex items-center gap-3">
+                                                <img src="<%= student.user.profilePicture || '/images/default-avatar.png' %>" class="w-10 h-10 rounded-full border border-slate-200">
+                                                <div>
+                                                    <p class="font-semibold text-slate-800 <%= isCurrentUser ? 'text-indigo-700' : '' %>"><%= student.user.name %> <%= isCurrentUser ? '(You)' : '' %></p>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="py-4 px-6 text-right">
+                                            <span class="font-bold text-slate-700"><%= student.totalPoints %></span>
+                                            <span class="text-xs text-slate-500 ml-1">pts</span>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                <% } else { %>
+                    <div class="p-8 text-center text-slate-500">
+                        No students on the leaderboard yet. Be the first to earn points!
+                    </div>
+                <% } %>
             </div>
         </div>
         
@@ -207,5 +256,6 @@
         });
     </script>
     <%- include('../partials/language-modal') %>
+    <%- include('../partials/student-header-scripts') %>
 </body>
 </html>

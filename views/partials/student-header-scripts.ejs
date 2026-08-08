@@ -1,0 +1,186 @@
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- Notifications Logic ---
+        const notificationBtn = document.getElementById('notificationBtn');
+        const notificationPanel = document.getElementById('notificationPanel');
+        const notificationList = document.getElementById('notificationList');
+        const unreadBadge = document.getElementById('unreadBadge');
+        const markAllReadBtn = document.getElementById('markAllReadBtn');
+
+        let notificationsOpen = false;
+
+        function toggleNotifications(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            notificationsOpen = !notificationsOpen;
+            
+            if (notificationsOpen) {
+                // Close profile dropdown if open
+                if (profileDropdownOpen) {
+                    profileDropdownOpen = false;
+                    profileDropdownBtn.setAttribute('aria-expanded', 'false');
+                    profileDropdownPanel.classList.add('hidden');
+                    profileDropdownPanel.classList.remove('opacity-100', 'scale-100');
+                    profileDropdownPanel.classList.add('opacity-0', 'scale-95');
+                }
+                
+                notificationPanel.classList.remove('hidden');
+                // Small delay to allow display:block to apply before animating opacity
+                setTimeout(() => {
+                    notificationPanel.classList.remove('opacity-0', 'scale-95');
+                    notificationPanel.classList.add('opacity-100', 'scale-100');
+                }, 10);
+                loadNotifications();
+            } else {
+                notificationPanel.classList.remove('opacity-100', 'scale-100');
+                notificationPanel.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    notificationPanel.classList.add('hidden');
+                }, 200); // Wait for transition
+            }
+        }
+
+        async function loadNotifications() {
+            try {
+                notificationList.innerHTML = '<div class="p-4 text-center text-sm text-slate-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Loading...</div>';
+                
+                // Currently mock notifications until a real endpoint is available
+                // If there's an endpoint: const response = await fetch('/api/notifications');
+                const mockNotifications = [
+                    { id: 1, title: 'Welcome to EduSmart', message: 'Your student account is ready.', time: 'Just now', read: false, icon: 'fa-solid fa-hand-wave', color: 'text-indigo-500' }
+                ];
+                
+                renderNotifications(mockNotifications);
+            } catch (err) {
+                console.error("Error loading notifications:", err);
+                notificationList.innerHTML = '<div class="p-4 text-center text-sm text-red-500">Failed to load notifications.</div>';
+            }
+        }
+
+        function renderNotifications(notifications) {
+            if (!notifications || notifications.length === 0) {
+                notificationList.innerHTML = `
+                    <div class="p-6 text-center">
+                        <div class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mx-auto mb-3 text-xl">
+                            <i class="fa-regular fa-bell-slash"></i>
+                        </div>
+                        <p class="text-sm text-slate-500">You're all caught up!</p>
+                    </div>`;
+                unreadBadge.classList.add('hidden');
+                markAllReadBtn.classList.add('hidden');
+                return;
+            }
+
+            const unreadCount = notifications.filter(n => !n.read).length;
+            if (unreadCount > 0) {
+                unreadBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                unreadBadge.classList.remove('hidden');
+                markAllReadBtn.classList.remove('hidden');
+            } else {
+                unreadBadge.classList.add('hidden');
+                markAllReadBtn.classList.add('hidden');
+            }
+
+            notificationList.innerHTML = notifications.map(n => `
+                <div class="p-4 hover:bg-slate-50 transition-colors cursor-pointer ${!n.read ? 'bg-indigo-50/50' : ''}">
+                    <div class="flex gap-3">
+                        <div class="shrink-0 w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center ${n.color}">
+                            <i class="${n.icon} text-xs"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-slate-800 truncate">${n.title}</p>
+                            <p class="text-xs text-slate-500 mt-0.5 line-clamp-2">${n.message}</p>
+                            <p class="text-[10px] text-slate-400 font-medium mt-1">${n.time}</p>
+                        </div>
+                        ${!n.read ? '<div class="w-2 h-2 rounded-full bg-indigo-500 shrink-0 mt-1.5"></div>' : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        if (notificationBtn) {
+            notificationBtn.addEventListener('click', toggleNotifications);
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', (e) => {
+            if (notificationsOpen && !notificationBtn.contains(e.target) && !notificationPanel.contains(e.target)) {
+                toggleNotifications();
+            }
+        });
+
+        // Prevent panel clicks from bubbling
+        if (notificationPanel) {
+            notificationPanel.addEventListener('click', (e) => e.stopPropagation());
+        }
+        
+        // --- Profile Dropdown Logic ---
+        const profileDropdownBtn = document.getElementById('profileDropdownBtn');
+        const profileDropdownPanel = document.getElementById('profileDropdownPanel');
+        
+        let profileDropdownOpen = false;
+        
+        function toggleProfileDropdown(e) {
+            if (e) {
+                e.stopPropagation();
+                e.preventDefault();
+            }
+            profileDropdownOpen = !profileDropdownOpen;
+            
+            if (profileDropdownBtn) {
+                profileDropdownBtn.setAttribute('aria-expanded', profileDropdownOpen.toString());
+            }
+            
+            if (profileDropdownOpen) {
+                // Close notification dropdown if open
+                if (notificationsOpen) {
+                    notificationsOpen = false;
+                    notificationPanel.classList.add('hidden');
+                    notificationPanel.classList.remove('opacity-100', 'scale-100');
+                    notificationPanel.classList.add('opacity-0', 'scale-95');
+                }
+                
+                profileDropdownPanel.classList.remove('hidden');
+                // Small delay to allow display:block to apply before animating opacity
+                setTimeout(() => {
+                    profileDropdownPanel.classList.remove('opacity-0', 'scale-95');
+                    profileDropdownPanel.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            } else {
+                profileDropdownPanel.classList.remove('opacity-100', 'scale-100');
+                profileDropdownPanel.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    profileDropdownPanel.classList.add('hidden');
+                }, 200); // Wait for transition
+            }
+        }
+        
+        if (profileDropdownBtn) {
+            profileDropdownBtn.addEventListener('click', toggleProfileDropdown);
+        }
+        
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            if (profileDropdownOpen && !profileDropdownBtn.contains(e.target) && !profileDropdownPanel.contains(e.target)) {
+                toggleProfileDropdown();
+            }
+        });
+        
+        if (profileDropdownPanel) {
+            profileDropdownPanel.addEventListener('click', (e) => e.stopPropagation());
+        }
+        
+        // Check for notifications on page load
+        // Simulated initial load
+        setTimeout(() => {
+            const initialBadge = document.getElementById('unreadBadge');
+            if (initialBadge) {
+                // Mock having 1 unread notification
+                initialBadge.textContent = '1';
+                initialBadge.classList.remove('hidden');
+            }
+        }, 1000);
+    });
+</script>

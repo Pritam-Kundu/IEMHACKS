@@ -43,7 +43,7 @@
         <div class="p-6 flex items-center justify-between">
             <a href="/student/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
                 <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-blue-600 ml-1 font-semibold uppercase tracking-normal">Student</span></span>
+                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase font-sans tracking-normal">Student</span></span>
             </a>
             <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -131,19 +131,7 @@
                         </div>
                     </div>
 
-                    <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                        <!-- Notification indicator (example active state) -->
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    
-                    <a href="/student/settings" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
-                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
-                        </div>
-                    </a>
+                    <%- include('../partials/student-header-controls') %>
                 </div>
             </div>
         </header>
@@ -153,14 +141,48 @@
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
             <h2 class="text-2xl font-bold text-slate-800 mb-6">My Achievements</h2>
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-                <div class="flex justify-center gap-4 mb-6">
-                    <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-medal"></i></div>
-                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-star"></i></div>
-                    <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-trophy"></i></div>
-                </div>
-                <h3 class="text-xl font-bold text-slate-700 mb-2">Achievement System Updating</h3>
-                <p class="text-slate-500 max-w-md mx-auto">We are adding hundreds of new badges to unlock based on your learning activity. Check back soon!</p>
+            
+            <% 
+                const earnedBadgeIds = (earnedBadges || []).map(eb => eb.badge ? eb.badge._id.toString() : '');
+            %>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                <% if (allBadges && allBadges.length > 0) { %>
+                    <% allBadges.forEach(badge => { %>
+                        <% const isEarned = earnedBadgeIds.includes(badge._id.toString()); %>
+                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col items-center text-center transition hover:shadow-md <%= isEarned ? '' : 'opacity-70 grayscale hover:grayscale-0' %>">
+                            <div class="w-20 h-20 <%= isEarned ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-100 text-slate-400' %> rounded-full flex items-center justify-center text-4xl mb-4 shadow-sm relative">
+                                <i class="<%= badge.icon || 'fa-solid fa-medal' %>"></i>
+                                <% if (isEarned) { %>
+                                    <div class="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white flex items-center justify-center text-white text-xs">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <h4 class="font-bold text-slate-800 mb-1 leading-tight"><%= badge.name %></h4>
+                            <p class="text-xs text-slate-500"><%= badge.description %></p>
+                            <% if (isEarned) { %>
+                                <% 
+                                    const earnedRecord = earnedBadges.find(eb => eb.badge && eb.badge._id.toString() === badge._id.toString());
+                                    const earnedDate = earnedRecord ? new Date(earnedRecord.earnedAt).toLocaleDateString() : '';
+                                %>
+                                <p class="text-[10px] font-medium text-indigo-600 mt-3 bg-indigo-50 px-2 py-1 rounded w-full">Earned: <%= earnedDate %></p>
+                            <% } else { %>
+                                <p class="text-[10px] font-medium text-slate-400 mt-3 bg-slate-50 px-2 py-1 rounded w-full border border-slate-100"><%= badge.criteriaType %> criteria</p>
+                            <% } %>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-span-full bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+                        <div class="flex justify-center gap-4 mb-6">
+                            <div class="w-16 h-16 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-medal"></i></div>
+                            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-star"></i></div>
+                            <div class="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center text-3xl shadow-sm"><i class="fa-solid fa-trophy"></i></div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-700 mb-2">No Badges Available</h3>
+                        <p class="text-slate-500 max-w-md mx-auto">There are no badges currently configured in the system. Check back soon!</p>
+                    </div>
+                <% } %>
             </div>
         </div>
         
@@ -204,5 +226,6 @@
         });
     </script>
     <%- include('../partials/language-modal') %>
+    <%- include('../partials/student-header-scripts') %>
 </body>
 </html>

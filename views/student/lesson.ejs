@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .lesson-content img { max-width: 100%; height: auto; border-radius: 0.5rem; margin-top: 1rem; margin-bottom: 1rem; }
+        .lesson-content h2 { font-size: 1.5rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; }
+        .lesson-content p { margin-bottom: 1rem; line-height: 1.6; }
+        .lesson-content ul { list-style-type: disc; margin-left: 1.5rem; margin-bottom: 1rem; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-slate-800 bg-slate-50">
+
+    <!-- Top Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-10 flex-shrink-0">
+        <div class="flex items-center justify-between px-6 py-4">
+            <div class="flex items-center gap-4">
+                <a href="/student/courses/<%= lesson.course._id %>" class="text-slate-500 hover:text-indigo-600 transition-colors">
+                    <i class="fa-solid fa-arrow-left text-lg"></i>
+                </a>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800"><%= lesson.course.title %></h1>
+                    <p class="text-xs text-slate-500">Lesson <%= lesson.order %>: <%= lesson.title %></p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button id="completeBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Complete & Continue
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- Sidebar: Lesson List -->
+        <aside class="w-80 bg-white border-r border-slate-200 flex flex-col hidden md:flex">
+            <div class="p-4 border-b border-slate-200 bg-slate-50">
+                <h3 class="font-bold text-slate-800">Course Content</h3>
+                <div class="mt-2 w-full bg-slate-200 rounded-full h-2">
+                    <% const progressPct = Math.round((completedLessonIds.length / courseLessons.length) * 100) || 0; %>
+                    <div class="bg-indigo-600 h-2 rounded-full" style="width: <%= progressPct %>%"></div>
+                </div>
+                <p class="text-xs text-slate-500 mt-1"><%= progressPct %>% Complete</p>
+            </div>
+            <div class="flex-1 overflow-y-auto p-4 space-y-2">
+                <% courseLessons.forEach((l, index) => { %>
+                    <% const isCurrent = l._id.toString() === lesson._id.toString(); %>
+                    <% const isCompleted = completedLessonIds.includes(l._id.toString()); %>
+                    <a href="/student/lessons/<%= l._id %>" class="block p-3 rounded-lg border transition-colors <%= isCurrent ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'border-transparent hover:bg-slate-100 text-slate-600' %>">
+                        <div class="flex items-center gap-3">
+                            <% if (isCompleted) { %>
+                                <i class="fa-solid fa-circle-check text-green-500 text-lg"></i>
+                            <% } else if (isCurrent) { %>
+                                <i class="fa-regular fa-circle-play text-indigo-600 text-lg"></i>
+                            <% } else { %>
+                                <i class="fa-regular fa-circle text-slate-400 text-lg"></i>
+                            <% } %>
+                            <div>
+                                <p class="font-medium text-sm <%= isCurrent ? 'font-bold' : '' %>"><%= index + 1 %>. <%= l.title %></p>
+                                <p class="text-xs opacity-75"><i class="fa-regular fa-clock"></i> <%= l.durationMinutes %>m</p>
+                            </div>
+                        </div>
+                    </a>
+                <% }) %>
+            </div>
+        </aside>
+
+        <!-- Main Content: Video & Text -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-8">
+            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                
+                <% if (lesson.videoUrl && lesson.videoUrl.trim() !== '') { %>
+                    <!-- Video Player Placeholder -->
+                    <div class="aspect-video bg-slate-900 w-full relative">
+                        <iframe src="<%= lesson.videoUrl.replace('watch?v=', 'embed/') %>" class="absolute inset-0 w-full h-full" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                <% } %>
+
+                <div class="p-6 md:p-8">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-2"><%= lesson.title %></h2>
+                    <p class="text-slate-500 mb-8"><%= lesson.description %></p>
+                    
+                    <div class="lesson-content text-slate-700">
+                        <%- lesson.content %>
+                    </div>
+                    
+                    <hr class="my-8 border-slate-200">
+                    
+                    <div class="flex justify-between items-center">
+                        <% if (prevLesson) { %>
+                            <a href="/student/lessons/<%= prevLesson._id %>" class="text-indigo-600 hover:text-indigo-800 font-medium px-4 py-2 rounded border border-indigo-200 hover:bg-indigo-50 transition">
+                                <i class="fa-solid fa-arrow-left mr-2"></i> Previous
+                            </a>
+                        <% } else { %>
+                            <div></div>
+                        <% } %>
+                        
+                        <% if (nextLesson) { %>
+                            <button id="bottomCompleteBtn" class="bg-indigo-600 text-white font-medium px-6 py-2 rounded shadow hover:bg-indigo-700 transition">
+                                Next Lesson <i class="fa-solid fa-arrow-right ml-2"></i>
+                            </button>
+                        <% } else { %>
+                            <button id="bottomCompleteBtn" class="bg-green-600 text-white font-medium px-6 py-2 rounded shadow hover:bg-green-700 transition">
+                                Finish Course <i class="fa-solid fa-flag-checkered ml-2"></i>
+                            </button>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const lessonId = '<%= lesson._id %>';
+            const nextLessonUrl = '<%= nextLesson ? `/student/lessons/${nextLesson._id}` : `/student/courses/${lesson.course._id}` %>';
+            
+            const handleComplete = () => {
+                fetch(`/student/lessons/${lessonId}/complete`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        window.location.href = nextLessonUrl;
+                    }
+                })
+                .catch(err => console.error(err));
+            };
+            
+            const topBtn = document.getElementById('completeBtn');
+            const bottomBtn = document.getElementById('bottomCompleteBtn');
+            
+            if (topBtn) topBtn.addEventListener('click', handleComplete);
+            if (bottomBtn) bottomBtn.addEventListener('click', handleComplete);
+        });
+    </script>
+    <%- include('../partials/student-header-scripts') %>
+</body>
+</html>

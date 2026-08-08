@@ -163,25 +163,7 @@
                         </div>
                     </div>
 
-                    <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                        <!-- Notification indicator (example active state) -->
-                        <span
-                            class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-
-                    <a href="/student/settings" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile"
-                            class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800">
-                                <%= user.name %>
-                            </p>
-                            <p class="text-xs text-slate-500 capitalize">
-                                <%= user.role %>
-                            </p>
-                        </div>
-                    </a>
+                    <%- include('../partials/student-header-controls') %>
                 </div>
             </div>
         </header>
@@ -223,7 +205,7 @@
                             <div
                                 class="bg-white/20 backdrop-blur-md rounded-xl p-5 border border-white/30 min-w-[280px] text-center">
                                 <p class="text-sm text-indigo-100 font-medium mb-2">Ready to start learning?</p>
-                                <a href="/student/courses"
+                                <a href="/student/explore"
                                     class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-lg w-full hover:bg-indigo-50 transition-colors shadow-sm">
                                     <span>Explore Courses</span>
                                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -364,7 +346,7 @@
                                     </div>
                                     <h4 class="text-slate-800 font-bold mb-1">No Courses Yet</h4>
                                     <p class="text-slate-500 text-sm mb-5">You haven't enrolled in any courses yet.</p>
-                                    <a href="/student/courses"
+                                    <a href="/student/explore"
                                         class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm">Browse
                                         Courses</a>
                                 </div>
@@ -452,7 +434,7 @@
                                     class="text-center py-5 bg-slate-50 rounded-lg border border-slate-100 border-dashed">
                                     <div class="text-slate-300 text-3xl mb-2"><i class="fa-solid fa-medal"></i></div>
                                     <p class="text-sm text-slate-500 mb-3">Your first achievement is waiting!</p>
-                                    <a href="/student/courses"
+                                    <a href="/student/explore"
                                         class="text-xs font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-md hover:bg-slate-50 text-slate-700 shadow-sm transition-colors">Start
                                         Learning</a>
                                 </div>

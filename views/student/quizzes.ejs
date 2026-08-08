@@ -43,7 +43,7 @@
         <div class="p-6 flex items-center justify-between">
             <a href="/student/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
                 <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-blue-600 ml-1 font-semibold uppercase tracking-normal">Student</span></span>
+                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase font-sans tracking-normal">Student</span></span>
             </a>
             <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -135,19 +135,7 @@
                         </div>
                     </div>
 
-                    <button class="relative text-slate-500 hover:text-indigo-600 transition-colors focus:outline-none">
-                        <i class="fa-regular fa-bell text-xl"></i>
-                        <!-- Notification indicator (example active state) -->
-                        <span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
-                    </button>
-                    
-                    <a href="/student/settings" class="flex items-center gap-3 cursor-pointer group">
-                        <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 group-hover:border-indigo-300 transition-colors">
-                        <div class="hidden md:block">
-                            <p class="text-sm font-semibold text-slate-800"><%= user.name %></p>
-                            <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
-                        </div>
-                    </a>
+                    <%- include('../partials/student-header-controls') %>
                 </div>
             </div>
         </header>
@@ -156,11 +144,34 @@
         <!-- Dashboard Content -->
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6">My Quizzes</h2>
+            <h2 class="text-2xl font-bold text-slate-800 mb-6">Quizzes</h2>
             
+            <div class="mb-8">
+                <h3 class="text-xl font-bold text-slate-800 mb-4">Available Quizzes</h3>
+                <% if (availableQuizzes && availableQuizzes.length > 0) { %>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <% availableQuizzes.forEach(quiz => { %>
+                            <div class="bg-white border border-slate-200 rounded-lg p-6 shadow-sm hover:shadow-md transition">
+                                <h4 class="font-bold text-lg text-slate-800 mb-1"><%= quiz.title %></h4>
+                                <p class="text-sm text-slate-500 mb-4"><%= quiz.course ? quiz.course.title : '' %></p>
+                                <div class="flex justify-between items-center mb-4 text-sm text-slate-600">
+                                    <span><i class="fa-solid fa-check-double text-green-500 mr-1"></i> Pass: <%= quiz.passingScore %>%</span>
+                                    <span><i class="fa-regular fa-clock text-indigo-500 mr-1"></i> <%= quiz.timeLimitMinutes > 0 ? quiz.timeLimitMinutes + 'm' : 'No limit' %></span>
+                                </div>
+                                <a href="/student/quizzes/<%= quiz._id %>" class="block w-full text-center bg-indigo-50 text-indigo-700 py-2 rounded font-medium hover:bg-indigo-100 transition-colors">View Details</a>
+                            </div>
+                        <% }) %>
+                    </div>
+                <% } else { %>
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+                        <p class="text-slate-500">No quizzes available for your enrolled courses yet.</p>
+                    </div>
+                <% } %>
+            </div>
+
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
                 <h3 class="text-lg font-semibold text-slate-800 mb-4">Recent Quiz Attempts</h3>
-                <% if (quizAttempts && quizAttempts.length > 0) { %>
+                <% if (recentAttempts && recentAttempts.length > 0) { %>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
@@ -172,7 +183,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% quizAttempts.forEach(attempt => { %>
+                                <% recentAttempts.forEach(attempt => { %>
                                     <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                         <td class="py-3 px-4">
                                             <p class="font-medium text-slate-800"><%= attempt.quiz ? attempt.quiz.title : 'Deleted Quiz' %></p>
@@ -182,12 +193,14 @@
                                             <%= new Date(attempt.createdAt).toLocaleDateString() %>
                                         </td>
                                         <td class="py-3 px-4">
-                                            <span class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold <%= attempt.score >= 80 ? 'bg-emerald-100 text-emerald-700' : attempt.score >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700' %>">
+                                            <span class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold <%= attempt.score >= (attempt.quiz ? attempt.quiz.passingScore : 60) ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700' %>">
                                                 <%= attempt.score %>%
                                             </span>
                                         </td>
                                         <td class="py-3 px-4">
-                                            <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Review</button>
+                                            <% if (attempt.quiz) { %>
+                                                <a href="/student/quizzes/<%= attempt.quiz._id %>/result?attemptId=<%= attempt._id %>" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Review</a>
+                                            <% } %>
                                         </td>
                                     </tr>
                                 <% }) %>
@@ -246,5 +259,6 @@
         });
     </script>
     <%- include('../partials/language-modal') %>
+    <%- include('../partials/student-header-scripts') %>
 </body>
 </html>
