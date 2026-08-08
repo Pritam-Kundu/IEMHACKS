@@ -68,6 +68,7 @@
                 <!-- Alert Box -->
                 <div id="alertBox" class="hidden mb-6 p-4 rounded-lg text-sm border font-medium" role="alert"></div>
 
+                <div id="step1">
                 <form id="signupForm" class="space-y-4" novalidate>
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
@@ -175,6 +176,53 @@
                         </button>
                     </div>
                 </div>
+                </div>
+
+                <div id="step2" class="hidden space-y-4">
+                    <div class="text-center">
+                        <i class="fas fa-envelope-open-text text-4xl text-indigo-500 mb-4"></i>
+                        <h3 class="text-xl font-bold text-gray-900">Verify your email</h3>
+                        <p class="text-sm text-gray-500 mt-2">We've sent a 6-digit verification code to <span id="displayEmail" class="font-medium text-gray-900"></span>.</p>
+                    </div>
+                    <form id="otpForm" class="space-y-4">
+                        <div>
+                            <label for="otp" class="block text-sm font-medium text-gray-700 mb-1">Verification Code</label>
+                            <input type="text" id="otp" name="otp" required maxlength="6" pattern="[0-9]{6}"
+                                class="w-full px-3 py-3 text-center text-2xl tracking-widest border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+                                placeholder="------">
+                        </div>
+                        <button type="submit" id="otpSubmitBtn" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-md text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-70 disabled:cursor-not-allowed">
+                            <span id="otpBtnText">Verify Code</span>
+                            <i id="otpBtnSpinner" class="fas fa-circle-notch fa-spin hidden ml-2 mt-0.5"></i>
+                        </button>
+                        <button type="button" id="backToSignupBtn" class="w-full mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium text-center">
+                            Back to sign up
+                        </button>
+                    </form>
+                </div>
+
+                <div class="mt-6">
+                    <div class="relative">
+                        <div class="absolute inset-0 flex items-center">
+                            <div class="w-full border-t border-gray-200"></div>
+                        </div>
+                        <div class="relative flex justify-center text-sm">
+                            <span class="px-2 bg-white text-gray-500">Or sign up with</span>
+                        </div>
+                    </div>
+
+                    <div class="mt-6">
+                        <button type="button" id="googleSignupBtn" class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                            </svg>
+                            Continue with Google
+                        </button>
+                    </div>
+                </div>
 
                 <p class="mt-8 text-center text-sm text-gray-600">
                     Already have an account? 
@@ -226,6 +274,18 @@
         const btnText = document.getElementById('btnText');
         const btnSpinner = document.getElementById('btnSpinner');
         const alertBox = document.getElementById('alertBox');
+        
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const displayEmail = document.getElementById('displayEmail');
+        const otpForm = document.getElementById('otpForm');
+        const otpEl = document.getElementById('otp');
+        const otpSubmitBtn = document.getElementById('otpSubmitBtn');
+        const otpBtnText = document.getElementById('otpBtnText');
+        const otpBtnSpinner = document.getElementById('otpBtnSpinner');
+        const backToSignupBtn = document.getElementById('backToSignupBtn');
+        
+        let registeredEmail = '';
 
         // Alert Utility
         const showAlert = (message, type = 'error') => {
@@ -243,13 +303,25 @@
             if (isLoading) {
                 submitBtn.disabled = true;
                 googleBtn.disabled = true;
-                btnText.textContent = 'Creating Account...';
+                btnText.textContent = 'Please wait...';
                 btnSpinner.classList.remove('hidden');
             } else {
                 submitBtn.disabled = false;
                 googleBtn.disabled = false;
                 btnText.textContent = 'Create Account';
                 btnSpinner.classList.add('hidden');
+            }
+        };
+
+        const setOtpLoading = (isLoading) => {
+            if (isLoading) {
+                otpSubmitBtn.disabled = true;
+                otpBtnText.textContent = 'Verifying...';
+                otpBtnSpinner.classList.remove('hidden');
+            } else {
+                otpSubmitBtn.disabled = false;
+                otpBtnText.textContent = 'Verify Code';
+                otpBtnSpinner.classList.add('hidden');
             }
         };
 
@@ -341,14 +413,64 @@
                 const data = await response.json();
                 
                 if (response.ok && data.success) {
-                    window.location.href = data.redirect || '/';
+                    if (data.requireOtp) {
+                        registeredEmail = email;
+                        displayEmail.textContent = email;
+                        step1.classList.add('hidden');
+                        step2.classList.remove('hidden');
+                        showAlert(data.message, 'success');
+                    } else {
+                        window.location.href = data.redirect || '/';
+                    }
                 } else {
                     throw new Error(data.message || 'Failed to create account.');
                 }
             } catch (error) {
                 console.error(error);
-                setLoading(false);
                 showAlert(error.message || 'An unexpected error occurred. Please try again.');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // Back to signup
+        backToSignupBtn.addEventListener('click', () => {
+            step2.classList.add('hidden');
+            step1.classList.remove('hidden');
+            alertBox.classList.add('hidden');
+        });
+
+        // OTP Verification Submission
+        otpForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            alertBox.classList.add('hidden');
+            
+            const otp = otpEl.value.trim();
+            if (!otp || otp.length !== 6) {
+                showAlert('Please enter a valid 6-digit code.');
+                return;
+            }
+
+            setOtpLoading(true);
+
+            try {
+                const response = await fetch('/api/auth/verify-signup-otp', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: registeredEmail, otp })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    window.location.href = data.redirect || '/';
+                } else {
+                    throw new Error(data.message || 'Failed to verify OTP.');
+                }
+            } catch (error) {
+                console.error(error);
+                showAlert(error.message || 'Verification failed. Please try again.');
+                setOtpLoading(false);
             }
         });
 

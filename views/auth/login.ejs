@@ -294,26 +294,12 @@ googleLoginBtn.addEventListener('click', async () => {
 });
 
 // Forgot Password
-forgotPasswordBtn.addEventListener('click', async () => {
+forgotPasswordBtn.addEventListener('click', () => {
     const email = emailInput.value.trim();
-    if (!email) {
-        showAlert('Please enter your email address first to reset your password.');
-        emailInput.focus();
-        return;
-    }
-    
-    forgotPasswordBtn.disabled = true;
-    forgotPasswordBtn.textContent = 'Sending...';
-    
-    try {
-        await sendPasswordResetEmail(auth, email);
-        showAlert(`Password reset email sent to ${email}. Check your inbox.`, 'success');
-    } catch (error) {
-        console.error(error);
-        showAlert(getAuthErrorMessage(error));
-    } finally {
-        forgotPasswordBtn.disabled = false;
-        forgotPasswordBtn.textContent = 'Forgot Password?';
+    if (email) {
+        window.location.href = `/forgot-password?email=${encodeURIComponent(email)}`;
+    } else {
+        window.location.href = '/forgot-password';
     }
 });
     </script>

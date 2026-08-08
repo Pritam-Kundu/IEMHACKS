@@ -53,6 +53,12 @@ const userSchema = new mongoose.Schema({
         enum: ['pending', 'active', 'rejected'],
         default: 'active',
         index: true
+    },
+    resetPasswordCode: {
+        type: String
+    },
+    resetPasswordExpires: {
+        type: Date
     }
 }, { 
     timestamps: true 

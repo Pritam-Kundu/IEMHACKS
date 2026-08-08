@@ -3,6 +3,8 @@ const User = require('../models/User');
 const StudentProfile = require('../models/StudentProfile');
 const TeacherProfile = require('../models/TeacherProfile');
 const ParentProfile = require('../models/ParentProfile');
+const Otp = require('../models/Otp');
+const { sendOtpEmail } = require('../utils/email');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
@@ -74,7 +76,61 @@ const localSignup = async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        const status = role === 'teacher' ? 'pending' : 'active';
+        // Generate 6-digit OTP
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Save OTP temporarily
+        await Otp.findOneAndDelete({ email: normalizedEmail }); // Delete any existing OTP for this email
+        const newOtp = new Otp({
+            name,
+            email: normalizedEmail,
+            password: hashedPassword,
+            role,
+            otp: otpCode
+        });
+        await newOtp.save();
+
+        // Send OTP via email
+        const emailSent = await sendOtpEmail(normalizedEmail, otpCode);
+        if (!emailSent) {
+            return res.status(500).json({ success: false, message: 'Failed to send OTP email. Please try again later.' });
+        }
+
+        return res.json({
+            success: true,
+            requireOtp: true,
+            message: 'OTP sent to your email. Please verify to complete registration.'
+        });
+
+    } catch (error) {
+        console.error('Signup error:', error);
+        return res.status(500).json({ success: false, message: 'An unexpected error occurred during signup.' });
+    }
+};
+
+const verifySignupOtp = async (req, res) => {
+    const { email, otp } = req.body;
+
+    try {
+        if (!email || !otp) {
+            return res.status(400).json({ success: false, message: 'Email and OTP are required.' });
+        }
+
+        const normalizedEmail = email.trim().toLowerCase();
+
+        const otpRecord = await Otp.findOne({ email: normalizedEmail, otp });
+
+        if (!otpRecord) {
+            return res.status(400).json({ success: false, message: 'Invalid or expired OTP.' });
+        }
+
+        // OTP is valid, proceed with user creation
+        const existingUser = await User.findOne({ email: normalizedEmail });
+        if (existingUser) {
+            return res.status(409).json({ success: false, message: 'An account with this email already exists.' });
+        }
+
+        const status = otpRecord.role === 'teacher' ? 'pending' : 'active';
 
         const session = await mongoose.startSession();
         let user;
@@ -83,10 +139,10 @@ const localSignup = async (req, res) => {
             session.startTransaction();
 
             const newUser = new User({
-                name,
-                email: normalizedEmail,
-                password: hashedPassword,
-                role,
+                name: otpRecord.name,
+                email: otpRecord.email,
+                password: otpRecord.password,
+                role: otpRecord.role,
                 status,
                 profilePicture: '/images/default-avatar.png'
             });
@@ -94,13 +150,16 @@ const localSignup = async (req, res) => {
             user = await newUser.save({ session });
 
             // Create profile
-            if (role === 'student' || role === 'child') {
+            if (otpRecord.role === 'student' || otpRecord.role === 'child') {
                 await new StudentProfile({ user: user._id }).save({ session });
-            } else if (role === 'teacher') {
+            } else if (otpRecord.role === 'teacher') {
                 await new TeacherProfile({ user: user._id }).save({ session });
-            } else if (role === 'parent') {
+            } else if (otpRecord.role === 'parent') {
                 await new ParentProfile({ user: user._id }).save({ session });
             }
+
+            // Clean up OTP
+            await Otp.deleteOne({ _id: otpRecord._id }, { session });
 
             await session.commitTransaction();
             session.endSession();
@@ -119,8 +178,8 @@ const localSignup = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Signup error:', error);
-        return res.status(500).json({ success: false, message: 'An unexpected error occurred during signup.' });
+        console.error('Verify OTP error:', error);
+        return res.status(500).json({ success: false, message: 'An unexpected error occurred during OTP verification.' });
     }
 };
 
@@ -271,6 +330,7 @@ module.exports = {
     renderLogin,
     renderSignup,
     localSignup,
+    verifySignupOtp,
     localLogin,
     googleLogin,
     logout
