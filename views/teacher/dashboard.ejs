@@ -115,14 +115,14 @@
             <a href="/teacher/settings"
                 class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-gear w-5 text-center"></i>
-                <span>Settings</span>
+                <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
             </a>
             <!-- Using existing logout flow -->
             <form action="/logout" method="POST" class="w-full mt-1">
                 <button type="submit"
                     class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
-                    <span>Logout</span>
+                    <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
                 </button>
             </form>
         </div>
@@ -143,13 +143,13 @@
 
                     <!-- Global Links -->
                     <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
-                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Home</a>
+                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
                         <a href="/#features"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Features</a>
+                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
                         <a href="/#how-it-works"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">How it Works</a>
+                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
                         <a href="/#about"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">About</a>
+                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
                     </div>
                 </div>
 

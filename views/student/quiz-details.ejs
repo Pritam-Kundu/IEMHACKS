@@ -35,35 +35,35 @@
         <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
             <a href="/student/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-house w-5 text-center"></i>
-                <span>Dashboard</span>
+                <span><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span>
             </a>
             <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-book-open w-5 text-center"></i>
-                <span>My Courses</span>
+                <span><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span>
             </a>
             <a href="/student/quizzes" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
                 <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
-                <span>Quizzes</span>
+                <span><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span>
             </a>
             <a href="/student/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-robot w-5 text-center"></i>
-                <span>AI Tutor</span>
+                <span><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span>
             </a>
             <a href="/student/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                <span>Progress</span>
+                <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
             </a>
             <a href="/student/leaderboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-trophy w-5 text-center"></i>
-                <span>Leaderboard</span>
+                <span><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span>
             </a>
             <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-medal w-5 text-center"></i>
-                <span>Badges</span>
+                <span><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span>
             </a>
             <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-download w-5 text-center"></i>
-                <span>Offline Videos</span>
+                <span><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span>
             </a>
         </nav>
     </aside>

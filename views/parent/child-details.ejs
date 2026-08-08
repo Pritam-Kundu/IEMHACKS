@@ -70,12 +70,12 @@
         <div class="p-4 border-t border-slate-200">
             <a href="/parent/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-gear w-5 text-center"></i>
-                <span>Settings</span>
+                <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
             </a>
             <form action="/logout" method="POST" class="w-full mt-1">
                 <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
-                    <span>Logout</span>
+                    <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
                 </button>
             </form>
         </div>
@@ -208,7 +208,7 @@
                     <h3 class="text-lg font-bold text-slate-800 mb-4">Overview</h3>
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
-                            <p class="text-xs text-slate-500 font-medium uppercase tracking-wider mb-1">Courses Enrolled</p>
+                            <p class="text-xs text-slate-500 font-medium uppercase tracking-wider mb-1"><%= typeof t === 'function' ? t('student.courses') : 'Courses Enrolled' %></p>
                             <p class="text-2xl font-bold text-slate-800"><%= stats.courses %></p>
                         </div>
                         <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">

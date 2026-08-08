@@ -72,38 +72,38 @@
             <a href="/student/dashboard"
                 class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
                 <i class="fa-solid fa-house w-5 text-center"></i>
-                <span>Dashboard</span>
+                <span><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span>
             </a>
             <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-book-open w-5 text-center"></i>
-                <span>My Courses</span>
+                <span><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span>
             </a>
             <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
-                <span>Quizzes</span>
+                <span><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span>
             </a>
             <a href="/student/ai-tutor"
                 class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-robot w-5 text-center"></i>
-                <span>AI Tutor</span>
+                <span><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span>
             </a>
             <a href="/student/progress"
                 class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                <span>Progress</span>
+                <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
             </a>
             <a href="/student/leaderboard"
                 class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-trophy w-5 text-center"></i>
-                <span>Leaderboard</span>
+                <span><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span>
             </a>
             <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-medal w-5 text-center"></i>
-                <span>Badges</span>
+                <span><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span>
             </a>
             <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-download w-5 text-center"></i>
-                <span>Offline Videos</span>
+                <span><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span>
             </a>
         </nav>
 
@@ -111,14 +111,14 @@
             <a href="/student/settings"
                 class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-gear w-5 text-center"></i>
-                <span>Settings</span>
+                <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
             </a>
             <!-- Using existing logout flow -->
             <form action="/logout" method="POST" class="w-full mt-1">
                 <button type="submit"
                     class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
-                    <span>Logout</span>
+                    <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
                 </button>
             </form>
         </div>
@@ -139,13 +139,13 @@
 
                     <!-- Global Links -->
                     <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
-                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Home</a>
+                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
                         <a href="/#features"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Features</a>
+                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
                         <a href="/#how-it-works"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">How it Works</a>
+                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
                         <a href="/#about"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">About</a>
+                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
                     </div>
                 </div>
 
@@ -197,7 +197,7 @@
                             </p>
                             <a href="/student/lesson"
                                 class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-lg w-full hover:bg-indigo-50 transition-colors shadow-sm">
-                                <span>Continue Learning</span>
+                                <span><%= typeof t === 'function' ? t('student.continueLearning') : 'Continue Learning' %></span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
@@ -207,7 +207,7 @@
                                 <p class="text-sm text-indigo-100 font-medium mb-2">Ready to start learning?</p>
                                 <a href="/student/explore"
                                     class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-lg w-full hover:bg-indigo-50 transition-colors shadow-sm">
-                                    <span>Explore Courses</span>
+                                    <span><%= typeof t === 'function' ? t('student.exploreCourses') : 'Explore Courses' %></span>
                                     <i class="fa-solid fa-magnifying-glass"></i>
                                 </a>
                             </div>
@@ -224,7 +224,7 @@
                         <i class="fa-solid fa-book-open"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500 font-medium">Courses Enrolled</p>
+                        <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.courses') : 'Courses Enrolled' %></p>
                         <p class="text-2xl font-bold text-slate-800">
                             <%= coursesEnrolled || 0 %>
                         </p>
@@ -238,7 +238,7 @@
                         <i class="fa-solid fa-check-double"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500 font-medium">Lessons Completed</p>
+                        <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.completed') : 'Lessons Completed' %></p>
                         <p class="text-2xl font-bold text-slate-800">
                             <%= lessonsCompleted || 0 %>
                         </p>
@@ -252,9 +252,9 @@
                         <i class="fa-solid fa-fire"></i>
                     </div>
                     <div>
-                        <p class="text-sm text-slate-500 font-medium">Current Streak</p>
+                        <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.currentStreak') : 'Current Streak' %></p>
                         <p class="text-2xl font-bold text-slate-800">
-                            <%= currentStreak || 0 %> <span class="text-base font-normal text-slate-500">Days</span>
+                            <%= currentStreak || 0 %> <span class="text-base font-normal text-slate-500"><%= typeof t === 'function' ? t('student.days') : 'Days' %></span>
                         </p>
                     </div>
                 </div>
@@ -322,7 +322,7 @@
                                                 </div>
                                                 <div
                                                     class="flex justify-between items-center text-xs text-slate-500 font-medium mb-4">
-                                                    <span>Progress</span>
+                                                    <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
                                                     <span>
                                                         <%= curProgress %>%
                                                     </span>
@@ -433,7 +433,7 @@
                                 <div
                                     class="text-center py-5 bg-slate-50 rounded-lg border border-slate-100 border-dashed">
                                     <div class="text-slate-300 text-3xl mb-2"><i class="fa-solid fa-medal"></i></div>
-                                    <p class="text-sm text-slate-500 mb-3">Your first achievement is waiting!</p>
+                                    <p class="text-sm text-slate-500 mb-3"><%= typeof t === 'function' ? t('student.achievementsEarned') : 'Your first achievement is waiting!' %></p>
                                     <a href="/student/explore"
                                         class="text-xs font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-md hover:bg-slate-50 text-slate-700 shadow-sm transition-colors">Start
                                         Learning</a>

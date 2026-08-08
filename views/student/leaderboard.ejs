@@ -53,48 +53,48 @@
         <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
             <a href="/student/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-house w-5 text-center"></i>
-                <span>Dashboard</span>
+                <span><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span>
             </a>
             <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-book-open w-5 text-center"></i>
-                <span>My Courses</span>
+                <span><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span>
             </a>
             <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
-                <span>Quizzes</span>
+                <span><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span>
             </a>
             <a href="/student/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-robot w-5 text-center"></i>
-                <span>AI Tutor</span>
+                <span><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span>
             </a>
             <a href="/student/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                <span>Progress</span>
+                <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
             </a>
             <a href="/student/leaderboard" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
                 <i class="fa-solid fa-trophy w-5 text-center"></i>
-                <span>Leaderboard</span>
+                <span><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span>
             </a>
             <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-medal w-5 text-center"></i>
-                <span>Badges</span>
+                <span><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span>
             </a>
             <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-download w-5 text-center"></i>
-                <span>Offline Videos</span>
+                <span><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span>
             </a>
         </nav>
 
         <div class="p-4 border-t border-slate-200">
             <a href="/student/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
                 <i class="fa-solid fa-gear w-5 text-center"></i>
-                <span>Settings</span>
+                <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
             </a>
             <!-- Using existing logout flow -->
             <form action="/logout" method="POST" class="w-full mt-1">
                 <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
                     <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
-                    <span>Logout</span>
+                    <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
                 </button>
             </form>
         </div>
@@ -114,10 +114,10 @@
                     
                     <!-- Global Links -->
                     <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
-                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Home</a>
-                        <a href="/#features" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Features</a>
-                        <a href="/#how-it-works" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">How it Works</a>
-                        <a href="/#about" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">About</a>
+                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
+                        <a href="/#features" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
+                        <a href="/#how-it-works" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
+                        <a href="/#about" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
                     </div>
                 </div>
                 
