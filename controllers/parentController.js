@@ -7,8 +7,6 @@ const QuizAttempt = require('../models/QuizAttempt');
 const Submission = require('../models/Submission');
 const Assignment = require('../models/Assignment');
 const Lesson = require('../models/Lesson');
-const User = require('../models/User');
-const ParentProfile = require('../models/ParentProfile');
 const Achievement = require('../models/Achievement');
 const Notification = require('../models/Notification');
 
