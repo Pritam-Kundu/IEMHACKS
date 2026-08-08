@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Access Denied - EduSmart</title>
+    <title><%= t('auth.accessDeniedTitle') %></title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -17,15 +17,15 @@
             <i class="fa-solid fa-ban text-2xl"></i>
         </div>
         
-        <h1 class="text-2xl font-bold text-slate-800 mb-2">Access Denied</h1>
+        <h1 class="text-2xl font-bold text-slate-800 mb-2"><%= t('auth.accessDenied') %></h1>
         <p class="text-slate-600 mb-8"><%= message || 'You do not have permission to access this page.' %></p>
         
         <div class="flex flex-col gap-3">
             <button onclick="window.history.back()" class="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors">
-                Go Back
+                <%= t('auth.goBack') %>
             </button>
             <a href="/" class="w-full py-2.5 px-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium rounded-lg transition-colors">
-                Return to Home
+                <%= t('auth.returnToHome') %>
             </a>
         </div>
     </div>

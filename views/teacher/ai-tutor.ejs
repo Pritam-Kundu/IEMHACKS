@@ -265,9 +265,14 @@
                 let speakerHtml = '';
                 if (isAI && text) {
                     speakerHtml = `
-                        <button type="button" class="tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
-                            <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
-                        </button>
+                        <div class="tts-controls flex gap-2 mt-2">
+                            <button type="button" class="tts-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
+                                <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                            </button>
+                            <button type="button" class="tts-pause-btn hidden text-xs text-slate-500 hover:text-amber-600 flex items-center gap-1 transition-colors" aria-label="Pause reading" title="Pause reading">
+                                <i class="fa-solid fa-pause"></i> <span>Pause</span>
+                            </button>
+                        </div>
                     `;
                 }
 
@@ -354,9 +359,20 @@
 
             // Delegate TTS button clicks
             chatContainer.addEventListener('click', (e) => {
+                const pauseBtn = e.target.closest('.tts-pause-btn');
+                if (pauseBtn) {
+                    const isPaused = pauseBtn.classList.contains('paused');
+                    if (isPaused) {
+                        tts.resume();
+                    } else {
+                        tts.pause();
+                    }
+                    return;
+                }
+                
                 const btn = e.target.closest('.tts-btn');
                 if (btn) {
-                    const textContainer = btn.parentElement.querySelector('.text-slate-600');
+                    const textContainer = btn.parentElement.parentElement.querySelector('.text-slate-600');
                     if (textContainer) {
                         const isCurrentlyPlaying = btn.classList.contains('playing');
                         
@@ -487,9 +503,14 @@
                                     
                                     if (!aiBubble.querySelector('.tts-btn') && fullText.length > 0) {
                                         const speakerHtml = `
-                                            <button type="button" class="tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
-                                                <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
-                                            </button>
+                                            <div class="tts-controls flex gap-2 mt-2">
+                                                <button type="button" class="tts-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
+                                                    <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                                                </button>
+                                                <button type="button" class="tts-pause-btn hidden text-xs text-slate-500 hover:text-amber-600 flex items-center gap-1 transition-colors" aria-label="Pause reading" title="Pause reading">
+                                                    <i class="fa-solid fa-pause"></i> <span>Pause</span>
+                                                </button>
+                                            </div>
                                         `;
                                         textContainer.insertAdjacentHTML('afterend', speakerHtml);
                                     }

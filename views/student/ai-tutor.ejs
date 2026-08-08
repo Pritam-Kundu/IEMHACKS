@@ -257,9 +257,14 @@
                 let speakerHtml = '';
                 if (isAI && text) {
                     speakerHtml = `
-                        <button type="button" class="tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
-                            <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
-                        </button>
+                        <div class="tts-controls flex gap-2 mt-2">
+                            <button type="button" class="tts-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
+                                <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                            </button>
+                            <button type="button" class="tts-pause-btn hidden text-xs text-slate-500 hover:text-amber-600 flex items-center gap-1 transition-colors" aria-label="Pause reading" title="Pause reading">
+                                <i class="fa-solid fa-pause"></i> <span>Pause</span>
+                            </button>
+                        </div>
                     `;
                 }
 
@@ -348,11 +353,24 @@
 
             // Delegate TTS button clicks
             chatContainer.addEventListener('click', (e) => {
+                const pauseBtn = e.target.closest('.tts-pause-btn');
+                if (pauseBtn) {
+                    const isPaused = pauseBtn.classList.contains('paused');
+                    if (isPaused) {
+                        tts.resume();
+                    } else {
+                        tts.pause();
+                    }
+                    return;
+                }
+                
                 const btn = e.target.closest('.tts-btn');
                 if (btn) {
-                    const textContainer = btn.parentElement.querySelector('.text-slate-600');
+                    const textContainer = btn.parentElement.parentElement.querySelector('.text-slate-600');
                     if (textContainer) {
                         const isCurrentlyPlaying = btn.classList.contains('playing');
+                        const controlsContainer = btn.closest('.tts-controls');
+                        const currentPauseBtn = controlsContainer ? controlsContainer.querySelector('.tts-pause-btn') : null;
                         
                         // Reset all buttons
                         document.querySelectorAll('.tts-btn').forEach(b => {
@@ -363,6 +381,17 @@
                             const span = b.querySelector('span');
                             if(span) span.innerText = 'Listen';
                             b.setAttribute('aria-label', 'Read this response aloud');
+                        });
+                        document.querySelectorAll('.tts-pause-btn').forEach(pb => {
+                            pb.classList.add('hidden');
+                            pb.classList.remove('paused', 'text-indigo-600');
+                            pb.classList.add('text-slate-500');
+                            const pi = pb.querySelector('i');
+                            if (pi) pi.className = 'fa-solid fa-pause';
+                            const pspan = pb.querySelector('span');
+                            if (pspan) pspan.innerText = 'Pause';
+                            pb.setAttribute('aria-label', 'Pause reading');
+                            pb.setAttribute('title', 'Pause reading');
                         });
 
                         if (isCurrentlyPlaying) {
@@ -376,6 +405,10 @@
                             if(span) span.innerText = 'Stop';
                             btn.setAttribute('aria-label', 'Stop reading');
                             
+                            if (currentPauseBtn) {
+                                currentPauseBtn.classList.remove('hidden');
+                            }
+                            
                             tts.onStateChange = (state) => {
                                 if (state === 'STOPPED' || state === 'ERROR') {
                                     btn.classList.remove('playing', 'text-indigo-600');
@@ -385,6 +418,43 @@
                                     const bspan = btn.querySelector('span');
                                     if(bspan) bspan.innerText = 'Listen';
                                     btn.setAttribute('aria-label', 'Read this response aloud');
+                                    
+                                    if (currentPauseBtn) {
+                                        currentPauseBtn.classList.add('hidden');
+                                        currentPauseBtn.classList.remove('paused', 'text-indigo-600');
+                                        currentPauseBtn.classList.add('text-slate-500');
+                                        const pi = currentPauseBtn.querySelector('i');
+                                        if (pi) pi.className = 'fa-solid fa-pause';
+                                        const pspan = currentPauseBtn.querySelector('span');
+                                        if (pspan) pspan.innerText = 'Pause';
+                                    }
+                                } else if (state === 'PAUSED') {
+                                    if (currentPauseBtn) {
+                                        currentPauseBtn.classList.add('paused', 'text-indigo-600');
+                                        currentPauseBtn.classList.remove('text-slate-500');
+                                        const pi = currentPauseBtn.querySelector('i');
+                                        if (pi) pi.className = 'fa-solid fa-play';
+                                        const pspan = currentPauseBtn.querySelector('span');
+                                        if (pspan) pspan.innerText = 'Resume';
+                                        currentPauseBtn.setAttribute('aria-label', 'Resume reading');
+                                        currentPauseBtn.setAttribute('title', 'Resume reading');
+                                    }
+                                    const bi = btn.querySelector('i');
+                                    if (bi) bi.classList.remove('animate-pulse');
+                                } else if (state === 'PLAYING') {
+                                    if (currentPauseBtn) {
+                                        currentPauseBtn.classList.remove('hidden');
+                                        currentPauseBtn.classList.remove('paused', 'text-indigo-600');
+                                        currentPauseBtn.classList.add('text-slate-500');
+                                        const pi = currentPauseBtn.querySelector('i');
+                                        if (pi) pi.className = 'fa-solid fa-pause';
+                                        const pspan = currentPauseBtn.querySelector('span');
+                                        if (pspan) pspan.innerText = 'Pause';
+                                        currentPauseBtn.setAttribute('aria-label', 'Pause reading');
+                                        currentPauseBtn.setAttribute('title', 'Pause reading');
+                                    }
+                                    const bi = btn.querySelector('i');
+                                    if (bi) bi.classList.add('animate-pulse');
                                 }
                             };
                             
@@ -483,9 +553,14 @@
                                     // Make sure TTS button is added if it was a streamed response
                                     if (!aiBubble.querySelector('.tts-btn') && fullText.length > 0) {
                                         const speakerHtml = `
-                                            <button type="button" class="tts-btn mt-2 text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
-                                                <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
-                                            </button>
+                                            <div class="tts-controls flex gap-2 mt-2">
+                                                <button type="button" class="tts-btn text-xs text-slate-500 hover:text-indigo-600 flex items-center gap-1 transition-colors" aria-label="Read this response aloud" title="Read this response aloud">
+                                                    <i class="fa-solid fa-volume-up"></i> <span>Listen</span>
+                                                </button>
+                                                <button type="button" class="tts-pause-btn hidden text-xs text-slate-500 hover:text-amber-600 flex items-center gap-1 transition-colors" aria-label="Pause reading" title="Pause reading">
+                                                    <i class="fa-solid fa-pause"></i> <span>Pause</span>
+                                                </button>
+                                            </div>
                                         `;
                                         textContainer.insertAdjacentHTML('afterend', speakerHtml);
                                     }

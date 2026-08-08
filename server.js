@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
+const i18n = require('./middleware/i18n');
 const routes = require('./routes');
 
 // Initialize Express App
@@ -29,12 +30,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-// Global template variables
-app.use((req, res, next) => {
-    res.locals.language = res.locals.language || 'en';
-    res.locals.direction = res.locals.direction || 'ltr';
-    next();
-});
+// i18n Middleware
+app.use(i18n);
 
 // Static Files
 app.use(express.static(path.join(__dirname, 'public')));

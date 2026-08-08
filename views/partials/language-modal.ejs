@@ -3,7 +3,7 @@
     <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="languageModalContent">
         <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
             <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
-                <i class="fa-solid fa-globe text-indigo-500"></i> Select Language
+                <i class="fa-solid fa-globe text-indigo-500"></i> <%= t ? t('language.choose') : 'Select Language' %>
             </h3>
             <button onclick="closeLanguageModal()" class="text-slate-400 hover:text-slate-600 transition-colors focus:outline-none">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -13,19 +13,11 @@
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="setLanguage('en')" class="flex flex-col items-center justify-center p-4 rounded-xl border-2 hover:border-indigo-500 hover:bg-indigo-50 transition-all <%= language === 'en' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-100 text-slate-600' %>">
                     <span class="text-2xl mb-2">🇬🇧</span>
-                    <span class="font-semibold text-sm">English</span>
+                    <span class="font-semibold text-sm"><%= t ? t('language.english') : 'English' %></span>
                 </button>
                 <button onclick="setLanguage('bn')" class="flex flex-col items-center justify-center p-4 rounded-xl border-2 hover:border-indigo-500 hover:bg-indigo-50 transition-all <%= language === 'bn' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-100 text-slate-600' %>">
                     <span class="text-2xl mb-2">🇮🇳</span>
-                    <span class="font-semibold text-sm">বাংলা</span>
-                </button>
-                <button onclick="setLanguage('hi')" class="flex flex-col items-center justify-center p-4 rounded-xl border-2 hover:border-indigo-500 hover:bg-indigo-50 transition-all <%= language === 'hi' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-100 text-slate-600' %>">
-                    <span class="text-2xl mb-2">🇮🇳</span>
-                    <span class="font-semibold text-sm">हिन्दी</span>
-                </button>
-                <button onclick="setLanguage('es')" class="flex flex-col items-center justify-center p-4 rounded-xl border-2 hover:border-indigo-500 hover:bg-indigo-50 transition-all <%= language === 'es' ? 'border-indigo-500 bg-indigo-50 text-indigo-700' : 'border-slate-100 text-slate-600' %>">
-                    <span class="text-2xl mb-2">🇪🇸</span>
-                    <span class="font-semibold text-sm">Español</span>
+                    <span class="font-semibold text-sm"><%= t ? t('language.bengali') : 'বাংলা' %></span>
                 </button>
             </div>
         </div>
@@ -57,7 +49,8 @@
     function setLanguage(lang) {
         // In a real app, this would make an API call to save preference
         // and/or set a cookie/localStorage, then reload
-        document.cookie = "preferred_language=" + lang + "; path=/; max-age=31536000";
+        document.cookie = "edusmart_language=" + lang + "; path=/; max-age=31536000";
+        localStorage.setItem('edusmart_language', lang);
         window.location.reload();
     }
     

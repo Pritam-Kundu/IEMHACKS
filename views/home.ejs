@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduSmart - Smart Learning for Every Student</title>
+    <title>EduSmart - <%= t('home.heroTitle') %> <%= t('home.heroTitleSpan') %></title>
     <meta name="description"
         content="EduSmart is a personalized learning platform with adaptive quizzes, AI-powered assistance, and comprehensive analytics for students, teachers, and parents.">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -97,13 +97,13 @@
                             <div id="heroCTA" class="flex flex-col sm:flex-row gap-4 opacity-0">
                                 <a href="/signup"
                                     class="group inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200/50 transition-all duration-300 hover:-translate-y-0.5">
-                                    Start Learning Free
+                                    <%= t('home.startLearningFree') %>
                                     <i
                                         class="fas fa-arrow-right ml-2 transition-transform duration-300 group-hover:translate-x-1"></i>
                                 </a>
                                 <button id="watchDemoBtn"
                                     class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
-                                    <i class="fas fa-play-circle mr-2 text-indigo-500"></i> Watch Demo
+                                    <i class="fas fa-play-circle mr-2 text-indigo-500"></i> <%= t('home.watchDemo') %>
                                 </button>
                             </div>
 
@@ -111,17 +111,17 @@
                             <div id="heroTrust" class="mt-12 flex items-center gap-6 text-sm text-gray-400 opacity-0">
                                 <div class="flex items-center gap-1.5">
                                     <i class="fas fa-shield-alt text-green-500"></i>
-                                    <span>Secure & Private</span>
+                                    <span><%= t('home.securePrivate') %></span>
                                 </div>
                                 <div class="w-px h-4 bg-gray-200"></div>
                                 <div class="flex items-center gap-1.5">
                                     <i class="fas fa-wifi text-blue-500"></i>
-                                    <span>Works Offline</span>
+                                    <span><%= t('home.worksOffline') %></span>
                                 </div>
                                 <div class="w-px h-4 bg-gray-200"></div>
                                 <div class="flex items-center gap-1.5">
                                     <i class="fas fa-globe text-purple-500"></i>
-                                    <span>Multi-language</span>
+                                    <span><%= t('home.multiLanguage') %></span>
                                 </div>
                             </div>
                         </div>
@@ -146,7 +146,7 @@
                                         <i class="fas fa-chart-line"></i>
                                     </div>
                                     <span
-                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Progress</span>
+                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider"><%= t('home.progress') %></span>
                                 </div>
                                 <div class="text-3xl font-extrabold text-gray-900">87<span
                                         class="text-lg text-indigo-500">%</span></div>
@@ -169,7 +169,7 @@
                                 </div>
                                 <div
                                     class="bg-gray-50 rounded-xl p-3 text-sm text-gray-600 leading-relaxed border border-gray-100">
-                                    "A <strong>for-loop</strong> iterates over a sequence one element at a time…"
+                                    <%- t('home.aiTutorExample') %>
                                 </div>
                             </div>
 
@@ -182,10 +182,10 @@
                                         <i class="fas fa-fire"></i>
                                     </div>
                                     <span
-                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Streak</span>
+                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider"><%= t('home.streak') %></span>
                                 </div>
                                 <div class="text-3xl font-extrabold text-gray-900">14 <span
-                                        class="text-base font-medium text-gray-400">days</span></div>
+                                        class="text-base font-medium text-gray-400"><%= t('home.days') %></span></div>
                             </div>
 
                             <!-- Card 4: Badge -->
@@ -197,8 +197,8 @@
                                         <i class="fas fa-trophy"></i>
                                     </div>
                                     <div>
-                                        <div class="text-sm font-bold text-gray-900">Quiz Master</div>
-                                        <div class="text-xs text-gray-400">Badge Unlocked</div>
+                                        <div class="text-sm font-bold text-gray-900"><%= t('home.quizMaster') %></div>
+                                        <div class="text-xs text-gray-400"><%= t('home.badgeUnlocked') %></div>
                                     </div>
                                 </div>
                             </div>
@@ -218,12 +218,12 @@
             <section id="features" class="py-24 bg-gray-50/80">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center max-w-3xl mx-auto mb-16 gsap-section-header">
-                        <h2 class="text-sm text-indigo-600 font-semibold tracking-widest uppercase mb-3">Features</h2>
+                        <h2 class="text-sm text-indigo-600 font-semibold tracking-widest uppercase mb-3"><%= t('home.featuresHeader') %></h2>
                         <p class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight">
-                            A Complete Learning Ecosystem
+                            <%= t('home.featuresTitle') %>
                         </p>
                         <p class="mt-4 text-lg text-gray-500">
-                            Everything you need to succeed, built into one seamless, accessible platform.
+                            <%= t('home.featuresDesc') %>
                         </p>
                     </div>
 
@@ -234,7 +234,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-brain text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Adaptive Learning</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.adaptiveLearning') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Lessons and quizzes adjust dynamically to
                                 your individual learning level.</p>
                         </div>
@@ -244,7 +244,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-robot text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">AI Tutor</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.aiTutor') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Get instant help, detailed explanations,
                                 and 24/7 assistance whenever you need it.</p>
                         </div>
@@ -254,7 +254,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-amber-50 text-amber-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-trophy text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Gamification</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.gamification') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Earn XP, unlock badges, and climb the
                                 leaderboard while learning.</p>
                         </div>
@@ -264,7 +264,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-green-50 text-green-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-wifi text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Offline Learning</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.offlineLearning') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Continue learning downloaded content even
                                 when you're disconnected.</p>
                         </div>
@@ -274,7 +274,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-purple-50 text-purple-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-chart-line text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Analytics & Progress</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.analyticsProgress') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Track your learning progress and
                                 performance with visual insights.</p>
                         </div>
@@ -284,7 +284,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-pink-50 text-pink-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-language text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Multi-language</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.multiLanguage') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Learn comfortably with comprehensive
                                 support for multiple languages.</p>
                         </div>
@@ -294,7 +294,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-orange-50 text-orange-600 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-volume-up text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Text-to-Speech</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.textToSpeech') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Listen to lessons and improve accessibility
                                 with native speech tools.</p>
                         </div>
@@ -304,7 +304,7 @@
                                 class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-slate-100 text-slate-700 mb-4 group-hover:scale-110 transition-transform duration-300">
                                 <i class="fas fa-shield-alt text-lg"></i>
                             </div>
-                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Secure & Scalable</h3>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5"><%= t('home.secureScalable') %></h3>
                             <p class="text-gray-500 text-sm leading-relaxed">Built with robust authentication and a
                                 scalable cloud architecture.</p>
                         </div>
@@ -341,8 +341,8 @@
                                     </div>
                                     <div
                                         class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                        <div class="font-bold text-gray-900">1. Learn</div>
-                                        <div class="text-sm text-gray-500">Consume bite-sized lessons.</div>
+                                        <div class="font-bold text-gray-900"><%= t('home.step1Learn') %></div>
+                                        <div class="text-sm text-gray-500"><%= t('home.step1Desc') %></div>
                                     </div>
                                 </div>
                                 <div
@@ -353,8 +353,8 @@
                                     </div>
                                     <div
                                         class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                        <div class="font-bold text-gray-900">2. Take Quiz</div>
-                                        <div class="text-sm text-gray-500">Test your knowledge immediately.</div>
+                                        <div class="font-bold text-gray-900"><%= t('home.step2Quiz') %></div>
+                                        <div class="text-sm text-gray-500"><%= t('home.step2Desc') %></div>
                                     </div>
                                 </div>
                                 <div
@@ -365,8 +365,8 @@
                                     </div>
                                     <div
                                         class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                        <div class="font-bold text-gray-900">3. Analyze</div>
-                                        <div class="text-sm text-gray-500">System evaluates your performance.</div>
+                                        <div class="font-bold text-gray-900"><%= t('home.step3Analyze') %></div>
+                                        <div class="text-sm text-gray-500"><%= t('home.step3Desc') %></div>
                                     </div>
                                 </div>
                                 <div
@@ -377,8 +377,8 @@
                                     </div>
                                     <div
                                         class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                        <div class="font-bold text-gray-900">4. Adjust</div>
-                                        <div class="text-sm text-gray-500">Difficulty scales to your needs.</div>
+                                        <div class="font-bold text-gray-900"><%= t('home.step4Adjust') %></div>
+                                        <div class="text-sm text-gray-500"><%= t('home.step4Desc') %></div>
                                     </div>
                                 </div>
                             </div>
@@ -405,8 +405,8 @@
                                         <i class="fas fa-sync fa-spin"></i>
                                     </div>
                                     <div>
-                                        <div class="font-bold text-sm text-gray-900">Adjusting Difficulty</div>
-                                        <div class="text-xs text-gray-500 mt-1">Generating appropriate content...</div>
+                                        <div class="font-bold text-sm text-gray-900"><%= t('home.adjustingDifficulty') %></div>
+                                        <div class="text-xs text-gray-500 mt-1"><%= t('home.generatingContent') %></div>
                                     </div>
                                 </div>
                                 <div
@@ -445,7 +445,7 @@
                                 <span class="flex w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
                                 Always Online
                             </div>
-                            <h2 class="text-3xl sm:text-4xl font-extrabold mb-6">Meet Your Personal AI Tutor</h2>
+                            <h2 class="text-3xl sm:text-4xl font-extrabold mb-6"><%= t('home.meetAiTutor') %></h2>
                             <p class="text-indigo-200 text-lg mb-8 leading-relaxed">
                                 Stuck on a difficult concept? The EduSmart AI Tutor is here 24/7 to provide
                                 context-aware hints, detailed explanations, and step-by-step guidance without just
@@ -453,7 +453,7 @@
                             </p>
                             <a href="/login?redirect=/api/ai/redirect"
                                 class="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-xl text-indigo-900 bg-white hover:bg-gray-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5">
-                                <i class="fas fa-comment-dots mr-2 text-indigo-600"></i> Ask AI Tutor
+                                <i class="fas fa-comment-dots mr-2 text-indigo-600"></i> <%= t('home.askAiTutor') %>
                             </a>
                         </div>
 
@@ -474,7 +474,7 @@
                                     <div class="flex justify-end">
                                         <div
                                             class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm">
-                                            Can you explain how a for-loop works in Python?
+                                            <%= t('home.aiExampleQ') %>
                                         </div>
                                     </div>
                                     <div class="flex justify-start relative group">
@@ -486,14 +486,19 @@
                                             if you have a list of numbers, a for-loop will look at each number one by
                                             one.
                                         </div>
-                                        <button type="button" class="tts-btn absolute top-2 right-2 text-gray-400 hover:text-indigo-600 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-indigo-50" aria-label="Listen to response" title="Listen to response">
-                                            <i class="fas fa-volume-up"></i>
-                                        </button>
+                                        <div class="tts-controls absolute top-2 right-2 flex gap-1">
+                                            <button type="button" class="tts-btn text-gray-400 hover:text-indigo-600 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-indigo-50" aria-label="Listen to response" title="Listen to response">
+                                                <i class="fas fa-volume-up"></i>
+                                            </button>
+                                            <button type="button" class="tts-pause-btn hidden text-gray-400 hover:text-amber-600 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-amber-50" aria-label="Pause reading" title="Pause reading">
+                                                <i class="fas fa-pause"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="p-3 border-t border-gray-100 bg-white">
                                     <form id="homeAiForm" class="flex items-center bg-gray-100 rounded-full px-4 py-2">
-                                        <input type="text" id="homeAiInput" class="bg-transparent border-none outline-none flex-grow text-gray-700" placeholder="Type a message..." autocomplete="off" required>
+                                        <input type="text" id="homeAiInput" class="bg-transparent border-none outline-none flex-grow text-gray-700" placeholder="<%= t('home.typeMessage') %>" autocomplete="off" required>
                                         <button type="button" id="homeMicBtn" class="text-gray-400 hover:text-indigo-600 focus:outline-none transition-colors ml-2 shrink-0" aria-label="Start voice input" title="Start voice input">
                                             <i class="fas fa-microphone"></i>
                                         </button>
@@ -531,12 +536,12 @@
                                     <div class="flex items-center space-x-3">
                                         <div class="text-orange-500 text-xl"><i class="fas fa-fire"></i></div>
                                         <div>
-                                            <div class="text-xs text-gray-500">Current Streak</div>
+                                            <div class="text-xs text-gray-500"><%= t('home.currentStreak') %></div>
                                             <div class="font-bold text-gray-900">7 Days</div>
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <div class="text-xs text-gray-500">Total XP</div>
+                                        <div class="text-xs text-gray-500"><%= t('home.totalXp') %></div>
                                         <div class="font-bold text-indigo-600">2,450</div>
                                     </div>
                                 </div>
@@ -558,7 +563,7 @@
                                 <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
                                     <div
                                         class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium mb-2">
-                                        <i class="fas fa-check-circle mr-1"></i> Available Offline
+                                        <i class="fas fa-check-circle mr-1"></i> <%= t('home.availableOffline') %>
                                     </div>
                                     <div class="text-sm font-medium text-gray-700">Algebra Basics Ch. 1-3</div>
                                 </div>
@@ -574,7 +579,7 @@
                                     class="w-11 h-11 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-5 text-lg">
                                     <i class="fas fa-chart-bar"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-900 mb-3">Rich Analytics</h3>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3"><%= t('home.richAnalytics') %></h3>
                                 <p class="text-gray-500 mb-6 text-sm leading-relaxed">Understand learning patterns.
                                     Track quiz scores, time spent, and identify weak areas across subjects.</p>
                                 <div class="space-y-3">
@@ -609,8 +614,8 @@
             <section id="how-it-works" class="py-24 bg-white">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 gsap-section-header">
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900">How It Works</h2>
-                        <p class="mt-4 text-lg text-gray-500">Your path to smarter learning in 4 simple steps.</p>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900"><%= t('home.howItWorks') %></h2>
+                        <p class="mt-4 text-lg text-gray-500"><%= t('home.howItWorksDesc') %></p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative" id="stepsGrid">
@@ -620,29 +625,29 @@
                             <div
                                 class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
                                 1</div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Create Account</h3>
-                            <p class="text-gray-500 text-sm">Sign up securely and choose your platform role.</p>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2"><%= t('home.createAccount') %></h3>
+                            <p class="text-gray-500 text-sm"><%= t('home.createAccountDesc') %></p>
                         </div>
                         <div class="step-item relative z-10 text-center">
                             <div
                                 class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
                                 2</div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Choose Path</h3>
-                            <p class="text-gray-500 text-sm">Enroll in courses tailored to your specific needs.</p>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2"><%= t('home.choosePath') %></h3>
+                            <p class="text-gray-500 text-sm"><%= t('home.choosePathDesc') %></p>
                         </div>
                         <div class="step-item relative z-10 text-center">
                             <div
                                 class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
                                 3</div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Learn & Practice</h3>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2"><%= t('home.learnPractice') %></h3>
                             <p class="text-gray-500 text-sm">Consume lessons, take quizzes, and chat with AI.</p>
                         </div>
                         <div class="step-item relative z-10 text-center">
                             <div
                                 class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
                                 4</div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-2">Track Progress</h3>
-                            <p class="text-gray-500 text-sm">View comprehensive analytics and earn achievements.</p>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2"><%= t('home.trackProgress') %></h3>
+                            <p class="text-gray-500 text-sm"><%= t('home.trackProgressDesc') %></p>
                         </div>
                     </div>
                 </div>
@@ -654,7 +659,7 @@
             <section id="about" class="py-24 bg-gray-50/80">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="text-center mb-16 gsap-section-header">
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900">A Platform for Everyone</h2>
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900"><%= t('home.platformForEveryone') %></h2>
                         <p class="mt-4 text-lg text-gray-500">Custom dashboards designed for every participant in the
                             educational journey.</p>
                     </div>
@@ -666,12 +671,12 @@
                                 class="w-14 h-14 mx-auto bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-2xl mb-5">
                                 <i class="fas fa-user-graduate"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-4">Students</h3>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4"><%= t('home.students') %></h3>
                             <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Learn
                                     interactively</li>
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                                    Practice with adaptive quizzes</li>
+                                    <%= t('home.studentsL2') %></li>
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Track
                                     personal progress</li>
                             </ul>
@@ -682,14 +687,14 @@
                                 class="w-14 h-14 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-5">
                                 <i class="fas fa-chalkboard-teacher"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-4">Teachers</h3>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4"><%= t('home.teachers') %></h3>
                             <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                                    Create rich courses</li>
+                                    <%= t('home.teachersL1') %></li>
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                                    Manage structured lessons</li>
+                                    <%= t('home.teachersL2') %></li>
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                                    Analyze class performance</li>
+                                    <%= t('home.teachersL3') %></li>
                             </ul>
                         </div>
                         <div
@@ -698,14 +703,14 @@
                                 class="w-14 h-14 mx-auto bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-2xl mb-5">
                                 <i class="fas fa-user-friends"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-4">Parents</h3>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4"><%= t('home.parents') %></h3>
                             <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                                    Monitor child's progress</li>
+                                    <%= t('home.parentsL1') %></li>
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> View
                                     subject performance</li>
                                 <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
-                                    Receive automated updates</li>
+                                    <%= t('home.parentsL3') %></li>
                             </ul>
                         </div>
                     </div>
@@ -723,14 +728,14 @@
                     class="max-w-4xl mx-auto px-4 py-20 sm:px-6 sm:py-28 lg:max-w-7xl lg:px-8 lg:flex lg:items-center lg:justify-between relative z-10">
                     <div class="gsap-fade-left">
                         <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-                            <span class="block">Ready to transform your education?</span>
-                            <span class="block text-indigo-200 mt-1">Start Your Smarter Learning Journey today.</span>
+                            <span class="block"><%= t('home.ctaTitle') %></span>
+                            <span class="block text-indigo-200 mt-1"><%= t('home.ctaDesc') %></span>
                         </h2>
                     </div>
                     <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0 gsap-fade-right">
                         <a href="/signup"
                             class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl text-indigo-600 bg-white hover:bg-indigo-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5">
-                            Get Started
+                            <%= t('home.getStartedCTA') %>
                         </a>
                     </div>
                 </div>
@@ -1096,11 +1101,23 @@
                     const chatContainer = document.getElementById('homeChatContainer');
                     if (chatContainer) {
                         chatContainer.addEventListener('click', (e) => {
+                            const pauseBtn = e.target.closest('.tts-pause-btn');
+                            if (pauseBtn) {
+                                const isPaused = pauseBtn.classList.contains('paused');
+                                if (isPaused) {
+                                    tts.resume();
+                                } else {
+                                    tts.pause();
+                                }
+                                return;
+                            }
                             const btn = e.target.closest('.tts-btn');
                             if (btn) {
-                                const textContainer = btn.parentElement.querySelector('.text-gray-600');
+                                const textContainer = btn.closest('.relative').querySelector('.text-gray-600');
                                 if (textContainer) {
                                     const isCurrentlyPlaying = btn.classList.contains('playing');
+                                    const controlsContainer = btn.closest('.tts-controls');
+                                    const currentPauseBtn = controlsContainer ? controlsContainer.querySelector('.tts-pause-btn') : null;
                                     
                                     // Reset all buttons
                                     document.querySelectorAll('.tts-btn').forEach(b => {
@@ -1110,6 +1127,15 @@
                                         if(i) i.className = 'fa-solid fa-volume-up';
                                         b.setAttribute('aria-label', 'Listen to response');
                                         b.setAttribute('title', 'Listen to response');
+                                    });
+                                    document.querySelectorAll('.tts-pause-btn').forEach(pb => {
+                                        pb.classList.add('hidden');
+                                        pb.classList.remove('paused', 'text-indigo-600');
+                                        pb.classList.add('text-gray-400');
+                                        const pi = pb.querySelector('i');
+                                        if (pi) pi.className = 'fa-solid fa-pause';
+                                        pb.setAttribute('aria-label', 'Pause reading');
+                                        pb.setAttribute('title', 'Pause reading');
                                     });
 
                                     if (isCurrentlyPlaying) {
@@ -1122,6 +1148,10 @@
                                         btn.setAttribute('aria-label', 'Stop reading');
                                         btn.setAttribute('title', 'Stop reading');
                                         
+                                        if (currentPauseBtn) {
+                                            currentPauseBtn.classList.remove('hidden');
+                                        }
+                                        
                                         tts.onStateChange = (state) => {
                                             if (state === 'STOPPED' || state === 'ERROR') {
                                                 btn.classList.remove('playing', 'text-indigo-600');
@@ -1130,6 +1160,37 @@
                                                 if(bi) bi.className = 'fa-solid fa-volume-up';
                                                 btn.setAttribute('aria-label', 'Listen to response');
                                                 btn.setAttribute('title', 'Listen to response');
+                                                
+                                                if (currentPauseBtn) {
+                                                    currentPauseBtn.classList.add('hidden');
+                                                    currentPauseBtn.classList.remove('paused', 'text-indigo-600');
+                                                    currentPauseBtn.classList.add('text-gray-400');
+                                                    const pi = currentPauseBtn.querySelector('i');
+                                                    if (pi) pi.className = 'fa-solid fa-pause';
+                                                }
+                                            } else if (state === 'PAUSED') {
+                                                if (currentPauseBtn) {
+                                                    currentPauseBtn.classList.add('paused', 'text-indigo-600');
+                                                    currentPauseBtn.classList.remove('text-gray-400');
+                                                    const pi = currentPauseBtn.querySelector('i');
+                                                    if (pi) pi.className = 'fa-solid fa-play';
+                                                    currentPauseBtn.setAttribute('aria-label', 'Resume reading');
+                                                    currentPauseBtn.setAttribute('title', 'Resume reading');
+                                                }
+                                                const bi = btn.querySelector('i');
+                                                if (bi) bi.classList.remove('animate-pulse');
+                                            } else if (state === 'PLAYING') {
+                                                if (currentPauseBtn) {
+                                                    currentPauseBtn.classList.remove('hidden');
+                                                    currentPauseBtn.classList.remove('paused', 'text-indigo-600');
+                                                    currentPauseBtn.classList.add('text-gray-400');
+                                                    const pi = currentPauseBtn.querySelector('i');
+                                                    if (pi) pi.className = 'fa-solid fa-pause';
+                                                    currentPauseBtn.setAttribute('aria-label', 'Pause reading');
+                                                    currentPauseBtn.setAttribute('title', 'Pause reading');
+                                                }
+                                                const bi = btn.querySelector('i');
+                                                if (bi) bi.classList.add('animate-pulse');
                                             }
                                         };
                                         
@@ -1214,8 +1275,6 @@
                     });
                 });
             </script>
-<<<<<<< HEAD
-
             <!-- Video Modal -->
             <div id="videoModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-gray-900/90 backdrop-blur-sm transition-opacity duration-300">
                 <div class="relative w-full max-w-5xl mx-4 rounded-2xl overflow-hidden bg-black shadow-2xl border border-gray-800">
@@ -1240,8 +1299,6 @@
                     </div>
                 </div>
             </div>
-=======
             <script src="/js/voice/speechToText.js"></script>
             <script src="/js/voice/textToSpeech.js"></script>
->>>>>>> d27e6058f29027417e8dfc4c45176f5e5356964b
 </body>

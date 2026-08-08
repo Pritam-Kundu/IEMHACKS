@@ -10,7 +10,7 @@
                     <span class="font-bold text-2xl tracking-tight text-white">EduSmart</span>
                 </a>
                 <p class="text-gray-400 text-sm leading-relaxed">
-                    Empowering students, teachers, and parents with smart, adaptive, and engaging learning tools.
+                    <%= t('footer.tagline') %>
                 </p>
                 <div class="flex space-x-4 mt-6">
                     <a href="#" class="text-gray-400 hover:text-white transition-colors"><i class="fab fa-twitter text-xl"></i></a>
@@ -22,41 +22,41 @@
 
             <!-- Quick Links -->
             <div>
-                <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase mb-4">Quick Links</h3>
+                <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase mb-4"><%= t('footer.quickLinks') %></h3>
                 <ul class="space-y-3">
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Home</a></li>
-                    <li><a href="#about" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">About Us</a></li>
-                    <li><a href="#how-it-works" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">How it Works</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Pricing</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.home') %></a></li>
+                    <li><a href="#about" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.aboutUs') %></a></li>
+                    <li><a href="#how-it-works" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.howItWorks') %></a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.pricing') %></a></li>
                 </ul>
             </div>
 
             <!-- Features -->
             <div>
-                <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase mb-4">Features</h3>
+                <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase mb-4"><%= t('footer.features') %></h3>
                 <ul class="space-y-3">
-                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Adaptive Learning</a></li>
-                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">AI Tutor</a></li>
-                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Gamification</a></li>
-                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Analytics</a></li>
+                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.adaptiveLearning') %></a></li>
+                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.aiTutor') %></a></li>
+                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.gamification') %></a></li>
+                    <li><a href="#features" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.analytics') %></a></li>
                 </ul>
             </div>
 
             <!-- Legal & Contact -->
             <div>
-                <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase mb-4">Support</h3>
+                <h3 class="text-sm font-semibold text-gray-300 tracking-wider uppercase mb-4"><%= t('footer.support') %></h3>
                 <ul class="space-y-3">
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Contact Us</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Help Center</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Privacy Policy</a></li>
-                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors">Terms of Service</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.contactUs') %></a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.helpCenter') %></a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.privacyPolicy') %></a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-indigo-400 text-sm transition-colors"><%= t('footer.termsOfService') %></a></li>
                 </ul>
             </div>
         </div>
         
         <div class="pt-8 border-t border-gray-800 text-center md:text-left flex flex-col md:flex-row justify-between items-center">
             <p class="text-gray-500 text-sm">
-                &copy; <%= new Date().getFullYear() %> EduSmart Platform. All rights reserved.
+                &copy; <%= new Date().getFullYear() %> <%= t('footer.allRightsReserved') %>
             </p>
         </div>
     </div>

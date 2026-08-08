@@ -16,19 +16,19 @@
         <!-- Product Dropdown -->
         <div class="nav-item h-full flex items-center" data-dropdown="product-menu">
             <button class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors gap-1 group">
-                Product <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
+                <%= t('nav.product') %> <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
             </button>
         </div>
 
         <!-- Company Dropdown -->
         <div class="nav-item h-full flex items-center" data-dropdown="company-menu">
             <button class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors gap-1 group">
-                Company <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
+                <%= t('nav.company') %> <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
             </button>
         </div>
 
         <!-- Pricing Link -->
-        <a href="#pricing" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100/50 hover:text-slate-900 transition-colors">Pricing</a>
+        <a href="#pricing" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100/50 hover:text-slate-900 transition-colors"><%= t('nav.pricing') %></a>
 
         <!-- Mega Menu Container -->
         <div id="mega-menu-container" class="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden transition-all duration-300 origin-top opacity-0 scale-95 pointer-events-none z-50">
@@ -40,8 +40,8 @@
                         <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
                             <i data-lucide="globe" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
                             <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block">Website Builder</span>
-                                <span class="text-xs text-slate-500 mt-1 block">Create responsive websites with ease</span>
+                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.websiteBuilder') %></span>
+                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.websiteBuilderDesc') %></span>
                             </div>
                         </a>
                     </li>
@@ -50,8 +50,8 @@
                         <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
                             <i data-lucide="layers" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
                             <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block">Cloud Platform</span>
-                                <span class="text-xs text-slate-500 mt-1 block">Deploy and scale apps in the cloud</span>
+                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.cloudPlatform') %></span>
+                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.cloudPlatformDesc') %></span>
                             </div>
                         </a>
                     </li>
@@ -60,18 +60,18 @@
                         <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
                             <i data-lucide="user-plus" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
                             <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block">Team Collaboration</span>
-                                <span class="text-xs text-slate-500 mt-1 block">Tools to help your teams work better</span>
+                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.teamCollaboration') %></span>
+                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.teamCollaborationDesc') %></span>
                             </div>
                         </a>
                     </li>
                 </ul>
                 <ul class="space-y-1 flex flex-col justify-center">
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="bar-chart" class="size-4"></i> Analytics</a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="plug" class="size-4"></i> Integrations</a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="dollar-sign" class="size-4"></i> E-Commerce</a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="shield" class="size-4"></i> Security</a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="code" class="size-4"></i> API</a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="bar-chart" class="size-4"></i> <%= t('nav.analytics') %></a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="plug" class="size-4"></i> <%= t('nav.integrations') %></a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="dollar-sign" class="size-4"></i> <%= t('nav.eCommerce') %></a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="shield" class="size-4"></i> <%= t('nav.security') %></a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="code" class="size-4"></i> <%= t('nav.api') %></a></li>
                 </ul>
             </div>
 
@@ -83,8 +83,8 @@
                         <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
                             <i data-lucide="users" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
                             <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block">About Us</span>
-                                <span class="text-xs text-slate-500 mt-1 block">Learn more about our story and team</span>
+                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.aboutUs') %></span>
+                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.aboutUsDesc') %></span>
                             </div>
                         </a>
                     </li>
@@ -93,21 +93,21 @@
                         <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
                             <i data-lucide="star" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
                             <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block">Customer Stories</span>
-                                <span class="text-xs text-slate-500 mt-1 block">See how we've helped clients succeed</span>
+                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.customerStories') %></span>
+                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.customerStoriesDesc') %></span>
                             </div>
                         </a>
                     </li>
                     <div class="col-span-2 grid grid-cols-3 gap-2">
-                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center">Terms</span></a>
-                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center">Privacy</span></a>
-                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center">Refund</span></a>
+                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center"><%= t('nav.terms') %></span></a>
+                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center"><%= t('nav.privacy') %></span></a>
+                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center"><%= t('nav.refund') %></span></a>
                     </div>
                 </ul>
                 <ul class="space-y-2 flex flex-col justify-center">
-                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">Partnerships</span><span class="text-xs text-slate-500 block">Collaborate with us</span></div><i data-lucide="handshake" class="size-4 text-slate-400"></i></a></li>
-                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">Blog</span><span class="text-xs text-slate-500 block">Insights & news</span></div><i data-lucide="leaf" class="size-4 text-slate-400"></i></a></li>
-                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">Help Center</span><span class="text-xs text-slate-500 block">Find answers</span></div><i data-lucide="help-circle" class="size-4 text-slate-400"></i></a></li>
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900"><%= t('nav.partnerships') %></span><span class="text-xs text-slate-500 block"><%= t('nav.partnershipsDesc') %></span></div><i data-lucide="handshake" class="size-4 text-slate-400"></i></a></li>
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900"><%= t('nav.blog') %></span><span class="text-xs text-slate-500 block"><%= t('nav.blogDesc') %></span></div><i data-lucide="leaf" class="size-4 text-slate-400"></i></a></li>
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900"><%= t('nav.helpCenter') %></span><span class="text-xs text-slate-500 block"><%= t('nav.helpCenterDesc') %></span></div><i data-lucide="help-circle" class="size-4 text-slate-400"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -116,11 +116,11 @@
     <!-- Right Side (Auth) -->
     <div class="flex items-center gap-2">
         <% if (locals.user) { %>
-            <a href="/<%= user.role %>/dashboard" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2">Dashboard</a>
-            <a href="/logout" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">Log out</a>
+            <a href="/<%= user.role %>/dashboard" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2"><%= t('nav.dashboard') %></a>
+            <a href="/logout" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm"><%= t('nav.logout') %></a>
         <% } else { %>
-            <a href="/login" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2">Log in</a>
-            <a href="/signup" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">Get Started</a>
+            <a href="/login" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2"><%= t('nav.login') %></a>
+            <a href="/signup" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm"><%= t('nav.getStarted') %></a>
         <% } %>
 
         <!-- Mobile Menu Toggle -->
@@ -143,29 +143,29 @@
         <!-- Mobile Accordion -->
         <div class="border-b border-slate-100 pb-2">
             <button class="flex items-center justify-between w-full py-3 text-left font-medium text-slate-900 group" onclick="toggleAccordion('mobile-product-content', this)">
-                Product
+                <%= t('nav.product') %>
                 <i data-lucide="chevron-down" class="size-4 text-slate-400 transition-transform duration-200"></i>
             </button>
             <div id="mobile-product-content" class="hidden pl-2 space-y-1 mt-1">
                 <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
                     <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="globe" class="size-4 text-indigo-600"></i></div>
                     <div>
-                        <span class="block font-medium text-slate-900">Website Builder</span>
-                        <span class="block text-xs text-slate-500">Create responsive websites with ease</span>
+                        <span class="block font-medium text-slate-900"><%= t('nav.websiteBuilder') %></span>
+                        <span class="block text-xs text-slate-500"><%= t('nav.websiteBuilderDesc') %></span>
                     </div>
                 </a>
                 <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
                     <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="layers" class="size-4 text-indigo-600"></i></div>
                     <div>
-                        <span class="block font-medium text-slate-900">Cloud Platform</span>
-                        <span class="block text-xs text-slate-500">Deploy and scale apps</span>
+                        <span class="block font-medium text-slate-900"><%= t('nav.cloudPlatform') %></span>
+                        <span class="block text-xs text-slate-500"><%= t('nav.cloudPlatformDesc') %></span>
                     </div>
                 </a>
                 <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
                     <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="user-plus" class="size-4 text-indigo-600"></i></div>
                     <div>
-                        <span class="block font-medium text-slate-900">Team Collaboration</span>
-                        <span class="block text-xs text-slate-500">Tools to help your teams work better</span>
+                        <span class="block font-medium text-slate-900"><%= t('nav.teamCollaboration') %></span>
+                        <span class="block text-xs text-slate-500"><%= t('nav.teamCollaborationDesc') %></span>
                     </div>
                 </a>
             </div>
@@ -173,36 +173,36 @@
         
         <div class="border-b border-slate-100 pb-2">
             <button class="flex items-center justify-between w-full py-3 text-left font-medium text-slate-900 group" onclick="toggleAccordion('mobile-company-content', this)">
-                Company
+                <%= t('nav.company') %>
                 <i data-lucide="chevron-down" class="size-4 text-slate-400 transition-transform duration-200"></i>
             </button>
             <div id="mobile-company-content" class="hidden pl-2 space-y-1 mt-1">
                 <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
                     <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="users" class="size-4 text-indigo-600"></i></div>
                     <div>
-                        <span class="block font-medium text-slate-900">About Us</span>
-                        <span class="block text-xs text-slate-500">Learn more about our story</span>
+                        <span class="block font-medium text-slate-900"><%= t('nav.aboutUs') %></span>
+                        <span class="block text-xs text-slate-500"><%= t('nav.aboutUsDesc') %></span>
                     </div>
                 </a>
                 <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
                     <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="star" class="size-4 text-indigo-600"></i></div>
                     <div>
-                        <span class="block font-medium text-slate-900">Customer Stories</span>
-                        <span class="block text-xs text-slate-500">See how we've helped clients</span>
+                        <span class="block font-medium text-slate-900"><%= t('nav.customerStories') %></span>
+                        <span class="block text-xs text-slate-500"><%= t('nav.customerStoriesDesc') %></span>
                     </div>
                 </a>
             </div>
         </div>
 
-        <a href="#pricing" class="block py-3 font-medium text-slate-900">Pricing</a>
+        <a href="#pricing" class="block py-3 font-medium text-slate-900"><%= t('nav.pricing') %></a>
         
         <div class="pt-6 mt-6 border-t border-slate-100 flex flex-col gap-3">
             <% if (locals.user) { %>
-                <a href="/<%= user.role %>/dashboard" class="w-full text-center bg-slate-100 text-slate-900 hover:bg-slate-200 block px-4 py-2 rounded-md font-medium">Dashboard</a>
-                <a href="/logout" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm">Log out</a>
+                <a href="/<%= user.role %>/dashboard" class="w-full text-center bg-slate-100 text-slate-900 hover:bg-slate-200 block px-4 py-2 rounded-md font-medium"><%= t('nav.dashboard') %></a>
+                <a href="/logout" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm"><%= t('nav.logout') %></a>
             <% } else { %>
-                <a href="/login" class="w-full text-center border border-slate-200 text-slate-700 hover:bg-slate-50 block px-4 py-2 rounded-md font-medium">Log in</a>
-                <a href="/signup" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm">Get Started</a>
+                <a href="/login" class="w-full text-center border border-slate-200 text-slate-700 hover:bg-slate-50 block px-4 py-2 rounded-md font-medium"><%= t('nav.login') %></a>
+                <a href="/signup" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm"><%= t('nav.getStarted') %></a>
             <% } %>
         </div>
     </div>
