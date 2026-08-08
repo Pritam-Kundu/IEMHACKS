@@ -32,6 +32,7 @@ const studentProfileSchema = new mongoose.Schema({
         earnedAt: {
             type: Date,
             default: Date.now
+        }
     }],
     recommendedDifficulty: {
         type: String,

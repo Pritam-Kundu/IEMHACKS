@@ -7,13 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Inject Firebase Config for the JS module to use -->
-    <script>
-        window.FIREBASE_CONFIG = {
-            apiKey: "<%= firebaseConfig.apiKey %>",
-            authDomain: "<%= firebaseConfig.authDomain %>"
-        };
-    </script>
+    <!-- Include Centralized Firebase Config -->
+    <script src="/js/firebase-config.js"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
     
@@ -188,10 +183,10 @@ const establishBackendSession = async (user) => {
         
         const data = await response.json();
         
-        if (response.ok && data.redirectUrl) {
-            window.location.href = data.redirectUrl;
+        if (response.ok && data.success) {
+            window.location.href = data.redirect;
         } else {
-            throw new Error(data.error || 'Failed to establish session.');
+            throw new Error(data.message || data.error || 'Failed to establish session.');
         }
     } catch (error) {
         setLoading(false);
@@ -203,14 +198,16 @@ const establishBackendSession = async (user) => {
 
 // Map Firebase errors to user-friendly messages
 const getAuthErrorMessage = (error) => {
-    const code = error.code;
-    if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
-    if (code === 'auth/invalid-credential') return 'Incorrect email or password.';
-    if (code === 'auth/user-not-found') return 'No account found with this email.';
-    if (code === 'auth/wrong-password') return 'Incorrect password.';
-    if (code === 'auth/too-many-requests') return 'Too many failed attempts. Please try again later.';
-    if (code === 'auth/network-request-failed') return 'Network error. Please check your connection.';
-    return 'An unexpected error occurred. Please try again.';
+    if (error.code) {
+        const code = error.code;
+        if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
+        if (code === 'auth/invalid-credential') return 'Incorrect email or password.';
+        if (code === 'auth/user-not-found') return 'No account found with this email.';
+        if (code === 'auth/wrong-password') return 'Incorrect password.';
+        if (code === 'auth/too-many-requests') return 'Too many failed attempts. Please try again later.';
+        if (code === 'auth/network-request-failed') return 'Network error. Please check your connection.';
+    }
+    return error.message || 'An unexpected error occurred. Please try again.';
 };
 
 // Toggle Password Visibility

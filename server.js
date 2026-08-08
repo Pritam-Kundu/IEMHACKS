@@ -14,7 +14,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to Database
-// connectDB(); // Uncomment when ready to connect to MongoDB
+// Connection happens asynchronously before app starts
 
 // View Engine Setup
 app.set('view engine', 'ejs');
@@ -46,6 +46,16 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 // Start Server
-app.listen(PORT, () => {
-    console.log(`Server is running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
-});
+const startServer = async () => {
+    try {
+        await connectDB();
+        app.listen(PORT, () => {
+            console.log(`Server is running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+        });
+    } catch (error) {
+        console.error('Failed to start server:', error.message);
+        process.exit(1);
+    }
+};
+
+startServer();

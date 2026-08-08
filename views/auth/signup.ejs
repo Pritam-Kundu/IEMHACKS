@@ -8,12 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script>
-        window.FIREBASE_CONFIG = {
-            apiKey: "<%= firebaseConfig.apiKey %>",
-            authDomain: "<%= firebaseConfig.authDomain %>"
-        };
-    </script>
+    <!-- Include Centralized Firebase Config -->
+    <script src="/js/firebase-config.js"></script>
     
     <style>
         /* Minimal custom styling, primarily handled by Tailwind */
@@ -329,10 +325,10 @@
                 
                 const data = await response.json();
                 
-                if (response.ok && data.redirectUrl) {
-                    window.location.href = data.redirectUrl;
+                if (response.ok && data.success) {
+                    window.location.href = data.redirect;
                 } else {
-                    throw new Error(data.error || 'Failed to establish session.');
+                    throw new Error(data.message || data.error || 'Failed to establish session.');
                 }
             } catch (error) {
                 // If backend fails, cleanup client session so they aren't stuck in a half-logged-in state
@@ -342,12 +338,14 @@
         };
 
         const getAuthErrorMessage = (error) => {
-            const code = error.code;
-            if (code === 'auth/email-already-in-use') return 'This email is already registered. Please log in instead.';
-            if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
-            if (code === 'auth/weak-password') return 'Password must contain at least 8 characters.';
-            if (code === 'auth/network-request-failed') return 'Network error. Please check your connection.';
-            return 'An unexpected error occurred. Please try again.';
+            if (error.code) {
+                const code = error.code;
+                if (code === 'auth/email-already-in-use') return 'This email is already registered. Please log in instead.';
+                if (code === 'auth/invalid-email') return 'Please enter a valid email address.';
+                if (code === 'auth/weak-password') return 'Password must contain at least 8 characters.';
+                if (code === 'auth/network-request-failed') return 'Network error. Please check your connection.';
+            }
+            return error.message || 'An unexpected error occurred. Please try again.';
         };
 
         // Form Submission (Email/Password)
