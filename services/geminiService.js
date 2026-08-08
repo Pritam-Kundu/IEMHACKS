@@ -6,7 +6,7 @@ const ai = new GoogleGenAI({
 });
 
 // Use a model provided by env, fallback to gemini-2.5-flash
-const MODEL_NAME = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+const MODEL_NAME = process.env.GEMINI_MODEL || "gemini-3.5-flash";
 
 /**
  * Generate a response using the Gemini API.
