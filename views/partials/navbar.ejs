@@ -1,104 +1,317 @@
-<!-- Navbar Partial -->
-<nav class="bg-white shadow-sm sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex items-center">
-                <a href="/" class="flex-shrink-0 flex items-center text-indigo-600 hover:text-indigo-700 transition-colors">
-                    <i class="fas fa-graduation-cap text-2xl mr-2"></i>
-                    <span class="font-bold text-xl tracking-tight">EduSmart</span>
-                </a>
-                
-                <!-- Desktop Menu -->
-                <div class="hidden md:ml-10 md:flex md:space-x-8">
-                    <a href="/" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">Home</a>
-                    <a href="#features" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors">Features</a>
-                    <a href="#how-it-works" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors">How it Works</a>
-                    <a href="#about" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors">About</a>
-                </div>
+<!-- Load Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<nav class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl h-14 bg-white/40 backdrop-blur-xl border border-white/50 rounded-xl shadow-lg px-4 flex items-center justify-between">
+    <!-- Logo -->
+    <div class="flex items-center gap-2">
+        <a href="/" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
+            <i data-lucide="graduation-cap" class="size-6"></i>
+            <span class="font-mono text-lg font-bold tracking-tight text-slate-900">EduSmart</span>
+        </a>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <div class="hidden lg:flex items-center gap-1 h-full relative" id="desktop-menu">
+        
+        <!-- Product Dropdown -->
+        <div class="nav-item h-full flex items-center" data-dropdown="product-menu">
+            <button class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors gap-1 group">
+                Product <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
+            </button>
+        </div>
+
+        <!-- Company Dropdown -->
+        <div class="nav-item h-full flex items-center" data-dropdown="company-menu">
+            <button class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors gap-1 group">
+                Company <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
+            </button>
+        </div>
+
+        <!-- Pricing Link -->
+        <a href="#pricing" class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100/50 hover:text-slate-900 transition-colors">Pricing</a>
+
+        <!-- Mega Menu Container -->
+        <div id="mega-menu-container" class="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden transition-all duration-300 origin-top opacity-0 scale-95 pointer-events-none z-50">
+            <!-- Product Menu Content -->
+            <div id="product-menu" class="hidden p-4 grid md:grid-cols-[1fr_.30fr] gap-4 w-[800px]">
+                <ul class="grid md:grid-cols-3 gap-4 border-r border-slate-100 pr-4">
+                    <!-- Website Builder -->
+                    <li>
+                        <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                            <i data-lucide="globe" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <div class="relative z-10">
+                                <span class="text-sm font-semibold text-slate-900 block">Website Builder</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Create responsive websites with ease</span>
+                            </div>
+                        </a>
+                    </li>
+                    <!-- Cloud Platform -->
+                    <li>
+                        <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                            <i data-lucide="layers" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <div class="relative z-10">
+                                <span class="text-sm font-semibold text-slate-900 block">Cloud Platform</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Deploy and scale apps in the cloud</span>
+                            </div>
+                        </a>
+                    </li>
+                    <!-- Team Collaboration -->
+                    <li>
+                        <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                            <i data-lucide="user-plus" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <div class="relative z-10">
+                                <span class="text-sm font-semibold text-slate-900 block">Team Collaboration</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Tools to help your teams work better</span>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="space-y-1 flex flex-col justify-center">
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="bar-chart" class="size-4"></i> Analytics</a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="plug" class="size-4"></i> Integrations</a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="dollar-sign" class="size-4"></i> E-Commerce</a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="shield" class="size-4"></i> Security</a></li>
+                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="code" class="size-4"></i> API</a></li>
+                </ul>
             </div>
 
-            <!-- Login / Get Started (Desktop) -->
-            <div class="hidden md:flex items-center space-x-4">
-                <% if (locals.user) { %>
-                    <!-- User is logged in -->
-                    <a href="/<%= user.role %>/dashboard" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Dashboard</a>
-                    <a href="/logout" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-4 py-2 rounded-md text-sm font-medium transition-colors">Log out</a>
-                <% } else { %>
-                    <a href="/login" class="text-gray-500 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors">Log in</a>
-                    <a href="/signup" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium shadow-sm transition-colors">Get Started</a>
-                <% } %>
-            </div>
-
-            <!-- Mobile menu button -->
-            <div class="flex items-center md:hidden">
-                <button type="button" id="mobileMenuBtn" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false">
-                    <span class="sr-only">Open main menu</span>
-                    <i class="fas fa-bars text-xl" id="menuIcon"></i>
-                </button>
+            <!-- Company Menu Content -->
+            <div id="company-menu" class="hidden p-4 grid md:grid-cols-[1fr_.40fr] gap-4 w-[750px]">
+                <ul class="grid grid-cols-2 gap-4 border-r border-slate-100 pr-4">
+                    <!-- About Us -->
+                    <li>
+                        <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                            <i data-lucide="users" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <div class="relative z-10">
+                                <span class="text-sm font-semibold text-slate-900 block">About Us</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Learn more about our story and team</span>
+                            </div>
+                        </a>
+                    </li>
+                    <!-- Customer Stories -->
+                    <li>
+                        <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                            <i data-lucide="star" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <div class="relative z-10">
+                                <span class="text-sm font-semibold text-slate-900 block">Customer Stories</span>
+                                <span class="text-xs text-slate-500 mt-1 block">See how we've helped clients succeed</span>
+                            </div>
+                        </a>
+                    </li>
+                    <div class="col-span-2 grid grid-cols-3 gap-2">
+                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center">Terms</span></a>
+                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center">Privacy</span></a>
+                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center">Refund</span></a>
+                    </div>
+                </ul>
+                <ul class="space-y-2 flex flex-col justify-center">
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">Partnerships</span><span class="text-xs text-slate-500 block">Collaborate with us</span></div><i data-lucide="handshake" class="size-4 text-slate-400"></i></a></li>
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">Blog</span><span class="text-xs text-slate-500 block">Insights & news</span></div><i data-lucide="leaf" class="size-4 text-slate-400"></i></a></li>
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">Help Center</span><span class="text-xs text-slate-500 block">Find answers</span></div><i data-lucide="help-circle" class="size-4 text-slate-400"></i></a></li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <!-- Mobile Menu (Hidden by default) -->
-    <div class="md:hidden hidden bg-white border-t border-gray-100 shadow-lg absolute w-full" id="mobileMenu">
-        <div class="pt-2 pb-3 space-y-1">
-            <a href="/" class="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Home</a>
-            <a href="#features" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">Features</a>
-            <a href="#how-it-works" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">How it Works</a>
-            <a href="#about" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">About</a>
-        </div>
-        <div class="pt-4 pb-4 border-t border-gray-200">
-            <div class="flex items-center px-4 space-x-3">
-                <% if (locals.user) { %>
-                    <a href="/<%= user.role %>/dashboard" class="w-full text-center bg-gray-100 text-gray-800 hover:bg-gray-200 block px-4 py-2 rounded-md text-base font-medium">Dashboard</a>
-                    <a href="/logout" class="w-full text-center bg-indigo-50 text-indigo-700 hover:bg-indigo-100 block px-4 py-2 rounded-md text-base font-medium">Log out</a>
-                <% } else { %>
-                    <a href="/login" class="w-full text-center border border-gray-300 text-gray-700 hover:bg-gray-50 block px-4 py-2 rounded-md text-base font-medium">Log in</a>
-                    <a href="/signup" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md text-base font-medium shadow-sm">Get Started</a>
-                <% } %>
-            </div>
-        </div>
+    <!-- Right Side (Auth) -->
+    <div class="flex items-center gap-2">
+        <% if (locals.user) { %>
+            <a href="/<%= user.role %>/dashboard" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2">Dashboard</a>
+            <a href="/logout" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">Log out</a>
+        <% } else { %>
+            <a href="/login" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2">Log in</a>
+            <a href="/signup" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm">Get Started</a>
+        <% } %>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-btn" class="lg:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-full transition-colors">
+            <i data-lucide="menu" class="size-5"></i>
+        </button>
     </div>
 </nav>
 
+<!-- Mobile Sheet Menu -->
+<div id="mobile-sheet-overlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] hidden opacity-0 transition-opacity duration-300"></div>
+<div id="mobile-sheet" class="fixed top-0 right-0 h-full w-[85%] max-w-sm bg-white shadow-2xl z-[70] transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    <div class="flex items-center justify-end p-4 border-b border-slate-100">
+        <button id="close-mobile-sheet" class="p-2 text-slate-500 hover:bg-slate-100 rounded-full transition-colors">
+            <i data-lucide="x" class="size-5"></i>
+        </button>
+    </div>
+    
+    <div class="flex-1 overflow-y-auto p-4 space-y-4">
+        <!-- Mobile Accordion -->
+        <div class="border-b border-slate-100 pb-2">
+            <button class="flex items-center justify-between w-full py-3 text-left font-medium text-slate-900 group" onclick="toggleAccordion('mobile-product-content', this)">
+                Product
+                <i data-lucide="chevron-down" class="size-4 text-slate-400 transition-transform duration-200"></i>
+            </button>
+            <div id="mobile-product-content" class="hidden pl-2 space-y-1 mt-1">
+                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="globe" class="size-4 text-indigo-600"></i></div>
+                    <div>
+                        <span class="block font-medium text-slate-900">Website Builder</span>
+                        <span class="block text-xs text-slate-500">Create responsive websites with ease</span>
+                    </div>
+                </a>
+                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="layers" class="size-4 text-indigo-600"></i></div>
+                    <div>
+                        <span class="block font-medium text-slate-900">Cloud Platform</span>
+                        <span class="block text-xs text-slate-500">Deploy and scale apps</span>
+                    </div>
+                </a>
+                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="user-plus" class="size-4 text-indigo-600"></i></div>
+                    <div>
+                        <span class="block font-medium text-slate-900">Team Collaboration</span>
+                        <span class="block text-xs text-slate-500">Tools to help your teams work better</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        
+        <div class="border-b border-slate-100 pb-2">
+            <button class="flex items-center justify-between w-full py-3 text-left font-medium text-slate-900 group" onclick="toggleAccordion('mobile-company-content', this)">
+                Company
+                <i data-lucide="chevron-down" class="size-4 text-slate-400 transition-transform duration-200"></i>
+            </button>
+            <div id="mobile-company-content" class="hidden pl-2 space-y-1 mt-1">
+                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="users" class="size-4 text-indigo-600"></i></div>
+                    <div>
+                        <span class="block font-medium text-slate-900">About Us</span>
+                        <span class="block text-xs text-slate-500">Learn more about our story</span>
+                    </div>
+                </a>
+                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="star" class="size-4 text-indigo-600"></i></div>
+                    <div>
+                        <span class="block font-medium text-slate-900">Customer Stories</span>
+                        <span class="block text-xs text-slate-500">See how we've helped clients</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <a href="#pricing" class="block py-3 font-medium text-slate-900">Pricing</a>
+        
+        <div class="pt-6 mt-6 border-t border-slate-100 flex flex-col gap-3">
+            <% if (locals.user) { %>
+                <a href="/<%= user.role %>/dashboard" class="w-full text-center bg-slate-100 text-slate-900 hover:bg-slate-200 block px-4 py-2 rounded-md font-medium">Dashboard</a>
+                <a href="/logout" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm">Log out</a>
+            <% } else { %>
+                <a href="/login" class="w-full text-center border border-slate-200 text-slate-700 hover:bg-slate-50 block px-4 py-2 rounded-md font-medium">Log in</a>
+                <a href="/signup" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm">Get Started</a>
+            <% } %>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Mobile Menu Toggle Logic
+    // Initialize Lucide Icons
     document.addEventListener('DOMContentLoaded', () => {
-        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const menuIcon = document.getElementById('menuIcon');
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
 
-        if (mobileMenuBtn && mobileMenu) {
-            mobileMenuBtn.addEventListener('click', () => {
-                const isExpanded = mobileMenuBtn.getAttribute('aria-expanded') === 'true';
+        // Mega Menu Logic
+        const navItems = document.querySelectorAll('.nav-item');
+        const megaMenuContainer = document.getElementById('mega-menu-container');
+        const allMenus = document.querySelectorAll('#mega-menu-container > div');
+        let hideTimeout;
+
+        function showMenu(menuId, button) {
+            clearTimeout(hideTimeout);
+            
+            // Hide all submenus
+            allMenus.forEach(m => m.classList.add('hidden'));
+            
+            // Show targeted submenu
+            const targetMenu = document.getElementById(menuId);
+            if (targetMenu) {
+                targetMenu.classList.remove('hidden');
                 
-                if (isExpanded) {
-                    // Close menu
-                    mobileMenu.classList.add('hidden');
-                    mobileMenuBtn.setAttribute('aria-expanded', 'false');
-                    menuIcon.classList.remove('fa-times');
-                    menuIcon.classList.add('fa-bars');
-                } else {
-                    // Open menu
-                    mobileMenu.classList.remove('hidden');
-                    mobileMenuBtn.setAttribute('aria-expanded', 'true');
-                    menuIcon.classList.remove('fa-bars');
-                    menuIcon.classList.add('fa-times');
-                }
-            });
+                // Animate container in
+                megaMenuContainer.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                megaMenuContainer.classList.add('opacity-100', 'scale-100');
+
+                // Rotate chevron
+                navItems.forEach(item => {
+                    const icon = item.querySelector('[data-lucide="chevron-down"]');
+                    if (item.contains(button)) {
+                        icon.style.transform = 'rotate(180deg)';
+                    } else {
+                        icon.style.transform = 'rotate(0deg)';
+                    }
+                });
+            }
         }
 
-        // Close mobile menu when clicking a link
-        if (mobileMenu) {
-            const mobileLinks = mobileMenu.querySelectorAll('a');
-            mobileLinks.forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.add('hidden');
-                    mobileMenuBtn.setAttribute('aria-expanded', 'false');
-                    menuIcon.classList.remove('fa-times');
-                    menuIcon.classList.add('fa-bars');
+        function hideMenu() {
+            hideTimeout = setTimeout(() => {
+                megaMenuContainer.classList.remove('opacity-100', 'scale-100');
+                megaMenuContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                
+                // Reset chevrons
+                navItems.forEach(item => {
+                    const icon = item.querySelector('[data-lucide="chevron-down"]');
+                    icon.style.transform = 'rotate(0deg)';
                 });
-            });
+            }, 150); // Small delay to allow moving mouse to the dropdown
         }
+
+        navItems.forEach(item => {
+            const menuId = item.getAttribute('data-dropdown');
+            item.addEventListener('mouseenter', (e) => showMenu(menuId, e.currentTarget));
+            item.addEventListener('mouseleave', hideMenu);
+        });
+
+        if (megaMenuContainer) {
+            megaMenuContainer.addEventListener('mouseenter', () => {
+                clearTimeout(hideTimeout);
+            });
+            
+            megaMenuContainer.addEventListener('mouseleave', hideMenu);
+        }
+
+        // Mobile Sheet Logic
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const closeBtn = document.getElementById('close-mobile-sheet');
+        const sheet = document.getElementById('mobile-sheet');
+        const overlay = document.getElementById('mobile-sheet-overlay');
+
+        function openSheet() {
+            overlay.classList.remove('hidden');
+            // Small timeout to allow display:block to apply before animating opacity
+            setTimeout(() => overlay.classList.add('opacity-100'), 10);
+            sheet.classList.remove('translate-x-full');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closeSheet() {
+            overlay.classList.remove('opacity-100');
+            sheet.classList.add('translate-x-full');
+            document.body.style.overflow = '';
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+
+        if(mobileBtn) mobileBtn.addEventListener('click', openSheet);
+        if(closeBtn) closeBtn.addEventListener('click', closeSheet);
+        if(overlay) overlay.addEventListener('click', closeSheet);
     });
+
+    // Mobile Accordion Toggle
+    window.toggleAccordion = function(contentId, button) {
+        const content = document.getElementById(contentId);
+        const icon = button.querySelector('i');
+        
+        if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+        } else {
+            content.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+        }
+    }
 </script>

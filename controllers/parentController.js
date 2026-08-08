@@ -1,13 +1,13 @@
 const bcrypt = require('bcryptjs');
 const StudentProfile = require('../models/StudentProfile');
+const ParentProfile = require('../models/ParentProfile');
+const User = require('../models/User');
 const Enrollment = require('../models/Enrollment');
 const Progress = require('../models/Progress');
 const QuizAttempt = require('../models/QuizAttempt');
 const Submission = require('../models/Submission');
 const Assignment = require('../models/Assignment');
 const Lesson = require('../models/Lesson');
-const User = require('../models/User');
-const ParentProfile = require('../models/ParentProfile');
 const Achievement = require('../models/Achievement');
 const Notification = require('../models/Notification');
 
@@ -29,7 +29,9 @@ exports.getDashboard = async (req, res, next) => {
             return res.render('parent/dashboard', {
                 title: 'Parent Dashboard | EduSmart',
                 children: [],
-                selectedChild: null
+                selectedChild: null,
+                totalAchievements: 0,
+                recentAchievements: []
             });
         }
 

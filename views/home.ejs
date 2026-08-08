@@ -1,20 +1,28 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EduSmart - Smart Learning for Every Student</title>
-    <meta name="description" content="EduSmart is a personalized learning platform with adaptive quizzes, AI-powered assistance, and comprehensive analytics for students, teachers, and parents.">
+    <meta name="description"
+        content="EduSmart is a personalized learning platform with adaptive quizzes, AI-powered assistance, and comprehensive analytics for students, teachers, and parents.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <!-- GSAP + ScrollTrigger -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <!-- Lenis Smooth Scrolling -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
         #particleCanvas {
             position: absolute;
             top: 0;
@@ -24,832 +32,1106 @@
             z-index: 0;
             pointer-events: none;
         }
+
         .hero-glow {
-            background: radial-gradient(ellipse 600px 400px at 70% 40%, rgba(99,102,241,0.10), transparent);
+            background: radial-gradient(ellipse 600px 400px at 70% 40%, rgba(99, 102, 241, 0.10), transparent);
         }
+
         .float-card {
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+            will-change: transform;
+            transform: translateZ(0);
         }
     </style>
 </head>
+
 <body class="bg-white text-gray-800 font-sans antialiased flex flex-col min-h-screen overflow-x-hidden">
-    
+
     <%- include('partials/navbar') %>
 
-    <main class="flex-grow">
+        <main class="flex-grow">
 
-        <!-- ============================== -->
-        <!-- HERO SECTION                   -->
-        <!-- ============================== -->
-        <section id="heroSection" class="relative min-h-[92vh] flex items-center overflow-hidden bg-cover bg-center bg-no-repeat" style="background-image: url('/images/heroimage.jpg');">
-            <!-- Image Overlay for readability -->
-            <div class="absolute inset-0 bg-white/80 md:bg-white/50 bg-gradient-to-r from-white/95 via-white/70 to-white/20 pointer-events-none z-0"></div>
-            <!-- Particle Canvas -->
-            <canvas id="particleCanvas" class="z-0"></canvas>
-            <!-- Ambient glow -->
-            <div class="hero-glow absolute inset-0 pointer-events-none"></div>
-            <!-- Subtle corner accents -->
-            <div class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-indigo-100/40 blur-3xl pointer-events-none"></div>
-            <div class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-blue-100/30 blur-3xl pointer-events-none"></div>
+            <!-- ============================== -->
+            <!-- HERO SECTION                   -->
+            <!-- ============================== -->
+            <section id="heroSection"
+                class="relative min-h-[92vh] flex items-center overflow-hidden bg-cover bg-center bg-no-repeat"
+                style="background-image: url('/images/heroimage.jpg');">
+                <!-- Image Overlay for readability -->
+                <div
+                    class="absolute inset-0 bg-white/80 md:bg-white/50 bg-gradient-to-r from-white/95 via-white/70 to-white/20 pointer-events-none z-0">
+                </div>
+                <!-- Particle Canvas -->
+                <canvas id="particleCanvas" class="z-0"></canvas>
+                <!-- Ambient glow -->
+                <div class="hero-glow absolute inset-0 pointer-events-none"></div>
+                <!-- Subtle corner accents -->
+                <div
+                    class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-indigo-100/40 blur-3xl pointer-events-none">
+                </div>
+                <div
+                    class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-blue-100/30 blur-3xl pointer-events-none">
+                </div>
 
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 lg:py-0">
-                <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
-                    
-                    <!-- Left: Copy -->
-                    <div class="lg:w-1/2 relative z-10">
-                        <div id="heroBadge" class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 text-xs font-semibold tracking-wide uppercase mb-6 opacity-0">
-                            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
-                            The Future of Education
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 lg:py-0">
+                    <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+
+                        <!-- Left: Copy -->
+                        <div class="lg:w-1/2 relative z-10">
+
+                            <h1 id="heroTitle"
+                                class="mt-8 lg:mt-12 text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-[1.08] tracking-tight mb-6 opacity-0">
+                                Smart Learning
+                                <span
+                                    class="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-500">for
+                                    Every Student</span>
+                            </h1>
+
+                            <p id="heroDesc"
+                                class="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-lg mb-10 opacity-0">
+                                Personalized lessons, adaptive assessments, and AI-powered tutoring — all in one
+                                beautiful, accessible platform.
+                            </p>
+
+                            <div id="heroCTA" class="flex flex-col sm:flex-row gap-4 opacity-0">
+                                <a href="/signup"
+                                    class="group inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200/50 transition-all duration-300 hover:-translate-y-0.5">
+                                    Start Learning Free
+                                    <i
+                                        class="fas fa-arrow-right ml-2 transition-transform duration-300 group-hover:translate-x-1"></i>
+                                </a>
+                                <a href="#features"
+                                    class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300">
+                                    <i class="fas fa-play-circle mr-2 text-indigo-500"></i> Watch Demo
+                                </a>
+                            </div>
+
+                            <!-- Trust row -->
+                            <div id="heroTrust" class="mt-12 flex items-center gap-6 text-sm text-gray-400 opacity-0">
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-shield-alt text-green-500"></i>
+                                    <span>Secure & Private</span>
+                                </div>
+                                <div class="w-px h-4 bg-gray-200"></div>
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-wifi text-blue-500"></i>
+                                    <span>Works Offline</span>
+                                </div>
+                                <div class="w-px h-4 bg-gray-200"></div>
+                                <div class="flex items-center gap-1.5">
+                                    <i class="fas fa-globe text-purple-500"></i>
+                                    <span>Multi-language</span>
+                                </div>
+                            </div>
                         </div>
 
-                        <h1 id="heroTitle" class="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-[1.08] tracking-tight mb-6 opacity-0">
-                            Smart Learning
-                            <span class="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-500">for Every Student</span>
-                        </h1>
+                        <!-- Right: Floating Metric Cards -->
+                        <div class="lg:w-1/2 relative flex items-center justify-center min-h-[420px] w-full">
 
-                        <p id="heroDesc" class="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-lg mb-10 opacity-0">
-                            Personalized lessons, adaptive assessments, and AI-powered tutoring — all in one beautiful, accessible platform.
+                            <!-- Central decorative rings -->
+                            <div
+                                class="absolute w-64 h-64 rounded-full border border-dashed border-indigo-100 opacity-60">
+                            </div>
+                            <div
+                                class="absolute w-80 h-80 rounded-full border border-dashed border-gray-100 opacity-40">
+                            </div>
+
+                            <!-- Card 1: Progress -->
+                            <div id="floatCard1"
+                                class="float-card absolute top-4 left-4 sm:left-8 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-5 w-52 opacity-0">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div
+                                        class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm">
+                                        <i class="fas fa-chart-line"></i>
+                                    </div>
+                                    <span
+                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Progress</span>
+                                </div>
+                                <div class="text-3xl font-extrabold text-gray-900">87<span
+                                        class="text-lg text-indigo-500">%</span></div>
+                                <div class="mt-2 w-full bg-gray-100 rounded-full h-1.5">
+                                    <div id="progressFill" class="bg-indigo-500 h-1.5 rounded-full" style="width: 0%">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: AI Tutor -->
+                            <div id="floatCard2"
+                                class="float-card absolute top-8 right-4 sm:right-6 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-5 w-56 opacity-0">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div
+                                        class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">AI
+                                        Tutor</span>
+                                </div>
+                                <div
+                                    class="bg-gray-50 rounded-xl p-3 text-sm text-gray-600 leading-relaxed border border-gray-100">
+                                    "A <strong>for-loop</strong> iterates over a sequence one element at a time…"
+                                </div>
+                            </div>
+
+                            <!-- Card 3: Streak -->
+                            <div id="floatCard3"
+                                class="float-card absolute bottom-12 left-8 sm:left-16 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-5 w-48 opacity-0">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <div
+                                        class="w-9 h-9 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center text-sm">
+                                        <i class="fas fa-fire"></i>
+                                    </div>
+                                    <span
+                                        class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Streak</span>
+                                </div>
+                                <div class="text-3xl font-extrabold text-gray-900">14 <span
+                                        class="text-base font-medium text-gray-400">days</span></div>
+                            </div>
+
+                            <!-- Card 4: Badge -->
+                            <div id="floatCard4"
+                                class="float-card absolute bottom-4 right-8 sm:right-12 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-4 opacity-0">
+                                <div class="flex items-center gap-3">
+                                    <div
+                                        class="w-11 h-11 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white flex items-center justify-center text-lg shadow-md">
+                                        <i class="fas fa-trophy"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-gray-900">Quiz Master</div>
+                                        <div class="text-xs text-gray-400">Badge Unlocked</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom fade line -->
+                <div
+                    class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent">
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- FEATURES GRID SECTION          -->
+            <!-- ============================== -->
+            <section id="features" class="py-24 bg-gray-50/80">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center max-w-3xl mx-auto mb-16 gsap-section-header">
+                        <h2 class="text-sm text-indigo-600 font-semibold tracking-widest uppercase mb-3">Features</h2>
+                        <p class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight">
+                            A Complete Learning Ecosystem
                         </p>
+                        <p class="mt-4 text-lg text-gray-500">
+                            Everything you need to succeed, built into one seamless, accessible platform.
+                        </p>
+                    </div>
 
-                        <div id="heroCTA" class="flex flex-col sm:flex-row gap-4 opacity-0">
-                            <a href="/signup" class="group inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200/50 transition-all duration-300 hover:-translate-y-0.5">
-                                Start Learning Free
-                                <i class="fas fa-arrow-right ml-2 transition-transform duration-300 group-hover:translate-x-1"></i>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="featuresGrid">
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-brain text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Adaptive Learning</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Lessons and quizzes adjust dynamically to
+                                your individual learning level.</p>
+                        </div>
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-robot text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">AI Tutor</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Get instant help, detailed explanations,
+                                and 24/7 assistance whenever you need it.</p>
+                        </div>
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-amber-50 text-amber-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-trophy text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Gamification</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Earn XP, unlock badges, and climb the
+                                leaderboard while learning.</p>
+                        </div>
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-green-50 text-green-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-wifi text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Offline Learning</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Continue learning downloaded content even
+                                when you're disconnected.</p>
+                        </div>
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-purple-50 text-purple-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-chart-line text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Analytics & Progress</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Track your learning progress and
+                                performance with visual insights.</p>
+                        </div>
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-pink-50 text-pink-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-language text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Multi-language</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Learn comfortably with comprehensive
+                                support for multiple languages.</p>
+                        </div>
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-orange-50 text-orange-600 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-volume-up text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Text-to-Speech</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Listen to lessons and improve accessibility
+                                with native speech tools.</p>
+                        </div>
+                        <div
+                            class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
+                            <div
+                                class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-slate-100 text-slate-700 mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <i class="fas fa-shield-alt text-lg"></i>
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1.5">Secure & Scalable</h3>
+                            <p class="text-gray-500 text-sm leading-relaxed">Built with robust authentication and a
+                                scalable cloud architecture.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- ADAPTIVE LEARNING SECTION      -->
+            <!-- ============================== -->
+            <section class="py-24 relative bg-cover bg-center bg-fixed"
+                style="background-image: url('/images/heroimage.jpg');">
+                <!-- Overlay to keep the text readable while letting the image peek through -->
+                <div class="absolute inset-0 bg-white/90"></div>
+
+                <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex flex-col lg:flex-row items-center gap-16">
+                        <div class="lg:w-1/2 gsap-fade-left">
+                            <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6 leading-tight">Learning
+                                that Adapts to You</h2>
+                            <p class="text-lg text-gray-500 mb-10 leading-relaxed">
+                                Our intelligent algorithm constantly monitors your performance, adjusting the difficulty
+                                of questions to keep you perfectly challenged—neither bored nor overwhelmed.
+                            </p>
+
+                            <!-- Visual Flow -->
+                            <div
+                                class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
+                                <div
+                                    class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div
+                                        class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-gray-100 text-gray-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                        <i class="fas fa-book-reader"></i>
+                                    </div>
+                                    <div
+                                        class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
+                                        <div class="font-bold text-gray-900">1. Learn</div>
+                                        <div class="text-sm text-gray-500">Consume bite-sized lessons.</div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div
+                                        class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-indigo-50 text-indigo-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                        <i class="fas fa-tasks"></i>
+                                    </div>
+                                    <div
+                                        class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
+                                        <div class="font-bold text-gray-900">2. Take Quiz</div>
+                                        <div class="text-sm text-gray-500">Test your knowledge immediately.</div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div
+                                        class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-50 text-blue-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                        <i class="fas fa-chart-pie"></i>
+                                    </div>
+                                    <div
+                                        class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
+                                        <div class="font-bold text-gray-900">3. Analyze</div>
+                                        <div class="text-sm text-gray-500">System evaluates your performance.</div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                                    <div
+                                        class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-green-50 text-green-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                                        <i class="fas fa-sliders-h"></i>
+                                    </div>
+                                    <div
+                                        class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
+                                        <div class="font-bold text-gray-900">4. Adjust</div>
+                                        <div class="text-sm text-gray-500">Difficulty scales to your needs.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div
+                            class="lg:w-1/2 bg-gray-50 rounded-2xl p-8 border border-gray-100 flex items-center justify-center min-h-[400px] gsap-fade-right">
+                            <div class="w-full max-w-sm space-y-4">
+                                <div
+                                    class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center space-x-4 opacity-50">
+                                    <div
+                                        class="w-10 h-10 rounded bg-red-100 text-red-500 flex items-center justify-center">
+                                        <i class="fas fa-times"></i>
+                                    </div>
+                                    <div>
+                                        <div class="h-4 w-24 bg-gray-200 rounded"></div>
+                                        <div class="h-3 w-16 bg-gray-100 rounded mt-2"></div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-white p-4 rounded-lg shadow-md border-l-4 border-indigo-500 flex items-center space-x-4 scale-105 transform transition-transform">
+                                    <div
+                                        class="w-10 h-10 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                                        <i class="fas fa-sync fa-spin"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-sm text-gray-900">Adjusting Difficulty</div>
+                                        <div class="text-xs text-gray-500 mt-1">Generating appropriate content...</div>
+                                    </div>
+                                </div>
+                                <div
+                                    class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center space-x-4 opacity-75">
+                                    <div
+                                        class="w-10 h-10 rounded bg-green-100 text-green-500 flex items-center justify-center">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div>
+                                        <div class="h-4 w-32 bg-gray-200 rounded"></div>
+                                        <div class="h-3 w-20 bg-gray-100 rounded mt-2"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- AI TUTOR SECTION               -->
+            <!-- ============================== -->
+            <section class="py-24 bg-indigo-950 text-white relative overflow-hidden">
+                <div
+                    class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-indigo-800 opacity-50 blur-3xl">
+                </div>
+                <div
+                    class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-800 opacity-30 blur-3xl">
+                </div>
+
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div class="flex flex-col lg:flex-row items-center gap-16">
+                        <div class="lg:w-1/2 gsap-fade-left">
+                            <div
+                                class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-800/60 text-indigo-200 text-xs font-semibold mb-6 border border-indigo-700/50">
+                                <span class="flex w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
+                                Always Online
+                            </div>
+                            <h2 class="text-3xl sm:text-4xl font-extrabold mb-6">Meet Your Personal AI Tutor</h2>
+                            <p class="text-indigo-200 text-lg mb-8 leading-relaxed">
+                                Stuck on a difficult concept? The EduSmart AI Tutor is here 24/7 to provide
+                                context-aware hints, detailed explanations, and step-by-step guidance without just
+                                giving away the answer.
+                            </p>
+                            <a href="/login?redirect=/student/ai-tutor"
+                                class="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-xl text-indigo-900 bg-white hover:bg-gray-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5">
+                                <i class="fas fa-comment-dots mr-2 text-indigo-600"></i> Ask AI Tutor
                             </a>
-                            <a href="#features" class="inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-gray-700 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-300">
-                                <i class="fas fa-play-circle mr-2 text-indigo-500"></i> Watch Demo
-                            </a>
                         </div>
 
-                        <!-- Trust row -->
-                        <div id="heroTrust" class="mt-12 flex items-center gap-6 text-sm text-gray-400 opacity-0">
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-shield-alt text-green-500"></i>
-                                <span>Secure & Private</span>
-                            </div>
-                            <div class="w-px h-4 bg-gray-200"></div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-wifi text-blue-500"></i>
-                                <span>Works Offline</span>
-                            </div>
-                            <div class="w-px h-4 bg-gray-200"></div>
-                            <div class="flex items-center gap-1.5">
-                                <i class="fas fa-globe text-purple-500"></i>
-                                <span>Multi-language</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Right: Floating Metric Cards -->
-                    <div class="lg:w-1/2 relative flex items-center justify-center min-h-[420px] w-full">
-                        
-                        <!-- Central decorative rings -->
-                        <div class="absolute w-64 h-64 rounded-full border border-dashed border-indigo-100 opacity-60"></div>
-                        <div class="absolute w-80 h-80 rounded-full border border-dashed border-gray-100 opacity-40"></div>
-
-                        <!-- Card 1: Progress -->
-                        <div id="floatCard1" class="float-card absolute top-4 left-4 sm:left-8 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-5 w-52 opacity-0">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm">
-                                    <i class="fas fa-chart-line"></i>
+                        <!-- Chat mock -->
+                        <div class="lg:w-1/2 w-full max-w-md mx-auto gsap-fade-right">
+                            <div class="bg-white rounded-2xl shadow-2xl overflow-hidden text-gray-800 text-sm">
+                                <div class="bg-gray-50 p-4 border-b border-gray-100 flex items-center">
+                                    <div
+                                        class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div>
+                                        <div class="font-bold text-gray-900">EduSmart AI</div>
+                                        <div class="text-xs text-green-500">Online</div>
+                                    </div>
                                 </div>
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Progress</span>
-                            </div>
-                            <div class="text-3xl font-extrabold text-gray-900">87<span class="text-lg text-indigo-500">%</span></div>
-                            <div class="mt-2 w-full bg-gray-100 rounded-full h-1.5">
-                                <div id="progressFill" class="bg-indigo-500 h-1.5 rounded-full" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <!-- Card 2: AI Tutor -->
-                        <div id="floatCard2" class="float-card absolute top-8 right-4 sm:right-6 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-5 w-56 opacity-0">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
-                                    <i class="fas fa-robot"></i>
+                                <div class="p-6 space-y-4 h-64 overflow-y-auto bg-gray-50/50" id="homeChatContainer">
+                                    <div class="flex justify-end">
+                                        <div
+                                            class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm">
+                                            Can you explain how a for-loop works in Python?
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-start">
+                                        <div
+                                            class="bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none max-w-[90%] shadow-sm text-gray-600 leading-relaxed">
+                                            Of course! Think of a <code
+                                                class="bg-gray-100 px-1 rounded text-xs">for</code> loop as a way to
+                                            say: "For every item in this collection, do something." <br><br>For example,
+                                            if you have a list of numbers, a for-loop will look at each number one by
+                                            one.
+                                        </div>
+                                    </div>
                                 </div>
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">AI Tutor</span>
-                            </div>
-                            <div class="bg-gray-50 rounded-xl p-3 text-sm text-gray-600 leading-relaxed border border-gray-100">
-                                "A <strong>for-loop</strong> iterates over a sequence one element at a time…"
-                            </div>
-                        </div>
-
-                        <!-- Card 3: Streak -->
-                        <div id="floatCard3" class="float-card absolute bottom-12 left-8 sm:left-16 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-5 w-48 opacity-0">
-                            <div class="flex items-center gap-3 mb-2">
-                                <div class="w-9 h-9 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center text-sm">
-                                    <i class="fas fa-fire"></i>
-                                </div>
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Streak</span>
-                            </div>
-                            <div class="text-3xl font-extrabold text-gray-900">14 <span class="text-base font-medium text-gray-400">days</span></div>
-                        </div>
-
-                        <!-- Card 4: Badge -->
-                        <div id="floatCard4" class="float-card absolute bottom-4 right-8 sm:right-12 bg-white/80 border border-gray-100 rounded-2xl shadow-lg p-4 opacity-0">
-                            <div class="flex items-center gap-3">
-                                <div class="w-11 h-11 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 text-white flex items-center justify-center text-lg shadow-md">
-                                    <i class="fas fa-trophy"></i>
-                                </div>
-                                <div>
-                                    <div class="text-sm font-bold text-gray-900">Quiz Master</div>
-                                    <div class="text-xs text-gray-400">Badge Unlocked</div>
+                                <div class="p-3 border-t border-gray-100 bg-white">
+                                    <form id="homeAiForm" class="flex items-center bg-gray-100 rounded-full px-4 py-2">
+                                        <input type="text" id="homeAiInput" class="bg-transparent border-none outline-none flex-grow text-gray-700" placeholder="Type a message..." autocomplete="off" required>
+                                        <button type="submit" id="homeAiSubmitBtn" class="text-indigo-500 hover:text-indigo-600 focus:outline-none disabled:opacity-50 transition-colors ml-2">
+                                            <i class="fas fa-paper-plane"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <!-- Bottom fade line -->
-            <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-        </section>
+            <!-- ============================== -->
+            <!-- HIGHLIGHTS GRID                -->
+            <!-- ============================== -->
+            <section class="py-24 bg-gray-50/80">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="highlightsGrid">
+                        <!-- Gamification -->
+                        <div
+                            class="highlight-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                            <div class="h-1 bg-gradient-to-r from-amber-400 to-orange-500"></div>
+                            <div class="p-8">
+                                <div
+                                    class="w-11 h-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center mb-5 text-lg">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">Gamification</h3>
+                                <p class="text-gray-500 mb-6 text-sm leading-relaxed">Learning is more fun with rewards.
+                                    Maintain learning streaks, earn experience points (XP), and unlock badges.</p>
+                                <div
+                                    class="bg-gray-50 rounded-xl p-4 flex items-center justify-between border border-gray-100">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="text-orange-500 text-xl"><i class="fas fa-fire"></i></div>
+                                        <div>
+                                            <div class="text-xs text-gray-500">Current Streak</div>
+                                            <div class="font-bold text-gray-900">7 Days</div>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <div class="text-xs text-gray-500">Total XP</div>
+                                        <div class="font-bold text-indigo-600">2,450</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- ============================== -->
-        <!-- FEATURES GRID SECTION          -->
-        <!-- ============================== -->
-        <section id="features" class="py-24 bg-gray-50/80">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center max-w-3xl mx-auto mb-16 gsap-section-header">
-                    <h2 class="text-sm text-indigo-600 font-semibold tracking-widest uppercase mb-3">Features</h2>
-                    <p class="text-3xl sm:text-4xl font-extrabold text-gray-900 leading-tight">
-                        A Complete Learning Ecosystem
-                    </p>
-                    <p class="mt-4 text-lg text-gray-500">
-                        Everything you need to succeed, built into one seamless, accessible platform.
-                    </p>
-                </div>
+                        <!-- Offline -->
+                        <div
+                            class="highlight-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                            <div class="h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
+                            <div class="p-8">
+                                <div
+                                    class="w-11 h-11 rounded-xl bg-green-50 text-green-500 flex items-center justify-center mb-5 text-lg">
+                                    <i class="fas fa-cloud-download-alt"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">Offline Learning</h3>
+                                <p class="text-gray-500 mb-6 text-sm leading-relaxed">No internet? No problem. Access
+                                    selected cached lessons and notes securely via your browser's local storage.</p>
+                                <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
+                                    <div
+                                        class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium mb-2">
+                                        <i class="fas fa-check-circle mr-1"></i> Available Offline
+                                    </div>
+                                    <div class="text-sm font-medium text-gray-700">Algebra Basics Ch. 1-3</div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="featuresGrid">
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-brain text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">Adaptive Learning</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Lessons and quizzes adjust dynamically to your individual learning level.</p>
-                    </div>
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-blue-50 text-blue-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-robot text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">AI Tutor</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Get instant help, detailed explanations, and 24/7 assistance whenever you need it.</p>
-                    </div>
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-amber-50 text-amber-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-trophy text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">Gamification</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Earn XP, unlock badges, and climb the leaderboard while learning.</p>
-                    </div>
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-green-50 text-green-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-wifi text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">Offline Learning</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Continue learning downloaded content even when you're disconnected.</p>
-                    </div>
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-purple-50 text-purple-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-chart-line text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">Analytics & Progress</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Track your learning progress and performance with visual insights.</p>
-                    </div>
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-pink-50 text-pink-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-language text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">Multi-language</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Learn comfortably with comprehensive support for multiple languages.</p>
-                    </div>
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-orange-50 text-orange-600 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-volume-up text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">Text-to-Speech</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Listen to lessons and improve accessibility with native speech tools.</p>
-                    </div>
-                    <div class="feature-card bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 group">
-                        <div class="w-11 h-11 inline-flex items-center justify-center rounded-xl bg-slate-100 text-slate-700 mb-4 group-hover:scale-110 transition-transform duration-300">
-                            <i class="fas fa-shield-alt text-lg"></i>
-                        </div>
-                        <h3 class="text-base font-bold text-gray-900 mb-1.5">Secure & Scalable</h3>
-                        <p class="text-gray-500 text-sm leading-relaxed">Built with robust authentication and a scalable cloud architecture.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================== -->
-        <!-- ADAPTIVE LEARNING SECTION      -->
-        <!-- ============================== -->
-        <section class="py-24 relative bg-cover bg-center bg-fixed" style="background-image: url('/images/heroimage.jpg');">
-            <!-- Overlay to keep the text readable while letting the image peek through -->
-            <div class="absolute inset-0 bg-white/90"></div>
-            
-            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col lg:flex-row items-center gap-16">
-                    <div class="lg:w-1/2 gsap-fade-left">
-                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-6 leading-tight">Learning that Adapts to You</h2>
-                        <p class="text-lg text-gray-500 mb-10 leading-relaxed">
-                            Our intelligent algorithm constantly monitors your performance, adjusting the difficulty of questions to keep you perfectly challenged—neither bored nor overwhelmed.
-                        </p>
-                        
-                        <!-- Visual Flow -->
-                        <div class="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
-                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-gray-100 text-gray-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                                    <i class="fas fa-book-reader"></i>
+                        <!-- Analytics -->
+                        <div
+                            class="highlight-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
+                            <div class="h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
+                            <div class="p-8">
+                                <div
+                                    class="w-11 h-11 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-5 text-lg">
+                                    <i class="fas fa-chart-bar"></i>
                                 </div>
-                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                    <div class="font-bold text-gray-900">1. Learn</div>
-                                    <div class="text-sm text-gray-500">Consume bite-sized lessons.</div>
+                                <h3 class="text-xl font-bold text-gray-900 mb-3">Rich Analytics</h3>
+                                <p class="text-gray-500 mb-6 text-sm leading-relaxed">Understand learning patterns.
+                                    Track quiz scores, time spent, and identify weak areas across subjects.</p>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="font-medium text-gray-700">Mathematics</span>
+                                            <span class="text-indigo-600 font-bold">85%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 85%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between text-xs mb-1">
+                                            <span class="font-medium text-gray-700">Science</span>
+                                            <span class="text-blue-500 font-bold">62%</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 62%"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-indigo-50 text-indigo-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                                    <i class="fas fa-tasks"></i>
-                                </div>
-                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                    <div class="font-bold text-gray-900">2. Take Quiz</div>
-                                    <div class="text-sm text-gray-500">Test your knowledge immediately.</div>
-                                </div>
-                            </div>
-                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-blue-50 text-blue-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                                    <i class="fas fa-chart-pie"></i>
-                                </div>
-                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                    <div class="font-bold text-gray-900">3. Analyze</div>
-                                    <div class="text-sm text-gray-500">System evaluates your performance.</div>
-                                </div>
-                            </div>
-                            <div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
-                                <div class="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-green-50 text-green-500 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
-                                    <i class="fas fa-sliders-h"></i>
-                                </div>
-                                <div class="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-lg bg-white border border-gray-100 shadow-sm">
-                                    <div class="font-bold text-gray-900">4. Adjust</div>
-                                    <div class="text-sm text-gray-500">Difficulty scales to your needs.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="lg:w-1/2 bg-gray-50 rounded-2xl p-8 border border-gray-100 flex items-center justify-center min-h-[400px] gsap-fade-right">
-                        <div class="w-full max-w-sm space-y-4">
-                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center space-x-4 opacity-50">
-                                <div class="w-10 h-10 rounded bg-red-100 text-red-500 flex items-center justify-center"><i class="fas fa-times"></i></div>
-                                <div><div class="h-4 w-24 bg-gray-200 rounded"></div><div class="h-3 w-16 bg-gray-100 rounded mt-2"></div></div>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow-md border-l-4 border-indigo-500 flex items-center space-x-4 scale-105 transform transition-transform">
-                                <div class="w-10 h-10 rounded bg-indigo-100 text-indigo-600 flex items-center justify-center"><i class="fas fa-sync fa-spin"></i></div>
-                                <div>
-                                    <div class="font-bold text-sm text-gray-900">Adjusting Difficulty</div>
-                                    <div class="text-xs text-gray-500 mt-1">Generating appropriate content...</div>
-                                </div>
-                            </div>
-                            <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-100 flex items-center space-x-4 opacity-75">
-                                <div class="w-10 h-10 rounded bg-green-100 text-green-500 flex items-center justify-center"><i class="fas fa-check"></i></div>
-                                <div><div class="h-4 w-32 bg-gray-200 rounded"></div><div class="h-3 w-20 bg-gray-100 rounded mt-2"></div></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- ============================== -->
-        <!-- AI TUTOR SECTION               -->
-        <!-- ============================== -->
-        <section class="py-24 bg-indigo-950 text-white relative overflow-hidden">
-            <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-indigo-800 opacity-50 blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-800 opacity-30 blur-3xl"></div>
-            
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                <div class="flex flex-col lg:flex-row items-center gap-16">
-                    <div class="lg:w-1/2 gsap-fade-left">
-                        <div class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-800/60 text-indigo-200 text-xs font-semibold mb-6 border border-indigo-700/50">
-                            <span class="flex w-2 h-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-                            Always Online
+            <!-- ============================== -->
+            <!-- HOW IT WORKS SECTION           -->
+            <!-- ============================== -->
+            <section id="how-it-works" class="py-24 bg-white">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16 gsap-section-header">
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900">How It Works</h2>
+                        <p class="mt-4 text-lg text-gray-500">Your path to smarter learning in 4 simple steps.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative" id="stepsGrid">
+                        <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 z-0"></div>
+
+                        <div class="step-item relative z-10 text-center">
+                            <div
+                                class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
+                                1</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Create Account</h3>
+                            <p class="text-gray-500 text-sm">Sign up securely and choose your platform role.</p>
                         </div>
-                        <h2 class="text-3xl sm:text-4xl font-extrabold mb-6">Meet Your Personal AI Tutor</h2>
-                        <p class="text-indigo-200 text-lg mb-8 leading-relaxed">
-                            Stuck on a difficult concept? The EduSmart AI Tutor is here 24/7 to provide context-aware hints, detailed explanations, and step-by-step guidance without just giving away the answer.
-                        </p>
-                        <a href="/login?redirect=/student/dashboard" class="inline-flex items-center justify-center px-6 py-3 text-base font-semibold rounded-xl text-indigo-900 bg-white hover:bg-gray-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5">
-                            <i class="fas fa-comment-dots mr-2 text-indigo-600"></i> Ask AI Tutor
+                        <div class="step-item relative z-10 text-center">
+                            <div
+                                class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
+                                2</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Choose Path</h3>
+                            <p class="text-gray-500 text-sm">Enroll in courses tailored to your specific needs.</p>
+                        </div>
+                        <div class="step-item relative z-10 text-center">
+                            <div
+                                class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
+                                3</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Learn & Practice</h3>
+                            <p class="text-gray-500 text-sm">Consume lessons, take quizzes, and chat with AI.</p>
+                        </div>
+                        <div class="step-item relative z-10 text-center">
+                            <div
+                                class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">
+                                4</div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Track Progress</h3>
+                            <p class="text-gray-500 text-sm">View comprehensive analytics and earn achievements.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- ROLES SECTION                  -->
+            <!-- ============================== -->
+            <section id="about" class="py-24 bg-gray-50/80">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="text-center mb-16 gsap-section-header">
+                        <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900">A Platform for Everyone</h2>
+                        <p class="mt-4 text-lg text-gray-500">Custom dashboards designed for every participant in the
+                            educational journey.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="rolesGrid">
+                        <div
+                            class="role-card bg-white rounded-2xl shadow-sm p-8 text-center border-t-4 border-indigo-500 hover:shadow-md transition-all duration-300">
+                            <div
+                                class="w-14 h-14 mx-auto bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-2xl mb-5">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">Students</h3>
+                            <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Learn
+                                    interactively</li>
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    Practice with adaptive quizzes</li>
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Track
+                                    personal progress</li>
+                            </ul>
+                        </div>
+                        <div
+                            class="role-card bg-white rounded-2xl shadow-sm p-8 text-center border-t-4 border-blue-500 hover:shadow-md transition-all duration-300">
+                            <div
+                                class="w-14 h-14 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-5">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">Teachers</h3>
+                            <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    Create rich courses</li>
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    Manage structured lessons</li>
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    Analyze class performance</li>
+                            </ul>
+                        </div>
+                        <div
+                            class="role-card bg-white rounded-2xl shadow-sm p-8 text-center border-t-4 border-purple-500 hover:shadow-md transition-all duration-300">
+                            <div
+                                class="w-14 h-14 mx-auto bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-2xl mb-5">
+                                <i class="fas fa-user-friends"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-4">Parents</h3>
+                            <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    Monitor child's progress</li>
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> View
+                                    subject performance</li>
+                                <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i>
+                                    Receive automated updates</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- FINAL CTA SECTION              -->
+            <!-- ============================== -->
+            <section class="bg-indigo-600 relative overflow-hidden" id="ctaSection">
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-indigo-700/20 via-transparent to-indigo-700/20 pointer-events-none">
+                </div>
+                <div
+                    class="max-w-4xl mx-auto px-4 py-20 sm:px-6 sm:py-28 lg:max-w-7xl lg:px-8 lg:flex lg:items-center lg:justify-between relative z-10">
+                    <div class="gsap-fade-left">
+                        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                            <span class="block">Ready to transform your education?</span>
+                            <span class="block text-indigo-200 mt-1">Start Your Smarter Learning Journey today.</span>
+                        </h2>
+                    </div>
+                    <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0 gsap-fade-right">
+                        <a href="/signup"
+                            class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl text-indigo-600 bg-white hover:bg-indigo-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5">
+                            Get Started
                         </a>
                     </div>
-                    
-                    <!-- Chat mock -->
-                    <div class="lg:w-1/2 w-full max-w-md mx-auto gsap-fade-right">
-                        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden text-gray-800 text-sm">
-                            <div class="bg-gray-50 p-4 border-b border-gray-100 flex items-center">
-                                <div class="w-8 h-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3">
-                                    <i class="fas fa-robot"></i>
-                                </div>
-                                <div>
-                                    <div class="font-bold text-gray-900">EduSmart AI</div>
-                                    <div class="text-xs text-green-500">Online</div>
-                                </div>
-                            </div>
-                            <div class="p-6 space-y-4 h-64 overflow-y-auto bg-gray-50/50">
-                                <div class="flex justify-end">
-                                    <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm">
-                                        Can you explain how a for-loop works in Python?
-                                    </div>
-                                </div>
-                                <div class="flex justify-start">
-                                    <div class="bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none max-w-[90%] shadow-sm text-gray-600 leading-relaxed">
-                                        Of course! Think of a <code class="bg-gray-100 px-1 rounded text-xs">for</code> loop as a way to say: "For every item in this collection, do something." <br><br>For example, if you have a list of numbers, a for-loop will look at each number one by one.
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-3 border-t border-gray-100 bg-white">
-                                <div class="flex items-center bg-gray-100 rounded-full px-4 py-2">
-                                    <span class="text-gray-400 italic flex-grow">Type a message...</span>
-                                    <i class="fas fa-paper-plane text-indigo-500 cursor-pointer ml-2"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </main>
 
-        <!-- ============================== -->
-        <!-- HIGHLIGHTS GRID                -->
-        <!-- ============================== -->
-        <section class="py-24 bg-gray-50/80">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="highlightsGrid">
-                    <!-- Gamification -->
-                    <div class="highlight-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
-                        <div class="h-1 bg-gradient-to-r from-amber-400 to-orange-500"></div>
-                        <div class="p-8">
-                            <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center mb-5 text-lg">
-                                <i class="fas fa-medal"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-3">Gamification</h3>
-                            <p class="text-gray-500 mb-6 text-sm leading-relaxed">Learning is more fun with rewards. Maintain learning streaks, earn experience points (XP), and unlock badges.</p>
-                            <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between border border-gray-100">
-                                <div class="flex items-center space-x-3">
-                                    <div class="text-orange-500 text-xl"><i class="fas fa-fire"></i></div>
-                                    <div>
-                                        <div class="text-xs text-gray-500">Current Streak</div>
-                                        <div class="font-bold text-gray-900">7 Days</div>
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="text-xs text-gray-500">Total XP</div>
-                                    <div class="font-bold text-indigo-600">2,450</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+        <%- include('partials/footer') %>
 
-                    <!-- Offline -->
-                    <div class="highlight-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
-                        <div class="h-1 bg-gradient-to-r from-green-400 to-emerald-500"></div>
-                        <div class="p-8">
-                            <div class="w-11 h-11 rounded-xl bg-green-50 text-green-500 flex items-center justify-center mb-5 text-lg">
-                                <i class="fas fa-cloud-download-alt"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-3">Offline Learning</h3>
-                            <p class="text-gray-500 mb-6 text-sm leading-relaxed">No internet? No problem. Access selected cached lessons and notes securely via your browser's local storage.</p>
-                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 text-center">
-                                <div class="inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-medium mb-2">
-                                    <i class="fas fa-check-circle mr-1"></i> Available Offline
-                                </div>
-                                <div class="text-sm font-medium text-gray-700">Algebra Basics Ch. 1-3</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Analytics -->
-                    <div class="highlight-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all duration-300">
-                        <div class="h-1 bg-gradient-to-r from-blue-400 to-indigo-500"></div>
-                        <div class="p-8">
-                            <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-5 text-lg">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <h3 class="text-xl font-bold text-gray-900 mb-3">Rich Analytics</h3>
-                            <p class="text-gray-500 mb-6 text-sm leading-relaxed">Understand learning patterns. Track quiz scores, time spent, and identify weak areas across subjects.</p>
-                            <div class="space-y-3">
-                                <div>
-                                    <div class="flex justify-between text-xs mb-1">
-                                        <span class="font-medium text-gray-700">Mathematics</span>
-                                        <span class="text-indigo-600 font-bold">85%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                        <div class="bg-indigo-500 h-1.5 rounded-full" style="width: 85%"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="flex justify-between text-xs mb-1">
-                                        <span class="font-medium text-gray-700">Science</span>
-                                        <span class="text-blue-500 font-bold">62%</span>
-                                    </div>
-                                    <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                        <div class="bg-blue-500 h-1.5 rounded-full" style="width: 62%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================== -->
-        <!-- HOW IT WORKS SECTION           -->
-        <!-- ============================== -->
-        <section id="how-it-works" class="py-24 bg-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16 gsap-section-header">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900">How It Works</h2>
-                    <p class="mt-4 text-lg text-gray-500">Your path to smarter learning in 4 simple steps.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative" id="stepsGrid">
-                    <div class="hidden md:block absolute top-12 left-0 w-full h-0.5 bg-gray-100 z-0"></div>
-                    
-                    <div class="step-item relative z-10 text-center">
-                        <div class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">1</div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">Create Account</h3>
-                        <p class="text-gray-500 text-sm">Sign up securely and choose your platform role.</p>
-                    </div>
-                    <div class="step-item relative z-10 text-center">
-                        <div class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">2</div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">Choose Path</h3>
-                        <p class="text-gray-500 text-sm">Enroll in courses tailored to your specific needs.</p>
-                    </div>
-                    <div class="step-item relative z-10 text-center">
-                        <div class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">3</div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">Learn & Practice</h3>
-                        <p class="text-gray-500 text-sm">Consume lessons, take quizzes, and chat with AI.</p>
-                    </div>
-                    <div class="step-item relative z-10 text-center">
-                        <div class="w-24 h-24 mx-auto bg-white border-2 border-indigo-100 rounded-full flex items-center justify-center text-indigo-600 text-3xl font-bold shadow-sm mb-6">4</div>
-                        <h3 class="text-lg font-bold text-gray-900 mb-2">Track Progress</h3>
-                        <p class="text-gray-500 text-sm">View comprehensive analytics and earn achievements.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================== -->
-        <!-- ROLES SECTION                  -->
-        <!-- ============================== -->
-        <section id="about" class="py-24 bg-gray-50/80">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-16 gsap-section-header">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold text-gray-900">A Platform for Everyone</h2>
-                    <p class="mt-4 text-lg text-gray-500">Custom dashboards designed for every participant in the educational journey.</p>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="rolesGrid">
-                    <div class="role-card bg-white rounded-2xl shadow-sm p-8 text-center border-t-4 border-indigo-500 hover:shadow-md transition-all duration-300">
-                        <div class="w-14 h-14 mx-auto bg-indigo-50 text-indigo-600 rounded-full flex items-center justify-center text-2xl mb-5">
-                            <i class="fas fa-user-graduate"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Students</h3>
-                        <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Learn interactively</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Practice with adaptive quizzes</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Track personal progress</li>
-                        </ul>
-                    </div>
-                    <div class="role-card bg-white rounded-2xl shadow-sm p-8 text-center border-t-4 border-blue-500 hover:shadow-md transition-all duration-300">
-                        <div class="w-14 h-14 mx-auto bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl mb-5">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Teachers</h3>
-                        <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Create rich courses</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Manage structured lessons</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Analyze class performance</li>
-                        </ul>
-                    </div>
-                    <div class="role-card bg-white rounded-2xl shadow-sm p-8 text-center border-t-4 border-purple-500 hover:shadow-md transition-all duration-300">
-                        <div class="w-14 h-14 mx-auto bg-purple-50 text-purple-600 rounded-full flex items-center justify-center text-2xl mb-5">
-                            <i class="fas fa-user-friends"></i>
-                        </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-4">Parents</h3>
-                        <ul class="text-sm text-gray-600 space-y-2.5 text-left w-3/4 mx-auto">
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Monitor child's progress</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> View subject performance</li>
-                            <li class="flex items-start"><i class="fas fa-check text-green-500 mt-1 mr-2"></i> Receive automated updates</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ============================== -->
-        <!-- FINAL CTA SECTION              -->
-        <!-- ============================== -->
-        <section class="bg-indigo-600 relative overflow-hidden" id="ctaSection">
-            <div class="absolute inset-0 bg-gradient-to-r from-indigo-700/20 via-transparent to-indigo-700/20 pointer-events-none"></div>
-            <div class="max-w-4xl mx-auto px-4 py-20 sm:px-6 sm:py-28 lg:max-w-7xl lg:px-8 lg:flex lg:items-center lg:justify-between relative z-10">
-                <div class="gsap-fade-left">
-                    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-                        <span class="block">Ready to transform your education?</span>
-                        <span class="block text-indigo-200 mt-1">Start Your Smarter Learning Journey today.</span>
-                    </h2>
-                </div>
-                <div class="mt-8 flex lg:mt-0 lg:flex-shrink-0 gsap-fade-right">
-                    <a href="/signup" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-xl text-indigo-600 bg-white hover:bg-indigo-50 transition-all duration-300 shadow-lg hover:-translate-y-0.5">
-                        Get Started
-                    </a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <%- include('partials/footer') %>
-
-    <!-- ============================== -->
-    <!-- GSAP ANIMATIONS                -->
-    <!-- ============================== -->
-    <script>
-        gsap.registerPlugin(ScrollTrigger);
-
-        // -- Hero entrance animations (immediate, no scroll trigger) --
-        const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
-        heroTl
-            .to("#heroBadge", { opacity: 1, y: 0, duration: 0.6 }, 0.2)
-            .fromTo("#heroTitle", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, 0.3)
-            .fromTo("#heroDesc", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, 0.5)
-            .fromTo("#heroCTA", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, 0.65)
-            .fromTo("#heroTrust", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6 }, 0.85);
-
-        // Floating cards staggered entrance
-        heroTl
-            .fromTo("#floatCard1", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.5)
-            .fromTo("#floatCard2", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.65)
-            .fromTo("#floatCard3", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.8)
-            .fromTo("#floatCard4", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.95);
-
-        // Animate the progress bar fill inside card 1
-        heroTl.to("#progressFill", { width: "87%", duration: 1.2, ease: "power2.inOut" }, 1.2);
-
-        // Subtle floating hover on the cards (perpetual)
-        gsap.to("#floatCard1", { y: -6, duration: 3, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 1.5 });
-        gsap.to("#floatCard2", { y: 8, duration: 3.5, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2 });
-        gsap.to("#floatCard3", { y: -7, duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 1.8 });
-        gsap.to("#floatCard4", { y: 5, duration: 3.2, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2.2 });
-
-        // -- Section Headers (scroll-triggered) --
-        gsap.utils.toArray(".gsap-section-header").forEach(el => {
-            gsap.fromTo(el, 
-                { opacity: 0, y: 40 },
-                { opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
-                  scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" }
-                }
-            );
-        });
-
-        // -- Feature Cards stagger --
-        gsap.fromTo("#featuresGrid .feature-card",
-            { opacity: 0, y: 50 },
-            { opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out",
-              scrollTrigger: { trigger: "#featuresGrid", start: "top 80%" }
-            }
-        );
-
-        // -- Left/Right fade animations --
-        gsap.utils.toArray(".gsap-fade-left").forEach(el => {
-            gsap.fromTo(el,
-                { opacity: 0, x: -60 },
-                { opacity: 1, x: 0, duration: 0.9, ease: "power3.out",
-                  scrollTrigger: { trigger: el, start: "top 80%" }
-                }
-            );
-        });
-        gsap.utils.toArray(".gsap-fade-right").forEach(el => {
-            gsap.fromTo(el,
-                { opacity: 0, x: 60 },
-                { opacity: 1, x: 0, duration: 0.9, ease: "power3.out",
-                  scrollTrigger: { trigger: el, start: "top 80%" }
-                }
-            );
-        });
-
-        // -- Highlights Cards stagger --
-        gsap.fromTo("#highlightsGrid .highlight-card",
-            { opacity: 0, y: 60 },
-            { opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: "back.out(1.4)",
-              scrollTrigger: { trigger: "#highlightsGrid", start: "top 80%" }
-            }
-        );
-
-        // -- Steps stagger --
-        gsap.fromTo("#stepsGrid .step-item",
-            { opacity: 0, y: 50, scale: 0.9 },
-            { opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.15, ease: "power2.out",
-              scrollTrigger: { trigger: "#stepsGrid", start: "top 80%" }
-            }
-        );
-
-        // -- Roles stagger --
-        gsap.fromTo("#rolesGrid .role-card",
-            { opacity: 0, y: 50 },
-            { opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: "power2.out",
-              scrollTrigger: { trigger: "#rolesGrid", start: "top 80%" }
-            }
-        );
-
-        // -- CTA Section --
-        ScrollTrigger.create({
-            trigger: "#ctaSection",
-            start: "top 85%",
-            onEnter: () => {
-                gsap.fromTo("#ctaSection .gsap-fade-left", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" });
-                gsap.fromTo("#ctaSection .gsap-fade-right", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out", delay: 0.15 });
-            }
-        });
-    </script>
-
-    <!-- ============================== -->
-    <!-- PARTICLE SYSTEM                -->
-    <!-- ============================== -->
-    <script>
-    (function() {
-        const canvas = document.getElementById('particleCanvas');
-        const ctx = canvas.getContext('2d');
-        const hero = document.getElementById('heroSection');
-
-        let width, height, particles, animId, time = 0;
-        const PARTICLE_COUNT = 60;
-        const CONNECTION_DIST = 160;
-        const MOUSE_RADIUS = 250; // Increased radius for smoother, wider interaction
-
-        const rawMouse = { x: -9999, y: -9999 };
-        const smoothMouse = { x: -9999, y: -9999 };
-        let mouseActive = false;
-
-        hero.addEventListener('mousemove', (e) => {
-            const rect = hero.getBoundingClientRect();
-            rawMouse.x = e.clientX - rect.left;
-            rawMouse.y = e.clientY - rect.top;
-            mouseActive = true;
-        });
-        hero.addEventListener('mouseleave', () => {
-            mouseActive = false;
-        });
-
-        function resize() {
-            const rect = hero.getBoundingClientRect();
-            const dpr = window.devicePixelRatio || 1;
-            width = rect.width;
-            height = rect.height;
-            canvas.width = width * dpr;
-            canvas.height = height * dpr;
-            canvas.style.width = width + 'px';
-            canvas.style.height = height + 'px';
-            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-        }
-
-        function createParticles() {
-            particles = [];
-            for (let i = 0; i < PARTICLE_COUNT; i++) {
-                particles.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
-                    vx: 0,
-                    vy: 0,
-                    r: Math.random() * 1.5 + 0.8,
-                    baseOpacity: Math.random() * 0.3 + 0.15,
-                    phase: Math.random() * Math.PI * 2,
-                    pulseSpeed: Math.random() * 0.02 + 0.008,
-                    // Unique offset to individualize vector field interaction
-                    noiseOffsetX: Math.random() * 100,
-                    noiseOffsetY: Math.random() * 100
+            <!-- ============================== -->
+            <!-- GSAP ANIMATIONS & LENIS        -->
+            <!-- ============================== -->
+            <script>
+                // Initialize Lenis Smooth Scrolling
+                const lenis = new Lenis({
+                    duration: 1.2,
+                    easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                    smooth: true,
+                    wheelMultiplier: 1.2
                 });
-            }
-        }
 
-        function animate() {
-            time++;
-            ctx.clearRect(0, 0, width, height);
+                // Sync Lenis with GSAP ScrollTrigger
+                lenis.on('scroll', ScrollTrigger.update);
 
-            // Lerp mouse for buttery smooth interaction
-            if (mouseActive) {
-                smoothMouse.x += (rawMouse.x - smoothMouse.x) * 0.1;
-                smoothMouse.y += (rawMouse.y - smoothMouse.y) * 0.1;
-            } else {
-                smoothMouse.x += (-9999 - smoothMouse.x) * 0.05;
-                smoothMouse.y += (-9999 - smoothMouse.y) * 0.05;
-            }
+                gsap.ticker.add((time) => {
+                    lenis.raf(time * 1000);
+                });
 
-            for (let i = 0; i < particles.length; i++) {
-                const p = particles[i];
+                gsap.ticker.lagSmoothing(0);
 
-                // 1. Ambient Fluid Motion (Procedural Vector Field)
-                // Uses sine waves based on coordinates to simulate a gentle flowing breeze
-                const t = time * 0.002;
-                const fieldAngle = Math.sin(p.x * 0.002 + p.noiseOffsetX + t) + Math.cos(p.y * 0.002 + p.noiseOffsetY + t);
-                
-                // Add gentle force in the direction of the field
-                p.vx += Math.cos(fieldAngle) * 0.035;
-                p.vy += Math.sin(fieldAngle) * 0.035;
+                gsap.registerPlugin(ScrollTrigger);
 
-                // 2. Mouse Interaction (Repel + Swirl)
-                const dx = p.x - smoothMouse.x;
-                const dy = p.y - smoothMouse.y;
-                const distSq = dx * dx + dy * dy;
-                const dist = Math.sqrt(distSq);
+                // -- Hero entrance animations (immediate, no scroll trigger) --
+                const heroTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+                heroTl
+                    .fromTo("#heroTitle", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8 }, 0.3)
+                    .fromTo("#heroDesc", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, 0.5)
+                    .fromTo("#heroCTA", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7 }, 0.65)
+                    .fromTo("#heroTrust", { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.6 }, 0.85);
 
-                if (dist < MOUSE_RADIUS && dist > 0) {
-                    // Cubic falloff for very soft edge interaction
-                    const t2 = 1 - dist / MOUSE_RADIUS;
-                    const force = t2 * t2 * t2 * 0.6; 
-                    
-                    const nx = dx / dist;
-                    const ny = dy / dist;
+                // Floating cards staggered entrance
+                heroTl
+                    .fromTo("#floatCard1", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.5)
+                    .fromTo("#floatCard2", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.65)
+                    .fromTo("#floatCard3", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.8)
+                    .fromTo("#floatCard4", { opacity: 0, y: 40, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.7 }, 0.95);
 
-                    // Outward push
-                    p.vx += nx * force;
-                    p.vy += ny * force;
+                // Animate the progress bar fill inside card 1
+                heroTl.to("#progressFill", { width: "87%", duration: 1.2, ease: "power2.inOut" }, 1.2);
 
-                    // Tangential swirl (creates a liquid mixing effect around cursor)
-                    p.vx += ny * force * 0.6;
-                    p.vy -= nx * force * 0.6;
-                }
+                // Subtle floating hover on the cards (perpetual)
+                gsap.to("#floatCard1", { y: -6, duration: 3, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 1.5, force3D: true });
+                gsap.to("#floatCard2", { y: 8, duration: 3.5, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2, force3D: true });
+                gsap.to("#floatCard3", { y: -7, duration: 2.8, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 1.8, force3D: true });
+                gsap.to("#floatCard4", { y: 5, duration: 3.2, repeat: -1, yoyo: true, ease: "sine.inOut", delay: 2.2, force3D: true });
 
-                // 3. Physics & Damping
-                p.vx *= 0.92; // Friction
-                p.vy *= 0.92;
-                p.x += p.vx;
-                p.y += p.vy;
+                // -- Section Headers (scroll-triggered) --
+                gsap.utils.toArray(".gsap-section-header").forEach(el => {
+                    gsap.fromTo(el,
+                        { opacity: 0, y: 40 },
+                        {
+                            opacity: 1, y: 0, duration: 0.8, ease: "power2.out",
+                            scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" }
+                        }
+                    );
+                });
 
-                // 4. Infinite wrapping (when moving offscreen, appear on other side)
-                if (p.x < -30) p.x = width + 30;
-                if (p.x > width + 30) p.x = -30;
-                if (p.y < -30) p.y = height + 30;
-                if (p.y > height + 30) p.y = -30;
-
-                // 5. Breathing Visuals
-                const pulseOpacity = p.baseOpacity + Math.sin(time * p.pulseSpeed + p.phase) * 0.12;
-                const clampedOpacity = Math.max(0.05, Math.min(0.6, pulseOpacity));
-                const pulseR = p.r + Math.sin(time * p.pulseSpeed * 1.5 + p.phase) * 0.3;
-
-                // Draw Particle
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, Math.max(0.5, pulseR), 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(99, 102, 241, ${clampedOpacity.toFixed(3)})`;
-                ctx.fill();
-
-                // 6. Draw Connections
-                for (let j = i + 1; j < particles.length; j++) {
-                    const p2 = particles[j];
-                    const cdx = p.x - p2.x;
-                    const cdy = p.y - p2.y;
-                    const cdistSq = cdx * cdx + cdy * cdy;
-
-                    if (cdistSq < CONNECTION_DIST * CONNECTION_DIST) {
-                        const cdist = Math.sqrt(cdistSq);
-                        // Quadratic falloff for smoother fading lines
-                        const falloff = 1 - cdist / CONNECTION_DIST;
-                        const lineOpacity = falloff * falloff * 0.15;
-                        
-                        ctx.beginPath();
-                        ctx.moveTo(p.x, p.y);
-                        ctx.lineTo(p2.x, p2.y);
-                        ctx.strokeStyle = `rgba(99, 102, 241, ${lineOpacity.toFixed(3)})`;
-                        ctx.lineWidth = 0.5;
-                        ctx.stroke();
+                // -- Feature Cards stagger --
+                gsap.fromTo("#featuresGrid .feature-card",
+                    { opacity: 0, y: 50 },
+                    {
+                        opacity: 1, y: 0, duration: 0.6, stagger: 0.1, ease: "power2.out",
+                        scrollTrigger: { trigger: "#featuresGrid", start: "top 80%" }
                     }
-                }
-            }
+                );
 
-            animId = requestAnimationFrame(animate);
-        }
+                // -- Left/Right fade animations --
+                gsap.utils.toArray(".gsap-fade-left").forEach(el => {
+                    gsap.fromTo(el,
+                        { opacity: 0, x: -60 },
+                        {
+                            opacity: 1, x: 0, duration: 0.9, ease: "power3.out",
+                            scrollTrigger: { trigger: el, start: "top 80%" }
+                        }
+                    );
+                });
+                gsap.utils.toArray(".gsap-fade-right").forEach(el => {
+                    gsap.fromTo(el,
+                        { opacity: 0, x: 60 },
+                        {
+                            opacity: 1, x: 0, duration: 0.9, ease: "power3.out",
+                            scrollTrigger: { trigger: el, start: "top 80%" }
+                        }
+                    );
+                });
 
-        function init() {
-            resize();
-            createParticles();
-            animate();
-        }
+                // -- Highlights Cards stagger --
+                gsap.fromTo("#highlightsGrid .highlight-card",
+                    { opacity: 0, y: 60 },
+                    {
+                        opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: "back.out(1.4)",
+                        scrollTrigger: { trigger: "#highlightsGrid", start: "top 80%" }
+                    }
+                );
 
-        let resizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                resize();
-            }, 150);
-        });
+                // -- Steps stagger --
+                gsap.fromTo("#stepsGrid .step-item",
+                    { opacity: 0, y: 50, scale: 0.9 },
+                    {
+                        opacity: 1, y: 0, scale: 1, duration: 0.6, stagger: 0.15, ease: "power2.out",
+                        scrollTrigger: { trigger: "#stepsGrid", start: "top 80%" }
+                    }
+                );
 
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
-    })();
-    </script>
+                // -- Roles stagger --
+                gsap.fromTo("#rolesGrid .role-card",
+                    { opacity: 0, y: 50 },
+                    {
+                        opacity: 1, y: 0, duration: 0.7, stagger: 0.15, ease: "power2.out",
+                        scrollTrigger: { trigger: "#rolesGrid", start: "top 80%" }
+                    }
+                );
+
+                // -- CTA Section --
+                ScrollTrigger.create({
+                    trigger: "#ctaSection",
+                    start: "top 85%",
+                    onEnter: () => {
+                        gsap.fromTo("#ctaSection .gsap-fade-left", { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out" });
+                        gsap.fromTo("#ctaSection .gsap-fade-right", { opacity: 0, x: 40 }, { opacity: 1, x: 0, duration: 0.8, ease: "power3.out", delay: 0.15 });
+                    }
+                });
+            </script>
+
+            <!-- ============================== -->
+            <!-- PARTICLE SYSTEM                -->
+            <!-- ============================== -->
+            <script>
+                (function () {
+                    const canvas = document.getElementById('particleCanvas');
+                    const ctx = canvas.getContext('2d');
+                    const hero = document.getElementById('heroSection');
+
+                    let width, height, particles, animId, time = 0;
+                    const PARTICLE_COUNT = 60;
+                    const CONNECTION_DIST = 160;
+                    const MOUSE_RADIUS = 250; // Increased radius for smoother, wider interaction
+
+                    const rawMouse = { x: -9999, y: -9999 };
+                    const smoothMouse = { x: -9999, y: -9999 };
+                    let mouseActive = false;
+
+                    hero.addEventListener('mousemove', (e) => {
+                        const rect = hero.getBoundingClientRect();
+                        rawMouse.x = e.clientX - rect.left;
+                        rawMouse.y = e.clientY - rect.top;
+                        mouseActive = true;
+                    });
+                    hero.addEventListener('mouseleave', () => {
+                        mouseActive = false;
+                    });
+
+                    function resize() {
+                        const rect = hero.getBoundingClientRect();
+                        const dpr = window.devicePixelRatio || 1;
+                        width = rect.width;
+                        height = rect.height;
+                        canvas.width = width * dpr;
+                        canvas.height = height * dpr;
+                        canvas.style.width = width + 'px';
+                        canvas.style.height = height + 'px';
+                        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                    }
+
+                    function createParticles() {
+                        particles = [];
+                        for (let i = 0; i < PARTICLE_COUNT; i++) {
+                            particles.push({
+                                x: Math.random() * width,
+                                y: Math.random() * height,
+                                vx: 0,
+                                vy: 0,
+                                r: Math.random() * 1.5 + 0.8,
+                                baseOpacity: Math.random() * 0.3 + 0.15,
+                                phase: Math.random() * Math.PI * 2,
+                                pulseSpeed: Math.random() * 0.02 + 0.008,
+                                // Unique offset to individualize vector field interaction
+                                noiseOffsetX: Math.random() * 100,
+                                noiseOffsetY: Math.random() * 100
+                            });
+                        }
+                    }
+
+                    function animate() {
+                        time++;
+                        ctx.clearRect(0, 0, width, height);
+
+                        // Lerp mouse for buttery smooth interaction
+                        if (mouseActive) {
+                            smoothMouse.x += (rawMouse.x - smoothMouse.x) * 0.1;
+                            smoothMouse.y += (rawMouse.y - smoothMouse.y) * 0.1;
+                        } else {
+                            smoothMouse.x += (-9999 - smoothMouse.x) * 0.05;
+                            smoothMouse.y += (-9999 - smoothMouse.y) * 0.05;
+                        }
+
+                        for (let i = 0; i < particles.length; i++) {
+                            const p = particles[i];
+
+                            // 1. Ambient Fluid Motion (Procedural Vector Field)
+                            // Uses sine waves based on coordinates to simulate a gentle flowing breeze
+                            const t = time * 0.002;
+                            const fieldAngle = Math.sin(p.x * 0.002 + p.noiseOffsetX + t) + Math.cos(p.y * 0.002 + p.noiseOffsetY + t);
+
+                            // Add gentle force in the direction of the field
+                            p.vx += Math.cos(fieldAngle) * 0.035;
+                            p.vy += Math.sin(fieldAngle) * 0.035;
+
+                            // 2. Mouse Interaction (Repel + Swirl)
+                            const dx = p.x - smoothMouse.x;
+                            const dy = p.y - smoothMouse.y;
+                            const distSq = dx * dx + dy * dy;
+                            const dist = Math.sqrt(distSq);
+
+                            if (dist < MOUSE_RADIUS && dist > 0) {
+                                // Cubic falloff for very soft edge interaction
+                                const t2 = 1 - dist / MOUSE_RADIUS;
+                                const force = t2 * t2 * t2 * 0.6;
+
+                                const nx = dx / dist;
+                                const ny = dy / dist;
+
+                                // Outward push
+                                p.vx += nx * force;
+                                p.vy += ny * force;
+
+                                // Tangential swirl (creates a liquid mixing effect around cursor)
+                                p.vx += ny * force * 0.6;
+                                p.vy -= nx * force * 0.6;
+                            }
+
+                            // 3. Physics & Damping
+                            p.vx *= 0.92; // Friction
+                            p.vy *= 0.92;
+                            p.x += p.vx;
+                            p.y += p.vy;
+
+                            // 4. Infinite wrapping (when moving offscreen, appear on other side)
+                            if (p.x < -30) p.x = width + 30;
+                            if (p.x > width + 30) p.x = -30;
+                            if (p.y < -30) p.y = height + 30;
+                            if (p.y > height + 30) p.y = -30;
+
+                            // 5. Breathing Visuals
+                            const pulseOpacity = p.baseOpacity + Math.sin(time * p.pulseSpeed + p.phase) * 0.12;
+                            const clampedOpacity = Math.max(0.05, Math.min(0.6, pulseOpacity));
+                            const pulseR = p.r + Math.sin(time * p.pulseSpeed * 1.5 + p.phase) * 0.3;
+
+                            // Draw Particle
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, Math.max(0.5, pulseR), 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(99, 102, 241, ${clampedOpacity.toFixed(3)})`;
+                            ctx.fill();
+
+                            // 6. Draw Connections
+                            for (let j = i + 1; j < particles.length; j++) {
+                                const p2 = particles[j];
+                                const cdx = p.x - p2.x;
+                                const cdy = p.y - p2.y;
+                                const cdistSq = cdx * cdx + cdy * cdy;
+
+                                if (cdistSq < CONNECTION_DIST * CONNECTION_DIST) {
+                                    const cdist = Math.sqrt(cdistSq);
+                                    // Quadratic falloff for smoother fading lines
+                                    const falloff = 1 - cdist / CONNECTION_DIST;
+                                    const lineOpacity = falloff * falloff * 0.15;
+
+                                    ctx.beginPath();
+                                    ctx.moveTo(p.x, p.y);
+                                    ctx.lineTo(p2.x, p2.y);
+                                    ctx.strokeStyle = `rgba(99, 102, 241, ${lineOpacity.toFixed(3)})`;
+                                    ctx.lineWidth = 0.5;
+                                    ctx.stroke();
+                                }
+                            }
+                        }
+
+                        animId = requestAnimationFrame(animate);
+                    }
+
+                    function init() {
+                        resize();
+                        createParticles();
+                        animate();
+                    }
+
+                    let resizeTimer;
+                    window.addEventListener('resize', () => {
+                        clearTimeout(resizeTimer);
+                        resizeTimer = setTimeout(() => {
+                            resize();
+                        }, 150);
+                    });
+
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', init);
+                    } else {
+                        init();
+                    }
+                })();
+
+                // Landing Page Chat Widget Logic
+                document.addEventListener('DOMContentLoaded', () => {
+                    const form = document.getElementById('homeAiForm');
+                    const input = document.getElementById('homeAiInput');
+                    const chatContainer = document.getElementById('homeChatContainer');
+                    const submitBtn = document.getElementById('homeAiSubmitBtn');
+
+                    if (!form || !input || !chatContainer || !submitBtn) return;
+
+                    form.addEventListener('submit', async (e) => {
+                        e.preventDefault();
+                        const message = input.value.trim();
+                        if (!message) return;
+
+                        // Clear initial mock messages if any exist
+                        if (chatContainer.innerHTML.includes('python')) {
+                            chatContainer.innerHTML = '';
+                        }
+
+                        // Add user message
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'flex justify-end';
+                        userDiv.innerHTML = `
+                            <div class="bg-indigo-600 text-white p-3 rounded-2xl rounded-tr-none max-w-[80%] shadow-sm">
+                                ${message}
+                            </div>
+                        `;
+                        chatContainer.appendChild(userDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                        input.value = '';
+                        input.disabled = true;
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+                        // Add AI message container
+                        const aiDiv = document.createElement('div');
+                        aiDiv.className = 'flex justify-start';
+                        const aiInner = document.createElement('div');
+                        aiInner.className = 'bg-white border border-gray-100 p-3 rounded-2xl rounded-tl-none max-w-[90%] shadow-sm text-gray-600 leading-relaxed min-h-[3rem]';
+                        aiDiv.appendChild(aiInner);
+                        chatContainer.appendChild(aiDiv);
+                        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                        try {
+                            const response = await fetch('/api/ai/public-chat', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ message: message })
+                            });
+
+                            if (!response.ok) throw new Error("Failed to connect to AI");
+                            
+                            const reader = response.body.getReader();
+                            const decoder = new TextDecoder('utf-8');
+                            let currentText = '';
+
+                            while (true) {
+                                const { value, done } = await reader.read();
+                                if (done) break;
+
+                                const chunkStr = decoder.decode(value, { stream: true });
+                                const lines = chunkStr.split('\n');
+
+                                for (const line of lines) {
+                                    if (line.startsWith('data: ')) {
+                                        const dataStr = line.substring(6).trim();
+                                        if (dataStr === '[DONE]') {
+                                            break;
+                                        }
+                                        try {
+                                            const data = JSON.parse(dataStr);
+                                            if (data.type === 'chunk' && data.text) {
+                                                currentText += data.text;
+                                                // Simple markdown-ish bold replacement
+                                                aiInner.innerHTML = currentText
+                                                    .replace(/\n/g, '<br>')
+                                                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                                                chatContainer.scrollTop = chatContainer.scrollHeight;
+                                            } else if (data.type === 'error') {
+                                                aiInner.innerHTML = `<span class="text-red-500">Error: ${data.message}</span>`;
+                                            }
+                                        } catch (e) {
+                                            console.error("Error parsing stream data", e);
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            aiInner.innerHTML = `<span class="text-red-500">Error communicating with AI Tutor. Please try again later.</span>`;
+                        } finally {
+                            input.disabled = false;
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                            input.focus();
+                        }
+                    });
+                });
+            </script>
 </body>
-</html>
