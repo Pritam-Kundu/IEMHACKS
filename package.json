@@ -15,6 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@google/genai": "^2.16.0",
+    "@mux/mux-node": "^14.1.1",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -29,6 +30,7 @@
     "mongodb": "^7.5.0",
     "mongoose": "^9.9.1",
     "morgan": "^1.11.0",
+    "multer": "^2.2.0",
     "nodemailer": "^9.0.5"
   },
   "devDependencies": {

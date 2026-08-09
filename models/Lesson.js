@@ -18,9 +18,26 @@ const lessonSchema = new mongoose.Schema({
     },
     content: {
         type: String, // Rich text or markdown
-        required: true
+        required: false
     },
     videoUrl: {
+        type: String,
+        trim: true
+    },
+    muxAssetId: {
+        type: String,
+        trim: true
+    },
+    muxPlaybackId: {
+        type: String,
+        trim: true
+    },
+    muxStatus: {
+        type: String,
+        enum: ['preparing', 'ready', 'errored', 'none'],
+        default: 'none'
+    },
+    muxDownloadUrl: {
         type: String,
         trim: true
     },
@@ -37,7 +54,7 @@ const lessonSchema = new mongoose.Schema({
     timestamps: true 
 });
 
-// Compound index to ensure lesson order is unique per course
-lessonSchema.index({ course: 1, order: 1 }, { unique: true });
+// Compound index for query performance
+lessonSchema.index({ course: 1, order: 1 });
 
 module.exports = mongoose.model('Lesson', lessonSchema);

@@ -13,17 +13,17 @@
     <!-- Desktop Navigation -->
     <div class="hidden lg:flex items-center gap-1 h-full relative" id="desktop-menu">
         
-        <!-- Product Dropdown -->
+        <!-- Home Dropdown -->
         <div class="nav-item h-full flex items-center" data-dropdown="product-menu">
             <button class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors gap-1 group">
-                <%= t('nav.product') %> <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
+                Home <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
             </button>
         </div>
 
-        <!-- Company Dropdown -->
+        <!-- Courses Dropdown -->
         <div class="nav-item h-full flex items-center" data-dropdown="company-menu">
             <button class="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors gap-1 group">
-                <%= t('nav.company') %> <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
+                Courses <i data-lucide="chevron-down" class="size-4 transition-transform duration-200"></i>
             </button>
         </div>
 
@@ -32,82 +32,209 @@
 
         <!-- Mega Menu Container -->
         <div id="mega-menu-container" class="absolute top-[calc(100%+0.5rem)] left-1/2 -translate-x-1/2 bg-white rounded-xl border border-slate-200 shadow-xl overflow-hidden transition-all duration-300 origin-top opacity-0 scale-95 pointer-events-none z-50">
-            <!-- Product Menu Content -->
+            <!-- Home Menu Content -->
             <div id="product-menu" class="hidden p-4 grid md:grid-cols-[1fr_.30fr] gap-4 w-[800px]">
-                <ul class="grid md:grid-cols-3 gap-4 border-r border-slate-100 pr-4">
-                    <!-- Website Builder -->
-                    <li>
-                        <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
-                            <i data-lucide="globe" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
-                            <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.websiteBuilder') %></span>
-                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.websiteBuilderDesc') %></span>
-                            </div>
-                        </a>
-                    </li>
-                    <!-- Cloud Platform -->
-                    <li>
-                        <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
-                            <i data-lucide="layers" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
-                            <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.cloudPlatform') %></span>
-                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.cloudPlatformDesc') %></span>
-                            </div>
-                        </a>
-                    </li>
-                    <!-- Team Collaboration -->
-                    <li>
-                        <a href="#" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
-                            <i data-lucide="user-plus" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
-                            <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.teamCollaboration') %></span>
-                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.teamCollaborationDesc') %></span>
-                            </div>
-                        </a>
-                    </li>
+                <ul class="grid md:grid-cols-2 gap-4 border-r border-slate-100 pr-4">
+                    <% if (locals.user && user.role === 'student') { %>
+                        <li>
+                            <a href="/student/dashboard" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="layout-dashboard" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">My Dashboard</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Track your progress and rewards.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/student/ai-tutor" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="bot" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">AI Tutor</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Get instant help with your studies.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/student/courses" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="brain" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Adaptive Learning</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Personalized learning paths tailored for you.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/student/quizzes" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="gamepad-2" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">My Quizzes</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Play and learn with gamified quizzes.</span>
+                                </div>
+                            </a>
+                        </li>
+                    <% } else if (locals.user && user.role === 'teacher') { %>
+                        <li>
+                            <a href="/teacher/lessons" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="pen-tool" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Lesson Builder</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Create engaging AI-assisted lessons.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/teacher/ai-tutor" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="bot" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Teacher AI Assistant</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Assistant for grading and planning.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/teacher/analytics" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="bar-chart" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Student Analytics</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Track class performance in real time.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/teacher/assignments" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="file-check" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Assignments</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Manage and evaluate tasks effectively.</span>
+                                </div>
+                            </a>
+                        </li>
+                    <% } else if (locals.user && user.role === 'parent') { %>
+                        <li>
+                            <a href="/parent/dashboard" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="line-chart" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Child Progress</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">View your child's academic growth.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/parent/dashboard" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="sparkles" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">AI Insights</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Get AI-generated learning suggestions.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/parent/dashboard" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="calendar-check" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Attendance</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Monitor your child's attendance.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/parent/messages" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="message-circle" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Communication</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Connect with teachers instantly.</span>
+                                </div>
+                            </a>
+                        </li>
+                    <% } else { %>
+                        <li>
+                            <a href="/#features" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="brain" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Adaptive Learning</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Personalized learning paths tailored for each student.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#features" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="bot" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">AI Tutor</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Multimodal AI that understands text, voice, and images.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#features" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="users" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Parent Dashboard</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Track your child's progress in real time.</span>
+                                </div>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/#features" class="group relative flex flex-col justify-between h-full p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                                <i data-lucide="graduation-cap" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                                <div class="relative z-10">
+                                    <span class="text-sm font-semibold text-slate-900 block">Teacher Dashboard</span>
+                                    <span class="text-xs text-slate-500 mt-1 block">Manage courses, assignments, and analytics.</span>
+                                </div>
+                            </a>
+                        </li>
+                    <% } %>
                 </ul>
                 <ul class="space-y-1 flex flex-col justify-center">
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="bar-chart" class="size-4"></i> <%= t('nav.analytics') %></a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="plug" class="size-4"></i> <%= t('nav.integrations') %></a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="dollar-sign" class="size-4"></i> <%= t('nav.eCommerce') %></a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="shield" class="size-4"></i> <%= t('nav.security') %></a></li>
-                    <li><a href="#" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="code" class="size-4"></i> <%= t('nav.api') %></a></li>
+                    <li><a href="/#how-it-works" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="help-circle" class="size-4"></i> How it Works</a></li>
+                    <li><a href="/#about" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="info" class="size-4"></i> About Us</a></li>
+                    <li><a href="/#contact" class="group flex items-center gap-3 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"><i data-lucide="mail" class="size-4"></i> Contact</a></li>
                 </ul>
             </div>
 
-            <!-- Company Menu Content -->
+            <!-- Courses Menu Content -->
             <div id="company-menu" class="hidden p-4 grid md:grid-cols-[1fr_.40fr] gap-4 w-[750px]">
                 <ul class="grid grid-cols-2 gap-4 border-r border-slate-100 pr-4">
-                    <!-- About Us -->
                     <li>
                         <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
-                            <i data-lucide="users" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <i data-lucide="calculator" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
                             <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.aboutUs') %></span>
-                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.aboutUsDesc') %></span>
+                                <span class="text-sm font-semibold text-slate-900 block">Mathematics</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Algebra, Geometry, and beyond.</span>
                             </div>
                         </a>
                     </li>
-                    <!-- Customer Stories -->
                     <li>
                         <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
-                            <i data-lucide="star" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <i data-lucide="flask-conical" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
                             <div class="relative z-10">
-                                <span class="text-sm font-semibold text-slate-900 block"><%= t('nav.customerStories') %></span>
-                                <span class="text-xs text-slate-500 mt-1 block"><%= t('nav.customerStoriesDesc') %></span>
+                                <span class="text-sm font-semibold text-slate-900 block">Science</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Physics, Chemistry, and Biology.</span>
                             </div>
                         </a>
                     </li>
-                    <div class="col-span-2 grid grid-cols-3 gap-2">
-                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center"><%= t('nav.terms') %></span></a>
-                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center"><%= t('nav.privacy') %></span></a>
-                        <a href="#" class="flex flex-col justify-center border border-slate-200 rounded-md p-3 hover:bg-slate-50 transition-colors"><span class="text-sm font-medium text-slate-900 text-center"><%= t('nav.refund') %></span></a>
-                    </div>
+                    <li>
+                        <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                            <i data-lucide="book-open" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <div class="relative z-10">
+                                <span class="text-sm font-semibold text-slate-900 block">English</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Grammar, Literature, and Writing.</span>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="group relative flex flex-col justify-between h-36 p-4 rounded-lg border border-slate-200 hover:border-indigo-200 hover:bg-indigo-50/50 transition-colors overflow-hidden">
+                            <i data-lucide="languages" class="size-5 text-indigo-600 mb-3 relative z-10"></i>
+                            <div class="relative z-10">
+                                <span class="text-sm font-semibold text-slate-900 block">Regional Languages</span>
+                                <span class="text-xs text-slate-500 mt-1 block">Bengali, Hindi, and more.</span>
+                            </div>
+                        </a>
+                    </li>
                 </ul>
                 <ul class="space-y-2 flex flex-col justify-center">
-                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900"><%= t('nav.partnerships') %></span><span class="text-xs text-slate-500 block"><%= t('nav.partnershipsDesc') %></span></div><i data-lucide="handshake" class="size-4 text-slate-400"></i></a></li>
-                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900"><%= t('nav.blog') %></span><span class="text-xs text-slate-500 block"><%= t('nav.blogDesc') %></span></div><i data-lucide="leaf" class="size-4 text-slate-400"></i></a></li>
-                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900"><%= t('nav.helpCenter') %></span><span class="text-xs text-slate-500 block"><%= t('nav.helpCenterDesc') %></span></div><i data-lucide="help-circle" class="size-4 text-slate-400"></i></a></li>
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">View All Courses</span><span class="text-xs text-slate-500 block">Explore our entire catalog</span></div><i data-lucide="arrow-right" class="size-4 text-slate-400"></i></a></li>
+                    <li><a href="#" class="flex items-center justify-between p-3 border border-slate-100 rounded-md hover:bg-slate-50 transition-colors"><div><span class="text-sm font-medium block text-slate-900">Live Classes</span><span class="text-xs text-slate-500 block">Join scheduled interactive sessions</span></div><i data-lucide="video" class="size-4 text-slate-400"></i></a></li>
                 </ul>
             </div>
         </div>
@@ -143,52 +270,141 @@
         <!-- Mobile Accordion -->
         <div class="border-b border-slate-100 pb-2">
             <button class="flex items-center justify-between w-full py-3 text-left font-medium text-slate-900 group" onclick="toggleAccordion('mobile-product-content', this)">
-                <%= t('nav.product') %>
+                Home
                 <i data-lucide="chevron-down" class="size-4 text-slate-400 transition-transform duration-200"></i>
             </button>
             <div id="mobile-product-content" class="hidden pl-2 space-y-1 mt-1">
-                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
-                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="globe" class="size-4 text-indigo-600"></i></div>
-                    <div>
-                        <span class="block font-medium text-slate-900"><%= t('nav.websiteBuilder') %></span>
-                        <span class="block text-xs text-slate-500"><%= t('nav.websiteBuilderDesc') %></span>
-                    </div>
-                </a>
-                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
-                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="layers" class="size-4 text-indigo-600"></i></div>
-                    <div>
-                        <span class="block font-medium text-slate-900"><%= t('nav.cloudPlatform') %></span>
-                        <span class="block text-xs text-slate-500"><%= t('nav.cloudPlatformDesc') %></span>
-                    </div>
-                </a>
-                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
-                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="user-plus" class="size-4 text-indigo-600"></i></div>
-                    <div>
-                        <span class="block font-medium text-slate-900"><%= t('nav.teamCollaboration') %></span>
-                        <span class="block text-xs text-slate-500"><%= t('nav.teamCollaborationDesc') %></span>
-                    </div>
-                </a>
+                <% if (locals.user && user.role === 'student') { %>
+                    <a href="/student/dashboard" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="layout-dashboard" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">My Dashboard</span>
+                            <span class="block text-xs text-slate-500">Track your progress</span>
+                        </div>
+                    </a>
+                    <a href="/student/ai-tutor" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="bot" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">AI Tutor</span>
+                            <span class="block text-xs text-slate-500">Instant learning help</span>
+                        </div>
+                    </a>
+                    <a href="/student/quizzes" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="gamepad-2" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">My Quizzes</span>
+                            <span class="block text-xs text-slate-500">Gamified learning</span>
+                        </div>
+                    </a>
+                <% } else if (locals.user && user.role === 'teacher') { %>
+                    <a href="/teacher/lessons" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="pen-tool" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">Lesson Builder</span>
+                            <span class="block text-xs text-slate-500">Create AI-assisted lessons</span>
+                        </div>
+                    </a>
+                    <a href="/teacher/ai-tutor" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="bot" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">AI Assistant</span>
+                            <span class="block text-xs text-slate-500">Grading & planning</span>
+                        </div>
+                    </a>
+                    <a href="/teacher/analytics" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="bar-chart" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">Analytics</span>
+                            <span class="block text-xs text-slate-500">Track class performance</span>
+                        </div>
+                    </a>
+                <% } else if (locals.user && user.role === 'parent') { %>
+                    <a href="/parent/dashboard" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="line-chart" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">Child Progress</span>
+                            <span class="block text-xs text-slate-500">View academic growth</span>
+                        </div>
+                    </a>
+                    <a href="/parent/dashboard" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="sparkles" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">AI Insights</span>
+                            <span class="block text-xs text-slate-500">Learning suggestions</span>
+                        </div>
+                    </a>
+                    <a href="/parent/messages" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="message-circle" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">Communication</span>
+                            <span class="block text-xs text-slate-500">Connect with teachers</span>
+                        </div>
+                    </a>
+                <% } else { %>
+                    <a href="/#features" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="brain" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">Adaptive Learning</span>
+                            <span class="block text-xs text-slate-500">Personalized learning paths</span>
+                        </div>
+                    </a>
+                    <a href="/#features" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="bot" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">AI Tutor</span>
+                            <span class="block text-xs text-slate-500">Multimodal assistance</span>
+                        </div>
+                    </a>
+                    <a href="/#features" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="users" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">Parent Dashboard</span>
+                            <span class="block text-xs text-slate-500">Track child progress</span>
+                        </div>
+                    </a>
+                    <a href="/#features" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                        <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="graduation-cap" class="size-4 text-indigo-600"></i></div>
+                        <div>
+                            <span class="block font-medium text-slate-900">Teacher Dashboard</span>
+                            <span class="block text-xs text-slate-500">Manage courses and students</span>
+                        </div>
+                    </a>
+                <% } %>
             </div>
         </div>
         
         <div class="border-b border-slate-100 pb-2">
             <button class="flex items-center justify-between w-full py-3 text-left font-medium text-slate-900 group" onclick="toggleAccordion('mobile-company-content', this)">
-                <%= t('nav.company') %>
+                Courses
                 <i data-lucide="chevron-down" class="size-4 text-slate-400 transition-transform duration-200"></i>
             </button>
             <div id="mobile-company-content" class="hidden pl-2 space-y-1 mt-1">
                 <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
-                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="users" class="size-4 text-indigo-600"></i></div>
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="calculator" class="size-4 text-indigo-600"></i></div>
                     <div>
-                        <span class="block font-medium text-slate-900"><%= t('nav.aboutUs') %></span>
-                        <span class="block text-xs text-slate-500"><%= t('nav.aboutUsDesc') %></span>
+                        <span class="block font-medium text-slate-900">Mathematics</span>
+                        <span class="block text-xs text-slate-500">Algebra, Geometry, etc.</span>
                     </div>
                 </a>
                 <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
-                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="star" class="size-4 text-indigo-600"></i></div>
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="flask-conical" class="size-4 text-indigo-600"></i></div>
                     <div>
-                        <span class="block font-medium text-slate-900"><%= t('nav.customerStories') %></span>
-                        <span class="block text-xs text-slate-500"><%= t('nav.customerStoriesDesc') %></span>
+                        <span class="block font-medium text-slate-900">Science</span>
+                        <span class="block text-xs text-slate-500">Physics, Chemistry, Biology</span>
+                    </div>
+                </a>
+                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="book-open" class="size-4 text-indigo-600"></i></div>
+                    <div>
+                        <span class="block font-medium text-slate-900">English</span>
+                        <span class="block text-xs text-slate-500">Grammar, Literature</span>
+                    </div>
+                </a>
+                <a href="#" class="flex items-center gap-3 p-2 rounded-md hover:bg-slate-50 text-sm">
+                    <div class="bg-slate-100 p-2 rounded-md"><i data-lucide="languages" class="size-4 text-indigo-600"></i></div>
+                    <div>
+                        <span class="block font-medium text-slate-900">Regional Languages</span>
+                        <span class="block text-xs text-slate-500">Bengali, Hindi</span>
                     </div>
                 </a>
             </div>
