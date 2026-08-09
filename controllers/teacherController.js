@@ -17,6 +17,7 @@ const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
 const Subject = require('../models/Subject');
 const Question = require('../models/Question');
+const RiskEvent = require('../models/RiskEvent');
 
 /**
  * Controller to handle Teacher Dashboard data fetching
@@ -100,19 +101,57 @@ exports.getDashboard = async (req, res, next) => {
 
         assignmentsWithStats.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
-        // 6. Students Needing Attention (e.g. recent quiz score < 50)
+        // 6. Students Needing Attention (e.g. recent quiz score < 50 or ML Risk Events)
         const weakAttempts = quizAttempts.filter(qa => qa.score < 50);
         const weakStudentIds = [...new Set(weakAttempts.map(qa => qa.student && qa.student._id.toString()))].filter(Boolean);
         
+        // Fetch ML Risk Events for enrolled students
+        const riskEvents = await RiskEvent.find({ 
+            student: { $in: uniqueStudentIds },
+            createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } // last 7 days
+        }).populate('student', 'name profilePicture').lean().catch(() => []);
+        
+        // Group risk events by student (take highest risk event)
+        const riskByStudent = {};
+        riskEvents.forEach(re => {
+            const stuId = re.student._id.toString();
+            if (!riskByStudent[stuId] || re.riskProbability > riskByStudent[stuId].riskProbability) {
+                riskByStudent[stuId] = re;
+            }
+        });
+
         const studentsNeedingAttentionMap = new Map();
+        
+        // First populate ML Risk Events
+        Object.values(riskByStudent).forEach(re => {
+            const stuId = re.student._id.toString();
+            studentsNeedingAttentionMap.set(stuId, {
+                studentId: stuId,
+                name: re.student.name,
+                profilePicture: re.student.profilePicture,
+                risk: re.riskLevel,
+                probability: Math.round(re.riskProbability * 100) + '%',
+                weakTopic: re.topic || 'General',
+                lastUpdated: re.createdAt,
+                type: 'ML_RISK'
+            });
+        });
+
+        // Then populate Low Quiz scores if not already flagged by ML
         enrollments.forEach(e => {
+            if (!e.student) return;
             const stuId = e.student._id.toString();
-            if (weakStudentIds.includes(stuId) && !studentsNeedingAttentionMap.has(stuId)) {
+            
+            if (!studentsNeedingAttentionMap.has(stuId) && weakStudentIds.includes(stuId)) {
                 studentsNeedingAttentionMap.set(stuId, {
+                    studentId: stuId,
                     name: e.student.name,
                     profilePicture: e.student.profilePicture,
-                    courseTitle: e.course.title,
-                    issue: 'Low Quiz Score'
+                    risk: 'LOW SCORE',
+                    probability: 'N/A',
+                    weakTopic: 'Recent Quiz',
+                    lastUpdated: new Date(),
+                    type: 'LOW_SCORE'
                 });
             }
         });

@@ -6,6 +6,9 @@
     <title>Quiz - EduSmart</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0"></script>
+    <script src="/js/ml/adaptive-engine.js"></script>
+    <script src="/js/ml/offline-tracker.js"></script>
     <style>
         /* Quiz Specific Custom CSS */
         
@@ -56,6 +59,16 @@
         .review-incorrect {
             background-color: #fee2e2 !important; /* red-100 */
             border-color: #ef4444 !important; /* red-500 */
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-5px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(5px); }
+        }
+        .animate-fade-in-out {
+            animation: fadeInOut 4s ease-in-out forwards;
         }
     </style>
 </head>
@@ -158,6 +171,12 @@
                     
                     <div id="optionsContainer" class="space-y-4">
                         <!-- Options injected here by JS -->
+                    </div>
+                    
+                    <!-- Adaptive Indicator -->
+                    <div id="adaptiveIndicator" class="hidden mt-6 p-3 bg-indigo-50 border border-indigo-100 rounded-lg flex items-center space-x-3 text-indigo-700 text-sm">
+                        <i class="fas fa-magic text-indigo-500"></i>
+                        <span>Difficulty adapted to your current performance.</span>
                     </div>
                 </div>
 
@@ -297,9 +316,12 @@
             let questions = [];
             let currentQuestionIndex = 0;
             
-            // Answers state: array of { questionId: String, selectedOptionIndex: Number, state: 'unvisited'|'visited'|'answered' }
+            // Answers state: array of { questionId: String, selectedOptionIndex: Number, state: 'unvisited'|'visited'|'answered', responseDuration: Number, skipped: Boolean, isCorrect: Boolean, questionAnsweredAt: Date }
             let studentAnswers = [];
             
+            // Adaptive tracking
+            let currentQuestionStartedAt = new Date();
+            let currentDifficulty = 3;
             // Timer state
             let timeLimitSeconds = 0;
             let timerInterval = null;
@@ -326,8 +348,17 @@
                     studentAnswers = questions.map(q => ({
                         questionId: q._id,
                         selectedOptionIndex: null,
-                        state: 'unvisited' // unvisited, visited, answered
+                        state: 'unvisited',
+                        responseDuration: 0,
+                        skipped: true,
+                        isCorrect: false
                     }));
+                    
+                    // Init adaptive engine v2
+                    if (window.ML) {
+                        await window.ML.initAll();
+                        window.ML.learnerStateService.reset();
+                    }
                     
                     populateStartScreen();
                     
@@ -400,12 +431,59 @@
             };
             
             const goToQuestion = (index) => {
+                const now = new Date();
+                // Save duration for the question we are leaving
+                if (currentQuestionIndex !== null && currentQuestionIndex !== undefined && studentAnswers[currentQuestionIndex]) {
+                    const timeSpent = now.getTime() - currentQuestionStartedAt.getTime();
+                    const ans = studentAnswers[currentQuestionIndex];
+                    ans.responseDuration += timeSpent;
+                    const isSkipped = ans.state !== 'answered';
+                    
+                    // Enqueue the offline event for the question we are leaving
+                    if (window.OfflineTracker && ans.state !== 'unvisited') {
+                        window.OfflineTracker.enqueue({
+                            quizId: quizId,
+                            questionId: questions[currentQuestionIndex]._id,
+                            selectedOptionIndex: ans.selectedOptionIndex,
+                            skipped: isSkipped,
+                            questionStartedAt: currentQuestionStartedAt.toISOString(),
+                            questionAnsweredAt: ans.questionAnsweredAt ? ans.questionAnsweredAt.toISOString() : now.toISOString(),
+                            quizCompleted: false
+                        });
+                    }
+                    
+                    // Update ML Learner State
+                    if (window.ML && ans.state !== 'unvisited') {
+                        let isCorrect = false;
+                        if (ans.selectedOptionIndex !== null && ans.selectedOptionIndex !== undefined) {
+                            const qLeaving = questions[currentQuestionIndex];
+                            if (qLeaving.options && qLeaving.options[ans.selectedOptionIndex] && qLeaving.options[ans.selectedOptionIndex].isCorrect) {
+                                isCorrect = true;
+                            }
+                        }
+                        
+                        window.ML.learnerStateService.updateWithInteraction(
+                            isCorrect,
+                            ans.responseDuration,
+                            isSkipped
+                        );
+                        
+                        // Check struggle periodically (e.g. every question)
+                        const liveMetrics = window.ML.learnerStateService.getLiveMetrics();
+                        const riskData = window.ML.struggleService.predictStruggle(liveMetrics);
+                        if (riskData && riskData.category !== 'LOW') {
+                            window.ML.queueRiskEvent(quizId, quizData.course, quizData.title, riskData);
+                        }
+                    }
+                }
+
                 // Update previous question state if unvisited
-                if (studentAnswers[currentQuestionIndex].state === 'unvisited') {
+                if (studentAnswers[currentQuestionIndex] && studentAnswers[currentQuestionIndex].state === 'unvisited') {
                     studentAnswers[currentQuestionIndex].state = 'visited';
                 }
                 
                 currentQuestionIndex = index;
+                currentQuestionStartedAt = new Date();
                 
                 // Mark new current as visited if unvisited
                 if (studentAnswers[currentQuestionIndex].state === 'unvisited') {
@@ -442,6 +520,11 @@
                     card.addEventListener('click', () => {
                         studentAnswers[currentQuestionIndex].selectedOptionIndex = optIndex;
                         studentAnswers[currentQuestionIndex].state = 'answered';
+                        studentAnswers[currentQuestionIndex].skipped = false;
+                        studentAnswers[currentQuestionIndex].questionAnsweredAt = new Date();
+                        
+                        // We don't have isCorrect locally without explanations, so we assume difficulty model will just use 0 or we could approximate.
+                        // Actually, client doesn't know isCorrect. We'll pass 0 to avoid spoiling it.
                         
                         // Re-render to update highlights and palette
                         goToQuestion(currentQuestionIndex);
@@ -468,8 +551,70 @@
                 if (currentQuestionIndex > 0) goToQuestion(currentQuestionIndex - 1);
             });
             
-            document.getElementById('btnNext').addEventListener('click', () => {
-                if (currentQuestionIndex < questions.length - 1) goToQuestion(currentQuestionIndex + 1);
+            document.getElementById('btnNext').addEventListener('click', async () => {
+                if (currentQuestionIndex < questions.length - 1) {
+                    let nextIndex = currentQuestionIndex + 1;
+                    
+                    // Adaptive Difficulty: Find next suitable question
+                    if (window.ML) {
+                        const q = questions[currentQuestionIndex];
+                        const currentDiff = q.difficulty || 3;
+                        const liveMetrics = window.ML.learnerStateService.getLiveMetrics();
+                        
+                        let targetDiff = window.ML.difficultyService.predictDifficulty(
+                            liveMetrics,
+                            currentDiff
+                        );
+                        
+                        // Enforce gradual transition (max 1 diff level jump)
+                        if (targetDiff > currentDiff + 1) targetDiff = currentDiff + 1;
+                        if (targetDiff < currentDiff - 1) targetDiff = currentDiff - 1;
+                        
+                        // Find unanswered question closest to targetDiff
+                        let bestMatchIdx = -1;
+                        let minDiff = 999;
+                        for (let i = 0; i < questions.length; i++) {
+                            // Only select unvisited questions to prevent repeating
+                            if (studentAnswers[i].state === 'unvisited') {
+                                const qCandidate = questions[i];
+                                const candidateDiff = qCandidate.difficulty || 3;
+                                
+                                let topicPenalty = 0;
+                                if (qCandidate.topic && q.topic && qCandidate.topic !== q.topic) {
+                                    topicPenalty = 1;
+                                }
+                                
+                                const score = Math.abs(candidateDiff - targetDiff) + (topicPenalty * 0.5);
+                                
+                                if (score < minDiff) {
+                                    minDiff = score;
+                                    bestMatchIdx = i;
+                                }
+                            }
+                        }
+                        if (bestMatchIdx !== -1) {
+                            nextIndex = bestMatchIdx;
+                            
+                            // Check if difficulty actually changed and show indicator
+                            const nextDiff = questions[nextIndex].difficulty || 3;
+                            if (nextDiff !== currentDiff) {
+                                const ind = document.getElementById('adaptiveIndicator');
+                                if (ind) {
+                                    ind.classList.remove('hidden');
+                                    // re-trigger animation
+                                    ind.classList.remove('animate-fade-in-out');
+                                    void ind.offsetWidth; // trigger reflow
+                                    ind.classList.add('animate-fade-in-out');
+                                    
+                                    setTimeout(() => {
+                                        ind.classList.add('hidden');
+                                    }, 4000);
+                                }
+                            }
+                        }
+                    }
+                    goToQuestion(nextIndex);
+                }
             });
             
             // Timer Logic
@@ -538,9 +683,41 @@
                 document.querySelector('#globalLoading p').textContent = "Submitting answers...";
                 
                 try {
+                    const now = new Date();
+                    // Update final duration
+                    if (currentQuestionIndex !== null && currentQuestionIndex !== undefined && studentAnswers[currentQuestionIndex]) {
+                        const timeSpent = now.getTime() - currentQuestionStartedAt.getTime();
+                        const ans = studentAnswers[currentQuestionIndex];
+                        ans.responseDuration += timeSpent;
+                        
+                        // Enqueue the final event
+                        if (window.OfflineTracker && ans.state !== 'unvisited') {
+                            const isSkipped = ans.state !== 'answered';
+                            window.OfflineTracker.enqueue({
+                                quizId: quizId,
+                                questionId: questions[currentQuestionIndex]._id,
+                                selectedOptionIndex: ans.selectedOptionIndex,
+                                skipped: isSkipped,
+                                questionStartedAt: currentQuestionStartedAt.toISOString(),
+                                questionAnsweredAt: ans.questionAnsweredAt ? ans.questionAnsweredAt.toISOString() : now.toISOString(),
+                                quizCompleted: false
+                            });
+                        }
+                    }
+
+                    // Update all queued events to quizCompleted = true before sync
+                    if (window.OfflineTracker) {
+                        await window.OfflineTracker.updateEvents(
+                            (ev) => ev.quizId === quizId && ev.quizCompleted === false,
+                            (ev) => { ev.quizCompleted = true; return ev; }
+                        );
+                    }
+
                     const payload = studentAnswers.map(a => ({
                         questionId: a.questionId,
-                        selectedOptionIndex: a.selectedOptionIndex
+                        selectedOptionIndex: a.selectedOptionIndex,
+                        responseDuration: a.responseDuration,
+                        skipped: a.skipped
                     }));
                     
                     const res = await fetch(`/quiz/api/${quizId}/submit`, {
@@ -552,6 +729,24 @@
                     if (!res.ok) throw new Error('Submission failed');
                     
                     const responseData = await res.json();
+
+                    // Ensure final state is run through the engine
+                    if (window.ML && currentQuestionIndex !== null && studentAnswers[currentQuestionIndex]) {
+                        const ans = studentAnswers[currentQuestionIndex];
+                        window.ML.learnerStateService.updateWithInteraction(
+                            false,
+                            ans.responseDuration,
+                            ans.state !== 'answered'
+                        );
+                        
+                        const liveMetrics = window.ML.learnerStateService.getLiveMetrics();
+                        const riskData = window.ML.struggleService.predictStruggle(liveMetrics);
+                        
+                        if (riskData && riskData.category !== 'LOW') {
+                            window.ML.queueRiskEvent(quizId, quizData.course, quizData.title, riskData);
+                        }
+                    }
+
                     renderResult(responseData.result);
                     
                 } catch (error) {

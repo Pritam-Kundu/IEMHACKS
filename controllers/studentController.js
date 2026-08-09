@@ -8,6 +8,7 @@ const Subject = require('../models/Subject');
 const Lesson = require('../models/Lesson');
 const Quiz = require('../models/Quiz');
 const Question = require('../models/Question');
+const RiskEvent = require('../models/RiskEvent');
 
 /**
  * Controller to handle Student Dashboard data fetching
@@ -92,6 +93,24 @@ exports.getDashboard = async (req, res, next) => {
             };
         }
 
+        // 7. AI Learning Insights
+        const recentRiskEvents = await RiskEvent.find({ 
+            student: studentId,
+            createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) }
+        }).sort({ createdAt: -1 }).populate('course').lean();
+
+        let learningInsight = null;
+        if (recentRiskEvents.length > 0) {
+            const latestRisk = recentRiskEvents[0];
+            if (latestRisk.riskLevel === 'HIGH' || latestRisk.riskLevel === 'MEDIUM') {
+                learningInsight = {
+                    message: "Your recent performance suggests reviewing this topic may help.",
+                    topic: latestRisk.topic || "General",
+                    courseId: latestRisk.course ? latestRisk.course._id : null
+                };
+            }
+        }
+
         // Render dashboard View
         res.render('student/dashboard', {
             title: 'Student Dashboard | EduSmart',
@@ -105,7 +124,8 @@ exports.getDashboard = async (req, res, next) => {
             continueLearning,
             activities: activities.slice(0, 5),
             badges: badges.slice(0, 4),
-            quizAttemptsCount: quizAttempts.length
+            quizAttemptsCount: quizAttempts.length,
+            learningInsight
         });
     } catch (error) {
         next(error);
