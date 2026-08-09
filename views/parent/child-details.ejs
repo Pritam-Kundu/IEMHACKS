@@ -12,19 +12,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fef3f2 100%);
+            min-height: 100vh;
+        }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .sidebar-item { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); position: relative; }
+        .sidebar-item:hover:not(.sidebar-active) { background: linear-gradient(135deg, #eef2ff, #f5f3ff); color: #4f46e5; transform: translateX(4px); }
+        .sidebar-active { background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff !important; border-radius: 12px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+        .sidebar-active div { background: transparent !important; color: #fff !important; box-shadow: none !important; }
+        .sidebar-active i { color: #fff !important; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
         
-        .sidebar-active { 
-            background-color: #f0fdf4; 
-            color: #16a34a; 
-            font-weight: 600; 
-            border-right: 4px solid #16a34a; 
-        }
-        .sidebar-item { transition: all 0.2s ease-in-out; }
-        .sidebar-item:hover:not(.sidebar-active) { 
-            background-color: #f1f5f9; 
-            color: #334155; 
-        }
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+        .card-hover { transition: all 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); }
+        .stat-glow { position: relative; }
+        .stat-glow::after { content: ''; position: absolute; inset: 0; background: inherit; filter: blur(20px); opacity: 0.4; z-index: -1; transition: opacity 0.3s ease; }
+        .stat-glow:hover::after { opacity: 0.6; }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
@@ -33,7 +43,7 @@
     <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 glass border-r border-white/50 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
         <div class="p-6 flex items-center justify-between">
             <a href="/parent/dashboard" class="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 transition-colors">
                 <i class="fa-solid fa-graduation-cap text-2xl"></i>
@@ -45,32 +55,32 @@
         </div>
 
         <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-            <a href="/parent/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-house-chimney w-5 text-center"></i>
-                <span>Dashboard</span>
+            <a href="/parent/dashboard" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-indigo-600 bg-indigo-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-house-chimney text-sm"></i></div>
+                <span class="font-semibold">Dashboard</span>
             </a>
-            <a href="/parent/children" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
-                <i class="fa-solid fa-children w-5 text-center"></i>
-                <span>My Children</span>
+            <a href="/parent/children" class="sidebar-item sidebar-active group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-violet-600 bg-violet-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-children text-sm"></i></div>
+                <span class="font-semibold">My Children</span>
             </a>
-            <a href="/parent/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                <span>Progress</span>
+            <a href="/parent/progress" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-purple-600 bg-purple-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-chart-line text-sm"></i></div>
+                <span class="font-semibold">Progress</span>
             </a>
-            <a href="/parent/assignments" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-file-signature w-5 text-center"></i>
-                <span>Assignments</span>
+            <a href="/parent/assignments" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-sky-600 bg-sky-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-file-signature text-sm"></i></div>
+                <span class="font-semibold">Assignments</span>
             </a>
-            <a href="/parent/achievements" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-medal w-5 text-center"></i>
-                <span>Achievements</span>
+            <a href="/parent/achievements" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-emerald-600 bg-emerald-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-medal text-sm"></i></div>
+                <span class="font-semibold">Achievements</span>
             </a>
         </nav>
 
         <div class="p-4 border-t border-slate-200">
-            <a href="/parent/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-gear w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
+            <a href="/parent/settings" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-slate-600 bg-slate-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-gear text-sm"></i></div>
+                <span class="font-semibold"><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
             </a>
             <form action="/logout" method="POST" class="w-full mt-1">
                 <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
@@ -85,7 +95,7 @@
     <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full relative">
         
         <!-- Top Header -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
+        <header class="glass border-b border-white/50 sticky top-0 z-10">
             <div class="flex items-center justify-between px-6 py-4">
                 <div class="flex items-center gap-4">
                     <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
@@ -94,8 +104,8 @@
                     <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Student Details</h1>
 
                     <!-- Global Links -->
-                    <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
-                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors">Home</a>
+                    <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200/50">
+                        <a href="/" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
                     </div>
                 </div>
                 

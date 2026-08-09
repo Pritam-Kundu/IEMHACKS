@@ -1603,7 +1603,6 @@ exports.getAssignments = async (req, res, next) => {
         // Fetch assignments for those courses
         const assignmentsRaw = await Assignment.find({ course: { $in: courseIds } })
             .populate('course', 'title')
-            .populate('teacher', 'name')
             .sort({ dueDate: 1 })
             .lean();
 
