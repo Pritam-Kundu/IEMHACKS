@@ -50,9 +50,9 @@ const generateAuthCookie = (res, user) => {
     const token = jwt.sign(
         { uid: user._id.toString(), firebaseUid: user.firebaseUid, role: user.role, email: user.email },
         JWT_SECRET,
-        { expiresIn: '5d' }
+        { expiresIn: '1d' }
     );
-    res.cookie('__session', token, { maxAge: 5 * 24 * 60 * 60 * 1000, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+    res.cookie('__session', token, { maxAge: 1 * 24 * 60 * 60 * 1000, httpOnly: true, secure: process.env.NODE_ENV === 'production' });
 };
 
 const localSignup = async (req, res) => {
@@ -185,6 +185,39 @@ const verifySignupOtp = async (req, res) => {
     }
 };
 
+const updateLoginStreak = async (user) => {
+    if (user.role === 'student' || user.role === 'child') {
+        const profile = await StudentProfile.findOne({ user: user._id });
+        if (profile) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            
+            if (profile.lastLoginDate) {
+                const lastLogin = new Date(profile.lastLoginDate);
+                const lastLoginDay = new Date(lastLogin.getFullYear(), lastLogin.getMonth(), lastLogin.getDate());
+                
+                const diffTime = today - lastLoginDay;
+                const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24)); 
+                
+                if (diffDays === 1) {
+                    profile.currentStreak += 1;
+                    if (profile.currentStreak > profile.longestStreak) {
+                        profile.longestStreak = profile.currentStreak;
+                    }
+                } else if (diffDays > 1) {
+                    profile.currentStreak = 1;
+                }
+            } else {
+                profile.currentStreak = 1;
+                profile.longestStreak = 1;
+            }
+            
+            profile.lastLoginDate = now;
+            await profile.save();
+        }
+    }
+};
+
 const localLogin = async (req, res) => {
     const { email, password } = req.body;
 
@@ -215,6 +248,7 @@ const localLogin = async (req, res) => {
             return res.status(403).json({ success: false, message: 'Your account has been rejected.' });
         }
 
+        await updateLoginStreak(user);
         generateAuthCookie(res, user);
 
         return res.json({
@@ -309,6 +343,7 @@ const googleLogin = async (req, res) => {
             return res.status(403).json({ success: false, message: 'Your account has been rejected.' });
         }
 
+        await updateLoginStreak(user);
         generateAuthCookie(res, user);
 
         return res.json({

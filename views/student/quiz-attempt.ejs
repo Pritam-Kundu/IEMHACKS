@@ -6,6 +6,7 @@
     <title><%= title %></title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -88,7 +89,20 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        window.location.href = `/student/quizzes/${quizId}/result?attemptId=${data.attemptId}`;
+                        const redirectUrl = `/student/quizzes/${quizId}/result?attemptId=${data.attemptId}`;
+                        if (data.leveledUp && typeof confetti === 'function') {
+                            confetti({
+                                particleCount: 200,
+                                spread: 90,
+                                origin: { y: 0.6 },
+                                zIndex: 10000
+                            });
+                            setTimeout(() => {
+                                window.location.href = redirectUrl;
+                            }, 2500);
+                        } else {
+                            window.location.href = redirectUrl;
+                        }
                     } else {
                         alert(data.message || 'Error submitting quiz');
                         submitBtn.disabled = false;

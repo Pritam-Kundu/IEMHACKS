@@ -34,6 +34,25 @@ const studentProfileSchema = new mongoose.Schema({
             default: Date.now
         }
     }],
+    lastLoginDate: {
+        type: Date
+    },
+    currentStreak: {
+        type: Number,
+        default: 0
+    },
+    longestStreak: {
+        type: Number,
+        default: 0
+    },
+    totalPoints: {
+        type: Number,
+        default: 0
+    },
+    level: {
+        type: Number,
+        default: 1
+    },
     recommendedDifficulty: {
         type: String,
         enum: ['beginner', 'intermediate', 'advanced'],

@@ -215,61 +215,90 @@
                 </div>
             </div>
 
+            <!-- Gamification Dashboard Row -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Level Card -->
+                <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-5 shadow-lg text-white flex flex-col justify-between relative overflow-hidden transform hover:-translate-y-1 transition-transform cursor-default">
+                    <div class="absolute -right-4 -top-4 text-white/20 text-7xl"><i class="fa-solid fa-star"></i></div>
+                    <div class="relative z-10 flex items-center justify-between mb-4">
+                        <p class="text-white/90 font-semibold text-sm uppercase tracking-wider">Current Level</p>
+                        <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-4xl font-black drop-shadow-md">Lvl <%= level || 1 %></h3>
+                        <p class="text-sm mt-1 text-white/90 font-medium">Next level at <%= (level || 1) * 100 %> XP</p>
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-black/20 rounded-full h-1.5 mt-3 overflow-hidden shadow-inner">
+                            <div class="bg-white h-1.5 rounded-full" style="width: <%= Math.min(100, ((totalPoints || 0) / ((level || 1) * 100)) * 100) %>%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- XP Card -->
+                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-5 shadow-lg text-white flex flex-col justify-between relative overflow-hidden transform hover:-translate-y-1 transition-transform cursor-default">
+                    <div class="absolute -right-4 -top-4 text-white/20 text-7xl"><i class="fa-solid fa-bolt"></i></div>
+                    <div class="relative z-10 flex items-center justify-between mb-4">
+                        <p class="text-white/90 font-semibold text-sm uppercase tracking-wider">Total XP</p>
+                        <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-4xl font-black drop-shadow-md"><%= totalPoints || 0 %> <span class="text-lg font-bold opacity-75">XP</span></h3>
+                        <p class="text-sm mt-1 text-white/90 font-medium">Keep learning to earn more!</p>
+                    </div>
+                </div>
+
+                <!-- Streak Card -->
+                <div class="bg-gradient-to-br from-rose-400 to-red-500 rounded-xl p-5 shadow-lg text-white flex flex-col justify-between relative overflow-hidden transform hover:-translate-y-1 transition-transform cursor-default">
+                    <div class="absolute -right-4 -top-4 text-white/20 text-7xl"><i class="fa-solid fa-fire"></i></div>
+                    <div class="relative z-10 flex items-center justify-between mb-4">
+                        <p class="text-white/90 font-semibold text-sm uppercase tracking-wider">Login Streak</p>
+                        <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-fire"></i>
+                        </div>
+                    </div>
+                    <div class="relative z-10">
+                        <h3 class="text-4xl font-black drop-shadow-md"><%= currentStreak || 0 %> <span class="text-lg font-bold opacity-75">Days</span></h3>
+                        <p class="text-sm mt-1 text-white/90 font-medium">You're on fire! 🔥</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Quick Statistics Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
                 <!-- Stat Card: Courses -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div
-                        class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0">
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0">
                         <i class="fa-solid fa-book-open"></i>
                     </div>
                     <div>
                         <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.courses') : 'Courses Enrolled' %></p>
-                        <p class="text-2xl font-bold text-slate-800">
-                            <%= coursesEnrolled || 0 %>
-                        </p>
+                        <p class="text-2xl font-bold text-slate-800"><%= coursesEnrolled || 0 %></p>
                     </div>
                 </div>
 
                 <!-- Stat Card: Lessons -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div
-                        class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
                         <i class="fa-solid fa-check-double"></i>
                     </div>
                     <div>
                         <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.completed') : 'Lessons Completed' %></p>
-                        <p class="text-2xl font-bold text-slate-800">
-                            <%= lessonsCompleted || 0 %>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Stat Card: Streak -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div
-                        class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xl shrink-0">
-                        <i class="fa-solid fa-fire"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.currentStreak') : 'Current Streak' %></p>
-                        <p class="text-2xl font-bold text-slate-800">
-                            <%= currentStreak || 0 %> <span class="text-base font-normal text-slate-500"><%= typeof t === 'function' ? t('student.days') : 'Days' %></span>
-                        </p>
+                        <p class="text-2xl font-bold text-slate-800"><%= lessonsCompleted || 0 %></p>
                     </div>
                 </div>
 
                 <!-- Stat Card: Quiz Score -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div
-                        class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0">
+                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0">
                         <i class="fa-solid fa-bullseye"></i>
                     </div>
                     <div>
                         <p class="text-sm text-slate-500 font-medium">Avg. Quiz Score</p>
-                        <p class="text-2xl font-bold text-slate-800">
-                            <%= averageQuizScore || 0 %>%
-                        </p>
+                        <p class="text-2xl font-bold text-slate-800"><%= averageQuizScore || 0 %>%</p>
                     </div>
                 </div>
             </div>

@@ -98,7 +98,9 @@ exports.getDashboard = async (req, res, next) => {
             coursesEnrolled: enrollments.length,
             lessonsCompleted,
             averageQuizScore,
-            currentStreak: 5, // Static for now
+            currentStreak: profile && profile.currentStreak ? profile.currentStreak : 0,
+            level: profile && profile.level ? profile.level : 1,
+            totalPoints: profile && profile.totalPoints ? profile.totalPoints : 0,
             enrollments,
             continueLearning,
             activities: activities.slice(0, 5),
@@ -475,10 +477,18 @@ exports.completeLesson = async (req, res, next) => {
             { upsert: true, new: true }
         );
 
-        // Very basic logic for 'Complete First Lesson' badge
+        // Gamification: Add XP and Level Up
         let profile = await StudentProfile.findOne({ user: studentId });
         if (!profile) {
             profile = await StudentProfile.create({ user: studentId });
+        }
+
+        let leveledUp = false;
+        profile.totalPoints = (profile.totalPoints || 0) + 50;
+        const requiredXP = (profile.level || 1) * 100;
+        if (profile.totalPoints >= requiredXP) {
+            profile.level = (profile.level || 1) + 1;
+            leveledUp = true;
         }
 
         const badge = await Badge.findOne({ criteria: 'completed_first_lesson' });
@@ -486,11 +496,11 @@ exports.completeLesson = async (req, res, next) => {
             const hasBadge = profile.earnedBadges.some(b => b.badge.toString() === badge._id.toString());
             if (!hasBadge) {
                 profile.earnedBadges.push({ badge: badge._id, earnedAt: new Date() });
-                await profile.save();
             }
         }
+        await profile.save();
 
-        res.json({ success: true, progress });
+        res.json({ success: true, progress, leveledUp });
     } catch (error) {
         next(error);
     }
@@ -591,22 +601,32 @@ exports.submitQuiz = async (req, res, next) => {
             endTime: new Date()
         });
 
-        // Earn Badge Logic
-        if (score === 100) {
-            let profile = await StudentProfile.findOne({ user: studentId });
-            if (!profile) profile = await StudentProfile.create({ user: studentId });
+        // Gamification: Earn XP and Badge Logic
+        let profile = await StudentProfile.findOne({ user: studentId });
+        if (!profile) profile = await StudentProfile.create({ user: studentId });
 
+        let leveledUp = false;
+        if (passed) {
+            profile.totalPoints = (profile.totalPoints || 0) + (score * 10);
+            const requiredXP = (profile.level || 1) * 100;
+            if (profile.totalPoints >= requiredXP) {
+                profile.level = (profile.level || 1) + 1;
+                leveledUp = true;
+            }
+        }
+
+        if (score === 100) {
             const badge = await Badge.findOne({ criteria: 'perfect_quiz' });
             if (badge) {
                 const hasBadge = profile.earnedBadges.some(b => b.badge.toString() === badge._id.toString());
                 if (!hasBadge) {
                     profile.earnedBadges.push({ badge: badge._id, earnedAt: new Date() });
-                    await profile.save();
                 }
             }
         }
+        await profile.save();
 
-        res.json({ success: true, attemptId: attempt._id });
+        res.json({ success: true, attemptId: attempt._id, leveledUp });
     } catch (error) {
         next(error);
     }
