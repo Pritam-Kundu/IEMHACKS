@@ -46,7 +46,11 @@
     "quizScore": "কুইজ স্কোর",
     "overallProgress": "সামগ্রিক অগ্রগতি",
     "recommendedForYou": "আপনার জন্য সুপারিশকৃত",
-    "exploreCourses": "কোর্স অন্বেষণ করুন"
+    "exploreCourses": "কোর্স এক্সপ্লোর করুন",
+    "continueLearning": "শেখা চালিয়ে যান",
+    "courses": "এনরোল করা কোর্স",
+    "completed": "সম্পন্ন লেসন",
+    "achievementsEarned": "অর্জিত সাফল্য"
   },
   "parent": {
     "dashboard": "অভিভাবক ড্যাশবোর্ড",

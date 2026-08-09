@@ -46,7 +46,11 @@
     "quizScore": "Quiz Score",
     "overallProgress": "Overall Progress",
     "recommendedForYou": "Recommended for You",
-    "exploreCourses": "Explore Courses"
+    "exploreCourses": "Explore Courses",
+    "continueLearning": "Continue Learning",
+    "courses": "Courses Enrolled",
+    "completed": "Lessons Completed",
+    "achievementsEarned": "Achievements Earned"
   },
   "parent": {
     "dashboard": "Parent Dashboard",

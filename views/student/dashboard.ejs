@@ -4,527 +4,597 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        <%= title %>
-    </title>
-    <!-- Tailwind CSS (CDN for rapid hackathon setup, can be replaced with build later) -->
+    <title><%= title %></title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* Dashboard-specific custom styles */
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
+            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fef3f2 100%);
+            min-height: 100vh;
         }
 
-        /* Sidebar styling */
-        .sidebar-active {
-            background-color: #e0e7ff;
-            color: #4f46e5;
-            font-weight: 600;
-            border-right: 4px solid #4f46e5;
-        }
-
+        /* Sidebar */
         .sidebar-item {
-            transition: all 0.2s ease-in-out;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
-
         .sidebar-item:hover:not(.sidebar-active) {
-            background-color: #f1f5f9;
-            color: #334155;
+            background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+            color: #4f46e5;
+            transform: translateX(4px);
+        }
+        .sidebar-active {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: #fff !important;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+        .sidebar-active i { color: #fff !important; }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); opacity: 1; }
+            80%, 100% { transform: scale(1.5); opacity: 0; }
         }
 
-        /* Utility */
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+        .animate-fade-in-scale { animation: fadeInScale 0.5s ease-out forwards; }
+        .animate-slide-in-right { animation: slideInRight 0.5s ease-out forwards; }
+        .animate-float { animation: float 4s ease-in-out infinite; }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-600 { animation-delay: 0.6s; }
+        .delay-700 { animation-delay: 0.7s; }
+
+        /* Card hover effects */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
         }
 
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        /* Stat card glow */
+        .stat-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-glow::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+        .stat-glow:hover::before { opacity: 1; }
+
+        /* Course card image */
+        .course-img-wrap {
+            overflow: hidden;
+        }
+        .course-img-wrap img {
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .course-card:hover .course-img-wrap img {
+            transform: scale(1.08);
+        }
+
+        /* Progress bar animation */
+        .progress-fill {
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Badge pulse */
+        .badge-item:hover {
+            transform: scale(1.05);
+            transition: transform 0.25s ease;
+        }
+
+        /* Scrollbar */
+        .scrollbar-thin::-webkit-scrollbar { width: 5px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* Glass effect */
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
     </style>
 </head>
 
-<body class="flex h-screen overflow-hidden text-slate-800">
+<body class="flex h-screen overflow-hidden text-gray-800">
 
     <!-- Mobile sidebar overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 hidden lg:hidden transition-opacity"></div>
 
-    <!-- Sidebar -->
+    <!-- ========== SIDEBAR ========== -->
     <aside id="sidebar"
-        class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
-        <div class="p-6 flex items-center justify-between">
-            <a href="/" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
-                <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-2xl font-bold tracking-tight text-slate-900">EduSmart <span class="font-sans text-xs text-blue-600 ml-1 font-semibold uppercase tracking-normal">Student</span></span>
+        class="fixed inset-y-0 left-0 w-[260px] bg-white/90 backdrop-blur-xl border-r border-indigo-100/50 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-lg shadow-indigo-100/20">
+
+        <!-- Logo -->
+        <div class="p-5 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center shadow-md shadow-indigo-200/50 group-hover:shadow-lg transition-shadow">
+                    <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+                </div>
+                <div>
+                    <span class="font-extrabold text-lg text-gray-900 tracking-tight">EduSmart</span>
+                    <span class="block text-[10px] font-semibold text-indigo-500 uppercase tracking-widest -mt-0.5">Student</span>
+                </div>
             </a>
-            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
-                <i class="fa-solid fa-xmark text-xl"></i>
+            <button id="closeSidebarBtn" class="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
 
-        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-            <a href="/student/dashboard"
-                class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
-                <i class="fa-solid fa-house w-5 text-center"></i>
+        <!-- Nav Items -->
+        <nav class="flex-1 px-3 py-2 space-y-1 overflow-y-auto scrollbar-thin">
+            <a href="/student/dashboard" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-house w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span>
             </a>
-            <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-book-open w-5 text-center"></i>
+            <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-book-open w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span>
             </a>
-            <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
+            <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-clipboard-question w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span>
             </a>
-            <a href="/student/ai-tutor"
-                class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-robot w-5 text-center"></i>
+            <a href="/student/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-robot w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span>
             </a>
-            <a href="/student/progress"
-                class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i>
+            <a href="/student/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-chart-line w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
             </a>
-            <a href="/student/leaderboard"
-                class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-trophy w-5 text-center"></i>
+            <a href="/student/leaderboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-trophy w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span>
             </a>
-            <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-medal w-5 text-center"></i>
+            <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-medal w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span>
             </a>
-            <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-download w-5 text-center"></i>
+            <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-download w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span>
             </a>
         </nav>
 
-        <div class="p-4 border-t border-slate-200">
-            <a href="/student/settings"
-                class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-gear w-5 text-center"></i>
+        <!-- Bottom -->
+        <div class="p-3 border-t border-gray-100">
+            <a href="/student/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <i class="fa-solid fa-gear w-5 text-center text-base"></i>
                 <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
             </a>
-            <!-- Using existing logout flow -->
             <form action="/logout" method="POST" class="w-full mt-1">
-                <button type="submit"
-                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
+                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 text-sm font-medium">
+                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-base"></i>
                     <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
                 </button>
             </form>
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full">
+    <!-- ========== MAIN CONTENT ========== -->
+    <main class="flex-1 flex flex-col h-screen lg:ml-[260px] w-full">
 
         <!-- Top Header -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
-            <div class="flex items-center justify-between px-6 py-4">
+        <header class="glass border-b border-white/50 sticky top-0 z-10">
+            <div class="flex items-center justify-between px-5 sm:px-8 py-3.5">
                 <div class="flex items-center gap-4">
-                    <button id="openSidebarBtn"
-                        class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
-                        <i class="fa-solid fa-bars text-xl"></i>
+                    <button id="openSidebarBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">
+                        <i class="fa-solid fa-bars text-lg"></i>
                     </button>
-                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Dashboard</h1>
-
-                    <!-- Global Links -->
-                    <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
-                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
-                        <a href="/#features"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
-                        <a href="/#how-it-works"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
-                        <a href="/#about"
-                            class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
+                    <h1 class="text-lg font-bold text-gray-800 hidden sm:block">Dashboard</h1>
+                    <div class="hidden md:flex items-center space-x-5 border-l pl-5 border-gray-200/50 ml-2">
+                        <a href="/" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
+                        <a href="/#features" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
+                        <a href="/#how-it-works" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
+                        <a href="/#about" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
                     </div>
                 </div>
-
-                <div class="flex items-center gap-5">
-                    
+                <div class="flex items-center gap-4">
                     <!-- Language Switcher -->
-                    <div class="relative group mr-2">
-                        <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
-                            <i class="fa-solid fa-globe text-xl"></i>
-                            <%= locals.language === 'bn' ? 'বাংলা' : 'English' %>
+                    <div class="relative group">
+                        <button class="inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-medium text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors gap-1.5">
+                            <i class="fa-solid fa-globe text-lg"></i>
+                            <span class="hidden sm:inline"><%= locals.language === 'bn' ? 'বাংলা' : 'English' %></span>
                         </button>
-                        <div class="absolute right-0 mt-0 w-32 bg-white border border-slate-200 rounded-md shadow-lg hidden group-hover:block z-50 overflow-hidden">
-                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'en' ? 'font-bold' : '' %>">English</button>
-                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'bn' ? 'font-bold' : '' %>">বাংলা</button>
+                        <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-100 rounded-xl shadow-xl shadow-gray-100/50 hidden group-hover:block z-50 overflow-hidden">
+                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors <%= locals.language === 'en' ? 'font-bold text-indigo-600' : '' %>">English</button>
+                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors <%= locals.language === 'bn' ? 'font-bold text-indigo-600' : '' %>">বাংলা</button>
                         </div>
                     </div>
-
                     <%- include('../partials/student-header-controls') %>
                 </div>
             </div>
         </header>
 
         <!-- Dashboard Content -->
-        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin">
 
-            <!-- Welcome Hero Card -->
-            <div
-                class="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg mb-8 relative overflow-hidden">
-                <!-- Decorative Elements -->
-                <div
-                    class="absolute right-0 top-0 w-64 h-64 bg-white opacity-5 rounded-full -translate-y-1/2 translate-x-1/3">
-                </div>
-                <div class="absolute right-10 bottom-0 w-40 h-40 bg-white opacity-10 rounded-full translate-y-1/2">
-                </div>
+            <!-- ===== WELCOME HERO ===== -->
+            <div class="animate-fade-in-up opacity-0 mb-8">
+                <div class="relative rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-600 via-blue-600 to-indigo-500 p-7 sm:p-10 text-white shadow-xl shadow-indigo-200/40">
+                    <!-- Decorative shapes -->
+                    <div class="absolute right-0 top-0 w-72 h-72 bg-white/5 rounded-full -translate-y-1/3 translate-x-1/4"></div>
+                    <div class="absolute right-20 bottom-0 w-48 h-48 bg-white/10 rounded-full translate-y-1/2"></div>
+                    <div class="absolute left-1/2 top-1/2 w-96 h-96 bg-blue-400/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
 
-                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                    <div>
-                        <h2 class="text-3xl font-bold mb-2">Good Morning, <%= user.name %>! 👋</h2>
-                        <p class="text-indigo-100 text-lg max-w-xl">Keep Learning, Keep Growing! You're making great
-                            progress towards your learning goals.</p>
-                    </div>
+                    <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div>
+                            <%
+                                const hour = new Date().getHours();
+                                let greeting = 'Good Morning';
+                                let greetEmoji = '☀️';
+                                if (hour >= 12 && hour < 17) { greeting = 'Good Afternoon'; greetEmoji = '🌤️'; }
+                                else if (hour >= 17) { greeting = 'Good Evening'; greetEmoji = '🌙'; }
+                            %>
+                            <p class="text-indigo-200 text-sm font-medium mb-1 uppercase tracking-wider"><%= greeting %> <%= greetEmoji %></p>
+                            <h2 class="text-3xl sm:text-4xl font-extrabold mb-2 tracking-tight"><%= user.name %></h2>
+                            <p class="text-blue-100 text-base max-w-lg leading-relaxed">Keep learning, keep growing! You're making great progress towards your goals.</p>
+                        </div>
 
-                    <!-- Continue Learning Quick Action -->
-                    <% if (continueLearning) { %>
-                        <div class="bg-white/20 backdrop-blur-md rounded-xl p-5 border border-white/30 min-w-[280px]">
-                            <p class="text-sm text-indigo-100 font-medium mb-1">Current Focus</p>
-                            <p class="text-lg font-bold mb-3 truncate" title="<%= continueLearning.lessonTitle %>">
-                                <%= continueLearning.lessonTitle %>
-                            </p>
-                            <a href="/student/lesson"
-                                class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-lg w-full hover:bg-indigo-50 transition-colors shadow-sm">
+                        <!-- Continue Learning Card -->
+                        <% if (continueLearning) { %>
+                        <div class="bg-white/15 backdrop-blur-lg rounded-2xl p-5 border border-white/20 min-w-[280px] animate-float">
+                            <p class="text-xs text-blue-200 font-semibold uppercase tracking-wider mb-1">Current Focus</p>
+                            <p class="text-lg font-bold mb-4 truncate" title="<%= continueLearning.lessonTitle %>"><%= continueLearning.lessonTitle %></p>
+                            <a href="/student/lesson" class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold px-5 py-2.5 rounded-xl w-full hover:bg-indigo-50 transition-all shadow-md hover:shadow-lg text-sm">
                                 <span><%= typeof t === 'function' ? t('student.continueLearning') : 'Continue Learning' %></span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </a>
                         </div>
                         <% } else { %>
-                            <div
-                                class="bg-white/20 backdrop-blur-md rounded-xl p-5 border border-white/30 min-w-[280px] text-center">
-                                <p class="text-sm text-indigo-100 font-medium mb-2">Ready to start learning?</p>
-                                <a href="/student/explore"
-                                    class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-semibold px-5 py-2.5 rounded-lg w-full hover:bg-indigo-50 transition-colors shadow-sm">
-                                    <span><%= typeof t === 'function' ? t('student.exploreCourses') : 'Explore Courses' %></span>
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </a>
-                            </div>
-                            <% } %>
+                        <div class="bg-white/15 backdrop-blur-lg rounded-2xl p-5 border border-white/20 min-w-[280px] text-center animate-float">
+                            <p class="text-sm text-blue-200 font-medium mb-3">Ready to start learning?</p>
+                            <a href="/student/explore" class="inline-flex items-center justify-center gap-2 bg-white text-indigo-700 font-bold px-5 py-2.5 rounded-xl w-full hover:bg-indigo-50 transition-all shadow-md hover:shadow-lg text-sm">
+                                <span><%= typeof t === 'function' ? t('student.exploreCourses') : 'Explore Courses' %></span>
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </a>
+                        </div>
+                        <% } %>
+                    </div>
                 </div>
             </div>
 
-            <!-- Gamification Dashboard Row -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <!-- ===== GAMIFICATION ROW ===== -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
                 <!-- Level Card -->
-                <div class="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-5 shadow-lg text-white flex flex-col justify-between relative overflow-hidden transform hover:-translate-y-1 transition-transform cursor-default">
-                    <div class="absolute -right-4 -top-4 text-white/20 text-7xl"><i class="fa-solid fa-star"></i></div>
-                    <div class="relative z-10 flex items-center justify-between mb-4">
-                        <p class="text-white/90 font-semibold text-sm uppercase tracking-wider">Current Level</p>
-                        <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-xl shadow-inner">
-                            <i class="fa-solid fa-star"></i>
-                        </div>
-                    </div>
-                    <div class="relative z-10">
-                        <h3 class="text-4xl font-black drop-shadow-md">Lvl <%= level || 1 %></h3>
-                        <p class="text-sm mt-1 text-white/90 font-medium">Next level at <%= (level || 1) * 100 %> XP</p>
-                        <!-- Progress Bar -->
-                        <div class="w-full bg-black/20 rounded-full h-1.5 mt-3 overflow-hidden shadow-inner">
-                            <div class="bg-white h-1.5 rounded-full" style="width: <%= Math.min(100, ((totalPoints || 0) / ((level || 1) * 100)) * 100) %>%"></div>
+                <div class="animate-fade-in-up opacity-0 delay-100">
+                    <div class="stat-glow card-hover bg-gradient-to-br from-amber-400 via-orange-400 to-amber-500 rounded-2xl p-5 text-white shadow-lg shadow-orange-200/30 cursor-default relative overflow-hidden">
+                        <div class="absolute -right-3 -top-3 text-white/10 text-6xl"><i class="fa-solid fa-star"></i></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase tracking-widest text-white/80">Level</span>
+                                <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-solid fa-star text-sm"></i></div>
+                            </div>
+                            <h3 class="text-4xl font-black">Lvl <%= level || 1 %></h3>
+                            <p class="text-xs mt-1.5 text-white/80 font-medium">Next at <%= (level || 1) * 100 %> XP</p>
+                            <div class="w-full bg-black/15 rounded-full h-1.5 mt-3">
+                                <div class="bg-white h-1.5 rounded-full progress-fill" style="width: <%= Math.min(100, ((totalPoints || 0) / ((level || 1) * 100)) * 100) %>%"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- XP Card -->
-                <div class="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl p-5 shadow-lg text-white flex flex-col justify-between relative overflow-hidden transform hover:-translate-y-1 transition-transform cursor-default">
-                    <div class="absolute -right-4 -top-4 text-white/20 text-7xl"><i class="fa-solid fa-bolt"></i></div>
-                    <div class="relative z-10 flex items-center justify-between mb-4">
-                        <p class="text-white/90 font-semibold text-sm uppercase tracking-wider">Total XP</p>
-                        <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-xl shadow-inner">
-                            <i class="fa-solid fa-bolt"></i>
+                <div class="animate-fade-in-up opacity-0 delay-200">
+                    <div class="stat-glow card-hover bg-gradient-to-br from-indigo-500 via-blue-500 to-indigo-600 rounded-2xl p-5 text-white shadow-lg shadow-indigo-200/30 cursor-default relative overflow-hidden">
+                        <div class="absolute -right-3 -top-3 text-white/10 text-6xl"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase tracking-widest text-white/80">Total XP</span>
+                                <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-solid fa-bolt text-sm"></i></div>
+                            </div>
+                            <h3 class="text-4xl font-black"><%= totalPoints || 0 %> <span class="text-lg font-bold opacity-60">XP</span></h3>
+                            <p class="text-xs mt-1.5 text-white/80 font-medium">Keep learning to earn more!</p>
                         </div>
-                    </div>
-                    <div class="relative z-10">
-                        <h3 class="text-4xl font-black drop-shadow-md"><%= totalPoints || 0 %> <span class="text-lg font-bold opacity-75">XP</span></h3>
-                        <p class="text-sm mt-1 text-white/90 font-medium">Keep learning to earn more!</p>
                     </div>
                 </div>
 
                 <!-- Streak Card -->
-                <div class="bg-gradient-to-br from-rose-400 to-red-500 rounded-xl p-5 shadow-lg text-white flex flex-col justify-between relative overflow-hidden transform hover:-translate-y-1 transition-transform cursor-default">
-                    <div class="absolute -right-4 -top-4 text-white/20 text-7xl"><i class="fa-solid fa-fire"></i></div>
-                    <div class="relative z-10 flex items-center justify-between mb-4">
-                        <p class="text-white/90 font-semibold text-sm uppercase tracking-wider">Login Streak</p>
-                        <div class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-xl shadow-inner">
-                            <i class="fa-solid fa-fire"></i>
-                        </div>
-                    </div>
-                    <div class="relative z-10">
-                        <h3 class="text-4xl font-black drop-shadow-md"><%= currentStreak || 0 %> <span class="text-lg font-bold opacity-75">Days</span></h3>
-                        <p class="text-sm mt-1 text-white/90 font-medium">You're on fire! 🔥</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quick Statistics Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
-                <!-- Stat Card: Courses -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0">
-                        <i class="fa-solid fa-book-open"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.courses') : 'Courses Enrolled' %></p>
-                        <p class="text-2xl font-bold text-slate-800"><%= coursesEnrolled || 0 %></p>
-                    </div>
-                </div>
-
-                <!-- Stat Card: Lessons -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
-                        <i class="fa-solid fa-check-double"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-slate-500 font-medium"><%= typeof t === 'function' ? t('student.completed') : 'Lessons Completed' %></p>
-                        <p class="text-2xl font-bold text-slate-800"><%= lessonsCompleted || 0 %></p>
-                    </div>
-                </div>
-
-                <!-- Stat Card: Quiz Score -->
-                <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200 flex items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0">
-                        <i class="fa-solid fa-bullseye"></i>
-                    </div>
-                    <div>
-                        <p class="text-sm text-slate-500 font-medium">Avg. Quiz Score</p>
-                        <p class="text-2xl font-bold text-slate-800"><%= averageQuizScore || 0 %>%</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Layout: 2/3 Main Content, 1/3 Sidebar Info -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-8">
-
-                <!-- Left Column (Main) -->
-                <div class="lg:col-span-2 space-y-8">
-
-                    <!-- My Courses Section -->
-                    <section>
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-bold text-slate-800">My Courses</h3>
-                            <a href="/student/courses"
-                                class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">View All</a>
-                        </div>
-
-                        <% if (enrollments && enrollments.length> 0) { %>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                                <% enrollments.forEach(enrollment=> { %>
-                                    <div
-                                        class="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-md transition-shadow group flex flex-col h-full">
-                                        <div class="h-32 bg-slate-200 relative overflow-hidden shrink-0">
-                                            <img src="<%= enrollment.course.thumbnail || '/images/default-course.png' %>"
-                                                alt="Course Thumbnail"
-                                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                            <div
-                                                class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded-md text-xs font-semibold text-slate-700">
-                                                <%= enrollment.course.subject ? enrollment.course.subject.name
-                                                    : 'General' %>
-                                            </div>
-                                        </div>
-                                        <div class="p-5 flex flex-col flex-1">
-                                            <h4 class="font-bold text-slate-800 mb-1 line-clamp-2"
-                                                title="<%= enrollment.course.title %>">
-                                                <%= enrollment.course.title %>
-                                            </h4>
-                                            <p class="text-sm text-slate-500 mb-4 flex items-center gap-1.5 mt-auto">
-                                                <i class="fa-regular fa-user text-xs"></i>
-                                                <%= enrollment.course.teacher ? enrollment.course.teacher.name
-                                                    : 'Instructor' %>
-                                            </p>
-
-                                            <!-- Simple calculated progress for UI presentation -->
-                                            <% const curProgress=enrollment.status==='completed' ? 100 : 45; %>
-                                                <div class="w-full bg-slate-100 rounded-full h-2 mb-2 overflow-hidden">
-                                                    <div class="bg-indigo-600 h-2 rounded-full"
-                                                        style="width: <%= curProgress %>%"></div>
-                                                </div>
-                                                <div
-                                                    class="flex justify-between items-center text-xs text-slate-500 font-medium mb-4">
-                                                    <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
-                                                    <span>
-                                                        <%= curProgress %>%
-                                                    </span>
-                                                </div>
-
-                                                <a href="/student/course/<%= enrollment.course._id %>"
-                                                    class="text-center w-full block py-2 border border-slate-200 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-colors">
-                                                    View Course
-                                                </a>
-                                        </div>
-                                    </div>
-                                    <% }) %>
+                <div class="animate-fade-in-up opacity-0 delay-300">
+                    <div class="stat-glow card-hover bg-gradient-to-br from-rose-400 via-pink-400 to-rose-500 rounded-2xl p-5 text-white shadow-lg shadow-rose-200/30 cursor-default relative overflow-hidden">
+                        <div class="absolute -right-3 -top-3 text-white/10 text-6xl"><i class="fa-solid fa-fire"></i></div>
+                        <div class="relative z-10">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-bold uppercase tracking-widest text-white/80">Streak</span>
+                                <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center"><i class="fa-solid fa-fire text-sm"></i></div>
                             </div>
-                            <% } else { %>
-                                <!-- Empty State: Courses -->
-                                <div
-                                    class="bg-white rounded-xl p-8 border border-slate-200 text-center flex flex-col items-center justify-center shadow-sm">
-                                    <div
-                                        class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 mb-4 text-2xl border border-slate-100">
-                                        <i class="fa-solid fa-folder-open"></i>
+                            <h3 class="text-4xl font-black"><%= currentStreak || 0 %> <span class="text-lg font-bold opacity-60">Days</span></h3>
+                            <p class="text-xs mt-1.5 text-white/80 font-medium">You're on fire! 🔥</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== QUICK STATS ===== -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-8">
+                <div class="animate-fade-in-up opacity-0 delay-300">
+                    <div class="card-hover bg-white rounded-2xl p-5 border border-gray-100 flex items-center gap-4 shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-book-open"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider"><%= typeof t === 'function' ? t('student.courses') : 'Courses Enrolled' %></p>
+                            <p class="text-2xl font-extrabold text-gray-800 mt-0.5"><%= coursesEnrolled || 0 %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-fade-in-up opacity-0 delay-400">
+                    <div class="card-hover bg-white rounded-2xl p-5 border border-gray-100 flex items-center gap-4 shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-check-double"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider"><%= typeof t === 'function' ? t('student.completed') : 'Lessons Completed' %></p>
+                            <p class="text-2xl font-extrabold text-gray-800 mt-0.5"><%= lessonsCompleted || 0 %></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="animate-fade-in-up opacity-0 delay-500">
+                    <div class="card-hover bg-white rounded-2xl p-5 border border-gray-100 flex items-center gap-4 shadow-sm">
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl shrink-0">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-gray-400 font-semibold uppercase tracking-wider">Avg. Quiz Score</p>
+                            <p class="text-2xl font-extrabold text-gray-800 mt-0.5"><%= averageQuizScore || 0 %>%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== MAIN GRID: Courses + Sidebar ===== -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 mb-8">
+
+                <!-- Left Column -->
+                <div class="lg:col-span-2 space-y-6">
+
+                    <!-- My Courses -->
+                    <section class="animate-fade-in-up opacity-0 delay-400">
+                        <div class="flex items-center justify-between mb-5">
+                            <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                                <span class="w-1 h-6 bg-indigo-500 rounded-full"></span>
+                                My Courses
+                            </h3>
+                            <a href="/student/courses" class="text-sm text-indigo-600 hover:text-indigo-700 font-semibold flex items-center gap-1 transition-colors">
+                                View All <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </a>
+                        </div>
+
+                        <% if (enrollments && enrollments.length > 0) { %>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <% enrollments.forEach(enrollment => { %>
+                            <div class="course-card card-hover bg-white rounded-2xl border border-gray-100 overflow-hidden flex flex-col h-full shadow-sm">
+                                <div class="course-img-wrap h-36 bg-gray-100 relative shrink-0">
+                                    <img src="<%= enrollment.course.thumbnail || '/images/default-course.png' %>" alt="Course" class="w-full h-full object-cover">
+                                    <div class="absolute top-3 left-3 bg-white/95 backdrop-blur-sm px-3 py-1 rounded-lg text-xs font-bold text-indigo-600 shadow-sm">
+                                        <%= enrollment.course.subject ? enrollment.course.subject.name : 'General' %>
                                     </div>
-                                    <h4 class="text-slate-800 font-bold mb-1">No Courses Yet</h4>
-                                    <p class="text-slate-500 text-sm mb-5">You haven't enrolled in any courses yet.</p>
-                                    <a href="/student/explore"
-                                        class="bg-indigo-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-indigo-700 transition-colors shadow-sm">Browse
-                                        Courses</a>
                                 </div>
-                                <% } %>
+                                <div class="p-5 flex flex-col flex-1">
+                                    <h4 class="font-bold text-gray-800 mb-1 line-clamp-2 text-sm" title="<%= enrollment.course.title %>"><%= enrollment.course.title %></h4>
+                                    <p class="text-xs text-gray-400 mb-4 flex items-center gap-1.5 mt-auto font-medium">
+                                        <i class="fa-regular fa-user"></i>
+                                        <%= enrollment.course.teacher ? enrollment.course.teacher.name : 'Instructor' %>
+                                    </p>
+
+                                    <% const curProgress = enrollment.status === 'completed' ? 100 : 45; %>
+                                    <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-indigo-500 to-blue-500 h-1.5 rounded-full progress-fill" style="width: <%= curProgress %>%"></div>
+                                    </div>
+                                    <div class="flex justify-between items-center text-xs text-gray-400 font-medium mb-4">
+                                        <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
+                                        <span class="font-bold text-gray-600"><%= curProgress %>%</span>
+                                    </div>
+
+                                    <a href="/student/course/<%= enrollment.course._id %>"
+                                        class="text-center w-full block py-2.5 bg-indigo-50 rounded-xl text-sm font-bold text-indigo-600 hover:bg-indigo-100 transition-colors">
+                                        View Course
+                                    </a>
+                                </div>
+                            </div>
+                            <% }) %>
+                        </div>
+                        <% } else { %>
+                        <!-- Empty State -->
+                        <div class="bg-white rounded-2xl p-10 border border-gray-100 text-center flex flex-col items-center justify-center shadow-sm">
+                            <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-300 mb-4 text-3xl">
+                                <i class="fa-solid fa-folder-open"></i>
+                            </div>
+                            <h4 class="text-gray-800 font-bold mb-1">No Courses Yet</h4>
+                            <p class="text-gray-400 text-sm mb-5">You haven't enrolled in any courses yet.</p>
+                            <a href="/student/explore" class="bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-6 py-2.5 rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-200/50 transition-all text-sm">
+                                Browse Courses
+                            </a>
+                        </div>
+                        <% } %>
                     </section>
 
-                    <!-- AI Tutor Promotional Banner -->
-                    <div
-                        class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-6 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-md relative overflow-hidden">
-                        <div
-                            class="absolute right-0 bottom-0 opacity-10 pointer-events-none translate-x-1/4 translate-y-1/4">
-                            <i class="fa-solid fa-robot text-9xl"></i>
+                    <!-- AI Tutor Banner -->
+                    <div class="animate-fade-in-up opacity-0 delay-500">
+                        <div class="relative bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-700 rounded-2xl p-6 flex flex-col sm:flex-row items-center justify-between gap-5 overflow-hidden shadow-lg shadow-indigo-200/30">
+                            <div class="absolute right-0 bottom-0 opacity-10 translate-x-1/4 translate-y-1/4 pointer-events-none">
+                                <i class="fa-solid fa-robot text-9xl"></i>
+                            </div>
+                            <div class="absolute left-0 top-0 w-64 h-64 bg-blue-400/10 rounded-full -translate-x-1/2 -translate-y-1/2 blur-3xl"></div>
+                            <div class="relative z-10">
+                                <h3 class="text-xl font-extrabold text-white mb-1.5 flex items-center gap-2">
+                                    <i class="fa-solid fa-wand-magic-sparkles text-blue-200"></i> Need Help?
+                                </h3>
+                                <p class="text-blue-100 text-sm max-w-md leading-relaxed">Ask the EduSmart AI Tutor about any lesson, assignment or concept you're stuck on.</p>
+                            </div>
+                            <a href="/student/ai-tutor" class="relative z-10 shrink-0 bg-white text-indigo-700 font-bold py-2.5 px-7 rounded-xl transition-all shadow-md hover:shadow-xl hover:-translate-y-0.5 text-sm">
+                                Ask AI Tutor
+                            </a>
                         </div>
-                        <div class="relative z-10">
-                            <h3 class="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                                <i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i> Need Help?
-                            </h3>
-                            <p class="text-slate-300 text-sm max-w-md leading-relaxed">Ask the EduSmart AI Tutor about
-                                any lesson, assignment or difficult concept you're stuck on.</p>
-                        </div>
-                        <a href="/student/ai-tutor"
-                            class="relative z-10 shrink-0 bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2.5 px-6 rounded-lg transition-colors whitespace-nowrap shadow-lg shadow-indigo-500/30">
-                            Ask AI Tutor
-                        </a>
                     </div>
                 </div>
 
-                <!-- Right Column (Sidebar Information) -->
-                <div class="space-y-8">
+                <!-- Right Column -->
+                <div class="space-y-6">
 
-                    <!-- Daily Learning Goal -->
-                    <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-target text-orange-500"></i> Today's Goal
-                        </h3>
-
-                        <div class="flex items-end justify-between mb-2">
-                            <div>
-                                <p class="text-2xl font-bold text-slate-800">20 <span
-                                        class="text-sm font-normal text-slate-500">/ 30 min</span></p>
+                    <!-- Today's Goal -->
+                    <div class="animate-slide-in-right opacity-0 delay-400">
+                        <div class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                            <h3 class="font-bold text-gray-800 mb-4 flex items-center gap-2 text-sm">
+                                <div class="w-7 h-7 rounded-lg bg-orange-50 flex items-center justify-center">
+                                    <i class="fa-solid fa-bullseye text-orange-500 text-xs"></i>
+                                </div>
+                                Today's Goal
+                            </h3>
+                            <div class="flex items-end justify-between mb-3">
+                                <div>
+                                    <p class="text-2xl font-extrabold text-gray-800">20 <span class="text-sm font-medium text-gray-400">/ 30 min</span></p>
+                                </div>
+                                <span class="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg">10 min left</span>
                             </div>
-                            <p class="text-sm font-medium text-orange-600 bg-orange-50 px-2 py-1 rounded-md">10 mins
-                                left</p>
-                        </div>
-
-                        <div class="w-full bg-slate-100 rounded-full h-2.5 mb-1 overflow-hidden">
-                            <!-- Progress visualization based on 20/30 -->
-                            <div class="bg-orange-500 h-2.5 rounded-full" style="width: 66%"></div>
+                            <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-orange-400 to-amber-400 h-2 rounded-full progress-fill" style="width: 66%"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Recent Badges / Gamification -->
-                    <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="font-bold text-slate-800">Recent Badges</h3>
-                            <a href="/student/badges"
-                                class="text-xs font-semibold text-indigo-600 hover:text-indigo-800">View All</a>
-                        </div>
+                    <!-- Recent Badges -->
+                    <div class="animate-slide-in-right opacity-0 delay-500">
+                        <div class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-gray-800 flex items-center gap-2 text-sm">
+                                    <div class="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+                                        <i class="fa-solid fa-medal text-amber-500 text-xs"></i>
+                                    </div>
+                                    Recent Badges
+                                </h3>
+                                <a href="/student/badges" class="text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors">View All</a>
+                            </div>
 
-                        <% if (badges && badges.length> 0) { %>
+                            <% if (badges && badges.length > 0) { %>
                             <div class="grid grid-cols-2 gap-3">
-                                <% badges.forEach(badge=> { %>
-                                    <div class="flex flex-col items-center p-3 bg-slate-50 rounded-lg border border-slate-100 text-center"
-                                        title="<%= badge.description %>">
-                                        <div
-                                            class="w-12 h-12 bg-amber-50 rounded-full border border-amber-200 flex items-center justify-center mb-2 shadow-sm text-xl text-amber-500">
-                                            <% if(badge.icon && badge.icon.startsWith('fa-')) { %>
-                                                <i class="fa-solid <%= badge.icon %>"></i>
-                                                <% } else if (badge.icon) { %>
-                                                    <img src="<%= badge.icon %>" alt="<%= badge.name %>"
-                                                        class="w-7 h-7 object-contain">
-                                                    <% } else { %>
-                                                        <i class="fa-solid fa-award"></i>
-                                                        <% } %>
-                                        </div>
-                                        <p class="text-xs font-semibold text-slate-700 leading-tight">
-                                            <%= badge.name %>
-                                        </p>
+                                <% badges.forEach(badge => { %>
+                                <div class="badge-item flex flex-col items-center p-3 bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl border border-amber-100/50 text-center cursor-default" title="<%= badge.description %>">
+                                    <div class="w-11 h-11 bg-white rounded-full border border-amber-200 flex items-center justify-center mb-2 shadow-sm text-lg text-amber-500">
+                                        <% if(badge.icon && badge.icon.startsWith('fa-')) { %>
+                                            <i class="fa-solid <%= badge.icon %>"></i>
+                                        <% } else if (badge.icon) { %>
+                                            <img src="<%= badge.icon %>" alt="<%= badge.name %>" class="w-6 h-6 object-contain">
+                                        <% } else { %>
+                                            <i class="fa-solid fa-award"></i>
+                                        <% } %>
                                     </div>
-                                    <% }) %>
+                                    <p class="text-xs font-bold text-gray-700 leading-tight"><%= badge.name %></p>
+                                </div>
+                                <% }) %>
                             </div>
                             <% } else { %>
-                                <!-- Empty State: Badges -->
-                                <div
-                                    class="text-center py-5 bg-slate-50 rounded-lg border border-slate-100 border-dashed">
-                                    <div class="text-slate-300 text-3xl mb-2"><i class="fa-solid fa-medal"></i></div>
-                                    <p class="text-sm text-slate-500 mb-3"><%= typeof t === 'function' ? t('student.achievementsEarned') : 'Your first achievement is waiting!' %></p>
-                                    <a href="/student/explore"
-                                        class="text-xs font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-md hover:bg-slate-50 text-slate-700 shadow-sm transition-colors">Start
-                                        Learning</a>
-                                </div>
-                                <% } %>
+                            <div class="text-center py-6 bg-gray-50 rounded-xl border border-gray-100 border-dashed">
+                                <div class="text-gray-300 text-3xl mb-2"><i class="fa-solid fa-medal"></i></div>
+                                <p class="text-sm text-gray-400 mb-3"><%= typeof t === 'function' ? t('student.achievementsEarned') : 'Your first achievement is waiting!' %></p>
+                                <a href="/student/explore" class="text-xs font-bold bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors">Start Learning</a>
+                            </div>
+                            <% } %>
+                        </div>
                     </div>
 
-                    <!-- Recent Activity Feed -->
-                    <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-                        <h3 class="font-bold text-slate-800 mb-5">Recent Activity</h3>
+                    <!-- Recent Activity -->
+                    <div class="animate-slide-in-right opacity-0 delay-600">
+                        <div class="card-hover bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                            <h3 class="font-bold text-gray-800 mb-5 flex items-center gap-2 text-sm">
+                                <div class="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center">
+                                    <i class="fa-regular fa-clock text-indigo-500 text-xs"></i>
+                                </div>
+                                Recent Activity
+                            </h3>
 
-                        <% if (activities && activities.length> 0) { %>
-                            <div class="space-y-4">
-                                <% activities.forEach((activity, index)=> { %>
-                                    <div
-                                        class="flex items-start gap-3 <%= index !== activities.length - 1 ? 'pb-4 border-b border-slate-100' : '' %>">
-                                        <!-- Activity Icon -->
-                                        <div
-                                            class="shrink-0 w-8 h-8 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 text-xs">
-                                            <% if (activity.type==='lesson_completed' ) { %>
-                                                <i class="fa-solid fa-check"></i>
-                                                <% } else if (activity.type==='quiz_completed' ) { %>
-                                                    <i class="fa-solid fa-list-check"></i>
-                                                    <% } else { %>
-                                                        <i class="fa-solid fa-bolt"></i>
-                                                        <% } %>
-                                        </div>
-                                        <!-- Activity Details -->
-                                        <div>
-                                            <p class="text-sm font-medium text-slate-700 leading-tight mb-1">
-                                                <%= activity.description %>
-                                            </p>
-                                            <time class="text-xs text-slate-400 font-medium">
-                                                <%= new Date(activity.date).toLocaleDateString(undefined, {
-                                                    month: 'short' , day: 'numeric' , year: 'numeric' }) %>
-                                            </time>
-                                        </div>
+                            <% if (activities && activities.length > 0) { %>
+                            <div class="space-y-3.5">
+                                <% activities.forEach((activity, index) => { %>
+                                <div class="flex items-start gap-3 <%= index !== activities.length - 1 ? 'pb-3.5 border-b border-gray-50' : '' %>">
+                                    <div class="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-xs
+                                        <% if (activity.type === 'lesson_completed') { %>
+                                            bg-emerald-50 text-emerald-500 border border-emerald-100
+                                        <% } else if (activity.type === 'quiz_completed') { %>
+                                            bg-purple-50 text-purple-500 border border-purple-100
+                                        <% } else { %>
+                                            bg-indigo-50 text-indigo-500 border border-indigo-100
+                                        <% } %>
+                                    ">
+                                        <% if (activity.type === 'lesson_completed') { %>
+                                            <i class="fa-solid fa-check"></i>
+                                        <% } else if (activity.type === 'quiz_completed') { %>
+                                            <i class="fa-solid fa-list-check"></i>
+                                        <% } else { %>
+                                            <i class="fa-solid fa-bolt"></i>
+                                        <% } %>
                                     </div>
-                                    <% }) %>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-700 leading-snug mb-0.5"><%= activity.description %></p>
+                                        <time class="text-xs text-gray-400 font-medium">
+                                            <%= new Date(activity.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) %>
+                                        </time>
+                                    </div>
+                                </div>
+                                <% }) %>
                             </div>
                             <% } else { %>
-                                <!-- Empty State: Activity -->
-                                <div class="text-center py-6">
-                                    <div
-                                        class="w-12 h-12 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3 mx-auto text-xl border border-slate-100">
-                                        <i class="fa-regular fa-clock"></i>
-                                    </div>
-                                    <p class="text-sm text-slate-500">No recent activity.</p>
+                            <div class="text-center py-6">
+                                <div class="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-300 mb-3 mx-auto text-xl border border-gray-100">
+                                    <i class="fa-regular fa-clock"></i>
                                 </div>
-                                <% } %>
+                                <p class="text-sm text-gray-400">No recent activity.</p>
+                            </div>
+                            <% } %>
+                        </div>
                     </div>
-
                 </div>
             </div>
 
         </div>
     </main>
 
-    <!-- Page Specific Scripts -->
+    <!-- Scripts -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Sidebar Toggle Logic for Mobile Responsiveness
+            // Sidebar Toggle
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
             const openSidebarBtn = document.getElementById('openSidebarBtn');
@@ -532,15 +602,14 @@
 
             const toggleSidebar = () => {
                 const isOpen = !sidebar.classList.contains('-translate-x-full');
-
                 if (isOpen) {
                     sidebar.classList.add('-translate-x-full');
                     sidebarOverlay.classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden'); // Restore body scroll
+                    document.body.classList.remove('overflow-hidden');
                 } else {
                     sidebar.classList.remove('-translate-x-full');
                     sidebarOverlay.classList.remove('hidden');
-                    document.body.classList.add('overflow-hidden'); // Prevent body scroll
+                    document.body.classList.add('overflow-hidden');
                 }
             };
 
@@ -548,13 +617,15 @@
             if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
 
-            /**
-             * Phase 13 Preparation: IndexedDB Initialization 
-             * This provides the architecture placeholder for offline caching.
-             * The actual caching sync logic will be added in Phase 13.
-             */
+            // Animate progress bars on load
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(bar => {
+                    bar.style.width = bar.style.width; // Trigger reflow
+                });
+            }, 500);
+
+            // IndexedDB placeholder
             if ('indexedDB' in window) {
-                // Future IndexedDB implementation placeholder
                 console.log('IndexedDB is supported. Ready for offline mode caching.');
             }
         });
