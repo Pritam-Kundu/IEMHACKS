@@ -12,6 +12,11 @@
         .sidebar-item { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
         .sidebar-item:hover:not(.sidebar-active) { background: linear-gradient(135deg, #eef2ff, #f5f3ff); color: #4f46e5; transform: translateX(4px); }
         .sidebar-active { background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff !important; border-radius: 12px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+        .sidebar-active div {
+            background: transparent !important;
+            color: #fff !important;
+            box-shadow: none !important;
+        }
         .sidebar-active i { color: #fff !important; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
@@ -34,14 +39,23 @@
             <button id="closeSidebarBtn" class="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
         <nav class="flex-1 px-3 py-2 space-y-1 overflow-y-auto scrollbar-thin">
-            <a href="/student/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-house w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span></a>
-            <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-book-open w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span></a>
-            <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-clipboard-question w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span></a>
-            <a href="/student/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-robot w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span></a>
-            <a href="/student/progress" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-chart-line w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span></a>
-            <a href="/student/leaderboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-trophy w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span></a>
-            <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-medal w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span></a>
-            <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-download w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span></a>
+            <a href="/student/dashboard" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-indigo-600 bg-indigo-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-house text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span></a>
+            <a href="/student/courses" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-violet-600 bg-violet-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-book-open text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span></a>
+
+            <a href="/student/explore" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+                <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-sky-600 bg-sky-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-compass text-sm"></i></div>
+                <span class="font-semibold">Explore</span>
+            </a>
+
+
+
+
+            <a href="/student/quizzes" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-amber-600 bg-amber-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-clipboard-question text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span></a>
+            <a href="/student/ai-tutor" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-cyan-600 bg-cyan-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-robot text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span></a>
+            <a href="/student/progress" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-purple-600 bg-purple-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-chart-line text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span></a>
+            <a href="/student/leaderboard" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-yellow-600 bg-yellow-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-trophy text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span></a>
+            <a href="/student/badges" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-emerald-600 bg-emerald-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-medal text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span></a>
+            <a href="/student/offline-videos" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-slate-600 bg-slate-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-download text-sm"></i></div><span class="font-semibold"><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span></a>
         </nav>
         <div class="p-3 border-t border-gray-100">
             <a href="/student/settings" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-gear w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span></a>
@@ -58,9 +72,6 @@
                     <h1 class="text-lg font-bold text-gray-800 hidden sm:block"><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></h1>
                     <div class="hidden md:flex items-center space-x-5 border-l pl-5 border-gray-200/50 ml-2">
                         <a href="/" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
-                        <a href="/#features" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
-                        <a href="/#how-it-works" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
-                        <a href="/#about" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
                     </div>
                 </div>
                 <div class="flex items-center gap-4">
