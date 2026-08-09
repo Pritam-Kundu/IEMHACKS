@@ -30,7 +30,9 @@ const quizAttemptSchema = new mongoose.Schema({
             ref: 'Question'
         },
         selectedOptionIndex: Number,
-        isCorrect: Boolean
+        isCorrect: Boolean,
+        responseDuration: Number,
+        skipped: { type: Boolean, default: false }
     }],
     startTime: {
         type: Date,

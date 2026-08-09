@@ -27,8 +27,8 @@ const getQuizData = async (req, res) => {
             return res.status(404).json({ error: 'Quiz not found' });
         }
 
-        // Fetch questions, explicitly EXCLUDING the explanation and isCorrect flags
-        const questions = await Question.find({ quiz: quiz._id }).select('-explanation -options.isCorrect');
+        // Fetch questions, explicitly EXCLUDING the explanation
+        const questions = await Question.find({ quiz: quiz._id }).select('-explanation');
         
         res.json({
             quiz: {
@@ -36,7 +36,8 @@ const getQuizData = async (req, res) => {
                 title: quiz.title,
                 description: quiz.description,
                 timeLimitMinutes: quiz.timeLimitMinutes,
-                passingScore: quiz.passingScore
+                passingScore: quiz.passingScore,
+                course: quiz.course
             },
             questions
         });
@@ -64,19 +65,31 @@ const submitQuiz = async (req, res) => {
             const studentAnswer = answers.find(a => a.questionId === q._id.toString());
             let isCorrect = false;
             let selectedIndex = null;
+            let responseDuration = 0;
+            let skipped = true;
             
             if (studentAnswer && studentAnswer.selectedOptionIndex !== null && studentAnswer.selectedOptionIndex !== undefined) {
                 selectedIndex = studentAnswer.selectedOptionIndex;
+                skipped = false;
                 if (q.options[selectedIndex] && q.options[selectedIndex].isCorrect) {
                     isCorrect = true;
                     correctCount++;
                 }
             }
+
+            if (studentAnswer && typeof studentAnswer.responseDuration === 'number') {
+                responseDuration = studentAnswer.responseDuration;
+            }
+            if (studentAnswer && studentAnswer.skipped !== undefined) {
+                skipped = studentAnswer.skipped;
+            }
             
             return {
                 question: q._id,
                 selectedOptionIndex: selectedIndex,
-                isCorrect
+                isCorrect,
+                responseDuration,
+                skipped
             };
         });
 

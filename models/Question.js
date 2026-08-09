@@ -32,6 +32,16 @@ const questionSchema = new mongoose.Schema({
     explanation: {
         type: String,
         trim: true
+    },
+    difficulty: {
+        type: Number,
+        min: 1,
+        max: 5,
+        default: 3
+    },
+    topic: {
+        type: String,
+        trim: true
     }
 }, { 
     timestamps: true 

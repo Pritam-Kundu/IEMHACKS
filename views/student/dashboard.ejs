@@ -213,6 +213,27 @@
                             </div>
                             <% } %>
                 </div>
+                
+                <% if (locals.learningInsight) { %>
+                <div class="relative z-10 mt-6 bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-inner">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shrink-0 text-yellow-300">
+                            <i class="fa-solid fa-lightbulb"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-white/90 mb-1">AI Learning Insight</p>
+                            <p class="text-white text-sm leading-relaxed"><%= learningInsight.message %></p>
+                        </div>
+                    </div>
+                    <% if (learningInsight.courseId && learningInsight.topic) { %>
+                    <a href="/student/course/<%= learningInsight.courseId %>?topic=<%= encodeURIComponent(learningInsight.topic) %>"
+                        class="shrink-0 bg-white text-indigo-700 font-semibold px-4 py-2 rounded-lg text-sm hover:bg-indigo-50 transition-colors shadow-sm self-stretch sm:self-auto flex items-center justify-center gap-2">
+                        <span>Review Topic: <%= learningInsight.topic %></span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                    <% } %>
+                </div>
+                <% } %>
             </div>
 
             <!-- Gamification Dashboard Row -->
