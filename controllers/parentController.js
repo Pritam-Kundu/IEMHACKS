@@ -40,7 +40,8 @@ exports.getDashboard = async (req, res, next) => {
             id: sp.user._id.toString(),
             name: sp.user.name,
             profilePicture: sp.user.profilePicture,
-            badges: sp.earnedBadges || []
+            badges: sp.earnedBadges || [],
+            currentStreak: sp.currentStreak || 0
         }));
 
         // 2. Determine selected child (Verify parent-child relationship implicitly)
@@ -149,7 +150,7 @@ exports.getDashboard = async (req, res, next) => {
             quizAttempts: quizAttempts.slice(0, 4),
             submissions: submissions.slice(0, 4),
             activities: activities.slice(0, 5),
-            learningStreak: 3, // Static placeholder for streak as per instructions
+            learningStreak: selectedChild.currentStreak,
             totalAchievements,
             recentAchievements
         });
