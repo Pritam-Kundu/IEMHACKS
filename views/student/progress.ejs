@@ -4,228 +4,157 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= title %></title>
-    <!-- Tailwind CSS (CDN for rapid hackathon setup, can be replaced with build later) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        /* Dashboard-specific custom styles */
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        
-        /* Sidebar styling */
-        .sidebar-active { 
-            background-color: #e0e7ff; 
-            color: #4f46e5; 
-            font-weight: 600; 
-            border-right: 4px solid #4f46e5; 
-        }
-        .sidebar-item { transition: all 0.2s ease-in-out; }
-        .sidebar-item:hover:not(.sidebar-active) { 
-            background-color: #f1f5f9; 
-            color: #334155; 
-        }
-        
-        /* Utility */
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fef3f2 100%); min-height: 100vh; }
+        .sidebar-item { transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar-item:hover:not(.sidebar-active) { background: linear-gradient(135deg, #eef2ff, #f5f3ff); color: #4f46e5; transform: translateX(4px); }
+        .sidebar-active { background: linear-gradient(135deg, #4f46e5, #6366f1); color: #fff !important; border-radius: 12px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+        .sidebar-active i { color: #fff !important; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+        .delay-100 { animation-delay: 0.1s; } .delay-200 { animation-delay: 0.2s; } .delay-300 { animation-delay: 0.3s; }
+        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08); }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+        .progress-fill { transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .scrollbar-thin::-webkit-scrollbar { width: 5px; } .scrollbar-thin::-webkit-scrollbar-track { background: transparent; } .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden text-slate-800">
-
-    <!-- Mobile sidebar overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
-
+<body class="flex h-screen overflow-hidden text-gray-800">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 hidden lg:hidden transition-opacity"></div>
     <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
-        <div class="p-6 flex items-center justify-between">
-            <a href="/student/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
-                <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-xl font-bold tracking-tight text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase font-sans tracking-normal">Student</span></span>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-[260px] bg-white/90 backdrop-blur-xl border-r border-indigo-100/50 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-lg shadow-indigo-100/20">
+        <div class="p-5 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center shadow-md shadow-indigo-200/50"><i class="fa-solid fa-graduation-cap text-white text-lg"></i></div>
+                <div><span class="font-extrabold text-lg text-gray-900 tracking-tight">EduSmart</span><span class="block text-[10px] font-semibold text-indigo-500 uppercase tracking-widest -mt-0.5">Student</span></div>
             </a>
-            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
+            <button id="closeSidebarBtn" class="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
-
-        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-            <a href="/student/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-house w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span>
-            </a>
-            <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-book-open w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span>
-            </a>
-            <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span>
-            </a>
-            <a href="/student/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-robot w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span>
-            </a>
-            <a href="/student/progress" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span>
-            </a>
-            <a href="/student/leaderboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-trophy w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span>
-            </a>
-            <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-medal w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span>
-            </a>
-            <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-download w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span>
-            </a>
+        <nav class="flex-1 px-3 py-2 space-y-1 overflow-y-auto scrollbar-thin">
+            <a href="/student/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-house w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.dashboard') : 'Dashboard' %></span></a>
+            <a href="/student/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-book-open w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.myCourses') : 'My Courses' %></span></a>
+            <a href="/student/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-clipboard-question w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.quizzes') : 'Quizzes' %></span></a>
+            <a href="/student/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-robot w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.aiTutor') : 'AI Tutor' %></span></a>
+            <a href="/student/progress" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-chart-line w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.progress') : 'Progress' %></span></a>
+            <a href="/student/leaderboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-trophy w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.leaderboard') : 'Leaderboard' %></span></a>
+            <a href="/student/badges" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-medal w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.badges') : 'Badges' %></span></a>
+            <a href="/student/offline-videos" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-download w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.offlineVideos') : 'Offline Videos' %></span></a>
         </nav>
-
-        <div class="p-4 border-t border-slate-200">
-            <a href="/student/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-gear w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
-            </a>
-            <!-- Using existing logout flow -->
-            <form action="/logout" method="POST" class="w-full mt-1">
-                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
-                    <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
-                </button>
-            </form>
+        <div class="p-3 border-t border-gray-100">
+            <a href="/student/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium"><i class="fa-solid fa-gear w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span></a>
+            <form action="/logout" method="POST" class="w-full mt-1"><button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 text-sm font-medium"><i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-base"></i><span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span></button></form>
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full">
-        
-        <!-- Top Header -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-10">
-            <div class="flex items-center justify-between px-6 py-4">
+    <main class="flex-1 flex flex-col h-screen lg:ml-[260px] w-full">
+        <!-- Header -->
+        <header class="glass border-b border-white/50 sticky top-0 z-10">
+            <div class="flex items-center justify-between px-5 sm:px-8 py-3.5">
                 <div class="flex items-center gap-4">
-                    <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
-                        <i class="fa-solid fa-bars text-xl"></i>
-                    </button>
-                    <h1 class="text-xl font-bold text-slate-800 hidden sm:block mr-6">Progress</h1>
-                    
-                    <!-- Global Links -->
-                    <div class="hidden md:flex items-center space-x-6 border-l pl-6 border-slate-200">
-                        <a href="/" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
-                        <a href="/#features" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
-                        <a href="/#how-it-works" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
-                        <a href="/#about" class="text-slate-500 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
+                    <button id="openSidebarBtn" class="lg:hidden w-9 h-9 rounded-xl flex items-center justify-center text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors"><i class="fa-solid fa-bars text-lg"></i></button>
+                    <h1 class="text-lg font-bold text-gray-800 hidden sm:block">Progress</h1>
+                    <div class="hidden md:flex items-center space-x-5 border-l pl-5 border-gray-200/50 ml-2">
+                        <a href="/" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('common.home') : 'Home' %></a>
+                        <a href="/#features" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.featuresHeader') : 'Features' %></a>
+                        <a href="/#how-it-works" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('home.howItWorks') : 'How it Works' %></a>
+                        <a href="/#about" class="text-sm text-gray-400 hover:text-indigo-600 font-medium transition-colors"><%= typeof t === 'function' ? t('nav.aboutUs') : 'About' %></a>
                     </div>
                 </div>
-                
-                <div class="flex items-center gap-5">
-                    
-                    <!-- Language Switcher -->
-                    <div class="relative group mr-2">
-                        <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
-                            <i class="fa-solid fa-globe text-xl"></i>
-                            <%= locals.language === 'bn' ? 'বাংলা' : 'English' %>
-                        </button>
-                        <div class="absolute right-0 mt-0 w-32 bg-white border border-slate-200 rounded-md shadow-lg hidden group-hover:block z-50 overflow-hidden">
-                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'en' ? 'font-bold' : '' %>">English</button>
-                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'bn' ? 'font-bold' : '' %>">বাংলা</button>
+                <div class="flex items-center gap-4">
+                    <div class="relative group">
+                        <button class="inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-medium text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 transition-colors gap-1.5"><i class="fa-solid fa-globe text-lg"></i><span class="hidden sm:inline"><%= locals.language === 'bn' ? 'বাংলা' : 'English' %></span></button>
+                        <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-100 rounded-xl shadow-xl shadow-gray-100/50 hidden group-hover:block z-50 overflow-hidden">
+                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors <%= locals.language === 'en' ? 'font-bold text-indigo-600' : '' %>">English</button>
+                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2.5 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors <%= locals.language === 'bn' ? 'font-bold text-indigo-600' : '' %>">বাংলা</button>
                         </div>
                     </div>
-
                     <%- include('../partials/student-header-controls') %>
                 </div>
             </div>
         </header>
 
-        
-        <!-- Dashboard Content -->
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 scrollbar-thin">
 
-        <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6">My Progress</h2>
-            
-            <% if (progressRecords && progressRecords.length > 0) { %>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <% progressRecords.forEach(record => { %>
-                        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
-                            <h3 class="text-lg font-bold text-slate-800 mb-2"><%= record.course.title %></h3>
-                            <p class="text-sm text-slate-500 mb-4">Last accessed: <%= new Date(record.lastAccessed).toLocaleDateString() %></p>
-                            
-                            <% 
-                                // To calculate accurate total progress
-                                const totalLessons = record.course.lessons ? record.course.lessons.length : 0;
-                                const completedCount = record.completedLessons.length;
-                                const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-                            %>
-                            
-                            <div class="mb-2 flex justify-between text-sm">
-                                <span class="font-medium text-slate-700">Course Completion</span>
-                                <span class="font-bold text-indigo-600"><%= progressPct %>%</span>
-                            </div>
-                            <div class="w-full bg-slate-100 rounded-full h-2.5 mb-4">
-                                <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= progressPct %>%"></div>
-                            </div>
-                            
-                            <div class="flex justify-between items-center text-sm border-t border-slate-100 pt-4 mt-4">
-                                <div class="text-slate-600">
-                                    <span class="font-bold text-slate-800"><%= completedCount %></span> / <%= totalLessons %> Lessons Completed
+            <!-- Page Title -->
+            <div class="animate-fade-in-up opacity-0 mb-8">
+                <h2 class="text-2xl font-extrabold text-gray-800 flex items-center gap-3">
+                    <span class="w-1.5 h-8 bg-gradient-to-b from-indigo-500 to-teal-500 rounded-full"></span>
+                    My Progress
+                </h2>
+                <p class="text-gray-400 text-sm mt-1 ml-5">Track your learning journey across all courses</p>
+            </div>
+
+            <div class="animate-fade-in-up opacity-0 delay-100">
+                <% if (progressRecords && progressRecords.length > 0) { %>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <% progressRecords.forEach(record => { %>
+                            <div class="card-hover bg-white rounded-2xl border border-gray-100 p-6 shadow-sm flex flex-col h-full">
+                                <h3 class="text-lg font-bold text-gray-800 mb-1"><%= record.course.title %></h3>
+                                <p class="text-xs text-gray-400 mb-6 flex items-center gap-1.5">
+                                    <i class="fa-regular fa-clock"></i> Last accessed: <%= new Date(record.lastAccessed).toLocaleDateString() %>
+                                </p>
+                                
+                                <% 
+                                    // To calculate accurate total progress
+                                    const totalLessons = record.course.lessons ? record.course.lessons.length : 0;
+                                    const completedCount = record.completedLessons.length;
+                                    const progressPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+                                %>
+                                
+                                <div class="mt-auto">
+                                    <div class="mb-2 flex justify-between text-sm items-end">
+                                        <span class="font-bold text-gray-600">Course Completion</span>
+                                        <span class="font-bold text-indigo-600 text-xl"><%= progressPct %>%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-100 rounded-full h-2 mb-6 overflow-hidden">
+                                        <div class="bg-gradient-to-r from-indigo-500 to-teal-400 h-2 rounded-full progress-fill" style="width: <%= progressPct %>%"></div>
+                                    </div>
+                                    
+                                    <div class="flex justify-between items-center text-sm border-t border-gray-100 pt-4 mt-2">
+                                        <div class="text-gray-500 bg-gray-50 px-3 py-1.5 rounded-lg">
+                                            <span class="font-extrabold text-gray-800"><%= completedCount %></span> / <%= totalLessons %> Lessons
+                                        </div>
+                                        <a href="/student/courses/<%= record.course._id %>" class="text-indigo-600 hover:text-indigo-800 font-bold flex items-center gap-1 group bg-indigo-50 px-4 py-1.5 rounded-lg hover:bg-indigo-100 transition-colors">
+                                            Continue <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+                                        </a>
+                                    </div>
                                 </div>
-                                <a href="/student/courses/<%= record.course._id %>" class="text-indigo-600 hover:text-indigo-800 font-medium">Continue <i class="fa-solid fa-arrow-right ml-1"></i></a>
                             </div>
-                        </div>
-                    <% }) %>
-                </div>
-            <% } else { %>
-                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
-                    <div class="w-24 h-24 bg-indigo-50 text-indigo-500 rounded-full flex items-center justify-center mx-auto mb-6 text-4xl">
-                        <i class="fa-solid fa-chart-line"></i>
+                        <% }) %>
                     </div>
-                    <h3 class="text-xl font-bold text-slate-700 mb-2">No Progress Data Yet</h3>
-                    <p class="text-slate-500 max-w-md mx-auto">Enroll in a course and start learning to see your progress here.</p>
-                    <a href="/student/courses" class="mt-6 inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-indigo-700 transition-colors">Browse Courses</a>
-                </div>
-            <% } %>
+                <% } else { %>
+                    <div class="bg-white rounded-2xl p-12 border border-gray-100 text-center flex flex-col items-center justify-center shadow-sm">
+                        <div class="w-20 h-20 bg-indigo-50 text-indigo-400 rounded-3xl flex items-center justify-center mx-auto mb-6 text-4xl shadow-inner rotate-3">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">No Progress Data Yet</h3>
+                        <p class="text-gray-500 text-sm max-w-sm mx-auto mb-6">Enroll in a course and start learning to see your detailed progress here.</p>
+                        <a href="/student/explore" class="inline-block bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:shadow-lg shadow-indigo-200 transition-all text-sm hover:-translate-y-0.5">Browse Courses</a>
+                    </div>
+                <% } %>
+            </div>
         </div>
-        
-        <!-- Page Specific Scripts -->
-<!-- Page Specific Scripts -->
+    </main>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Sidebar Toggle Logic for Mobile Responsiveness
             const sidebar = document.getElementById('sidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
             const openSidebarBtn = document.getElementById('openSidebarBtn');
             const closeSidebarBtn = document.getElementById('closeSidebarBtn');
-            
             const toggleSidebar = () => {
                 const isOpen = !sidebar.classList.contains('-translate-x-full');
-                
-                if (isOpen) {
-                    sidebar.classList.add('-translate-x-full');
-                    sidebarOverlay.classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden'); // Restore body scroll
-                } else {
-                    sidebar.classList.remove('-translate-x-full');
-                    sidebarOverlay.classList.remove('hidden');
-                    document.body.classList.add('overflow-hidden'); // Prevent body scroll
-                }
+                if (isOpen) { sidebar.classList.add('-translate-x-full'); sidebarOverlay.classList.add('hidden'); document.body.classList.remove('overflow-hidden'); }
+                else { sidebar.classList.remove('-translate-x-full'); sidebarOverlay.classList.remove('hidden'); document.body.classList.add('overflow-hidden'); }
             };
-            
             if (openSidebarBtn) openSidebarBtn.addEventListener('click', toggleSidebar);
             if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
             if (sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
-
-            /**
-             * Phase 13 Preparation: IndexedDB Initialization 
-             * This provides the architecture placeholder for offline caching.
-             * The actual caching sync logic will be added in Phase 13.
-             */
-            if ('indexedDB' in window) {
-                // Future IndexedDB implementation placeholder
-                console.log('IndexedDB is supported. Ready for offline mode caching.');
-            }
         });
     </script>
     <%- include('../partials/language-modal') %>

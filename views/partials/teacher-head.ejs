@@ -1,0 +1,116 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><%= typeof title !== 'undefined' ? title : 'EduSmart Teacher Dashboard' %></title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #fef3f2 100%);
+        min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar-item {
+        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+    .sidebar-item:hover:not(.sidebar-active) {
+        background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+        color: #4f46e5;
+        transform: translateX(4px);
+    }
+    .sidebar-active {
+        background: linear-gradient(135deg, #4f46e5, #6366f1);
+        color: #fff !important;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+    }
+    .sidebar-active i { color: #fff !important; }
+    .sidebar-active div { background: #fff !important; border: none !important; }
+    .sidebar-active div i { color: #4f46e5 !important; }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(24px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInScale {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes shimmer {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+    }
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+    }
+    @keyframes pulse-ring {
+        0% { transform: scale(0.9); opacity: 1; }
+        80%, 100% { transform: scale(1.5); opacity: 0; }
+    }
+
+    .animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+    .animate-fade-in-scale { animation: fadeInScale 0.5s ease-out forwards; }
+    .animate-slide-in-right { animation: slideInRight 0.5s ease-out forwards; }
+    .animate-float { animation: float 4s ease-in-out infinite; }
+
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+    .delay-500 { animation-delay: 0.5s; }
+    .delay-600 { animation-delay: 0.6s; }
+    .delay-700 { animation-delay: 0.7s; }
+
+    /* Card hover effects */
+    .card-hover {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    /* Stat card glow */
+    .stat-glow {
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-glow::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.4s;
+    }
+    .stat-glow:hover::before { opacity: 1; }
+
+    /* Scrollbar */
+    .scrollbar-thin::-webkit-scrollbar { width: 5px; }
+    .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Glass effect */
+    .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+    }
+</style>

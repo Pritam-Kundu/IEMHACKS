@@ -34,7 +34,7 @@
         }
 
         .hero-glow {
-            background: radial-gradient(ellipse 600px 400px at 70% 40%, rgba(99, 102, 241, 0.10), transparent);
+            background: radial-gradient(ellipse 600px 400px at 70% 40%, rgba(79, 70, 229, 0.25), transparent);
         }
 
         .float-card {
@@ -56,11 +56,11 @@
             <!-- HERO SECTION                   -->
             <!-- ============================== -->
             <section id="heroSection"
-                class="relative min-h-[92vh] flex items-center overflow-hidden bg-cover bg-center bg-no-repeat"
+                class="relative min-h-screen flex items-center overflow-hidden bg-cover bg-center bg-no-repeat"
                 style="background-image: url('/images/heroimage.jpg');">
                 <!-- Image Overlay for readability -->
                 <div
-                    class="absolute inset-0 bg-white/80 md:bg-white/50 bg-gradient-to-r from-white/95 via-white/70 to-white/20 pointer-events-none z-0">
+                    class="absolute inset-0 bg-white/70 md:bg-white/40 bg-gradient-to-r from-white/95 via-white/80 to-white/30 pointer-events-none z-0">
                 </div>
                 <!-- Particle Canvas -->
                 <canvas id="particleCanvas" class="z-0"></canvas>
@@ -68,10 +68,10 @@
                 <div class="hero-glow absolute inset-0 pointer-events-none"></div>
                 <!-- Subtle corner accents -->
                 <div
-                    class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-indigo-100/40 blur-3xl pointer-events-none">
+                    class="absolute -top-32 -right-32 w-96 h-96 rounded-full bg-indigo-400/30 blur-3xl pointer-events-none">
                 </div>
                 <div
-                    class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-blue-100/30 blur-3xl pointer-events-none">
+                    class="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-blue-400/30 blur-3xl pointer-events-none">
                 </div>
 
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-20 lg:py-0">
@@ -84,19 +84,19 @@
                                 class="mt-8 lg:mt-12 text-5xl sm:text-6xl lg:text-7xl font-extrabold text-gray-900 leading-[1.08] tracking-tight mb-6 opacity-0">
                                 Smart Learning
                                 <span
-                                    class="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-blue-600 to-indigo-500">for
+                                    class="block text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 drop-shadow-sm">for
                                     Every Student</span>
                             </h1>
 
                             <p id="heroDesc"
-                                class="text-lg sm:text-xl text-gray-500 leading-relaxed max-w-lg mb-10 opacity-0">
+                                class="text-lg sm:text-xl text-gray-600 font-medium leading-relaxed max-w-lg mb-10 opacity-0">
                                 Personalized lessons, adaptive assessments, and AI-powered tutoring — all in one
                                 beautiful, accessible platform.
                             </p>
 
                             <div id="heroCTA" class="flex flex-col sm:flex-row gap-4 opacity-0">
                                 <a href="/signup"
-                                    class="group inline-flex items-center justify-center px-8 py-4 text-base font-semibold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-200/50 transition-all duration-300 hover:-translate-y-0.5">
+                                    class="group inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-xl text-white bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 shadow-xl shadow-indigo-200/50 transition-all duration-300 hover:-translate-y-1">
                                     <%= t('home.startLearningFree') %>
                                     <i
                                         class="fas fa-arrow-right ml-2 transition-transform duration-300 group-hover:translate-x-1"></i>

@@ -1,144 +1,18 @@
 <!DOCTYPE html>
 <html lang="<%= language %>" dir="<%= direction %>">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title %></title>
-    <!-- Tailwind CSS (CDN for rapid hackathon setup) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Dashboard-specific custom styles */
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        
-        /* Sidebar styling */
-        .sidebar-active { 
-            background-color: #e0e7ff; 
-            color: #4f46e5; 
-            font-weight: 600; 
-            border-right: 4px solid #4f46e5; 
-        }
-        .sidebar-item { transition: all 0.2s ease-in-out; }
-        .sidebar-item:hover:not(.sidebar-active) { 
-            background-color: #f1f5f9; 
-            color: #334155; 
-        }
-        
-        /* Utility */
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+    <%- include('../partials/teacher-head', { title: typeof title !== 'undefined' ? title : 'EduSmart Teacher' }) %>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
 
-    <!-- Mobile sidebar overlay -->
-    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 z-20 hidden lg:hidden transition-opacity"></div>
+    
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-64 bg-white border-r border-slate-200 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col">
-        <div class="p-6 flex items-center justify-between">
-            <a href="/teacher/dashboard" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
-                <i class="fa-solid fa-graduation-cap text-2xl"></i>
-                <span class="font-mono text-2xl font-bold tracking-tight text-slate-900">EduSmart <span class="text-xs text-indigo-600 ml-1 font-semibold uppercase font-sans tracking-normal">Teacher</span></span>
-            </a>
-            <button id="closeSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-        </div>
-
-        <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto">
-            <a href="/teacher/dashboard" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-layer-group w-5 text-center"></i>
-                <span>Dashboard</span>
-            </a>
-            <a href="/teacher/courses" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-book-open w-5 text-center"></i>
-                <span>My Courses</span>
-            </a>
-            <a href="/teacher/students" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-users w-5 text-center"></i>
-                <span>Students</span>
-            </a>
-            <a href="/teacher/lessons" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-chalkboard-user w-5 text-center"></i>
-                <span>Lessons</span>
-            </a>
-            <a href="/teacher/quizzes" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-clipboard-question w-5 text-center"></i>
-                <span>Quizzes</span>
-            </a>
-            <a href="/teacher/assignments" class="sidebar-item sidebar-active flex items-center gap-3 px-4 py-3 rounded-lg text-slate-700">
-                <i class="fa-solid fa-file-pen w-5 text-center"></i>
-                <span>Assignments</span>
-            </a>
-            <a href="/teacher/ai-tutor" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-robot w-5 text-center"></i>
-                <span>AI Tutor</span>
-            </a>
-            <a href="/teacher/analytics" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-chart-pie w-5 text-center"></i>
-                <span>Analytics</span>
-            </a>
-            <a href="/teacher/reports" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-regular fa-file-lines w-5 text-center"></i>
-                <span>Reports</span>
-            </a>
-        </nav>
-
-        <div class="p-4 border-t border-slate-200">
-            <a href="/teacher/settings" class="sidebar-item flex items-center gap-3 px-4 py-3 rounded-lg text-slate-600">
-                <i class="fa-solid fa-gear w-5 text-center"></i>
-                <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
-            </a>
-            <form action="/auth/logout" method="POST" class="w-full mt-1">
-                <button type="submit" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700">
-                    <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i>
-                    <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
-                </button>
-            </form>
-        </div>
-    </aside>
+    <%- include('../partials/teacher-sidebar', { active: 'assignment-submissions' }) %>
 
     <!-- Main Content -->
-    <main class="flex-1 flex flex-col h-screen lg:ml-64 w-full">
+    <main class="flex-1 flex flex-col h-screen lg:ml-[260px] w-full">
         
-        <!-- Top Header -->
-        <header class="bg-white border-b border-slate-200 sticky top-0 z-40">
-            <div class="flex items-center justify-between px-6 py-4">
-                <div class="flex items-center gap-4">
-                    <button id="openSidebarBtn" class="lg:hidden text-slate-500 hover:text-slate-800 focus:outline-none">
-                        <i class="fa-solid fa-bars text-xl"></i>
-                    </button>
-                    <div class="flex items-center text-sm font-medium text-slate-500">
-                        <a href="/teacher/assignments" class="hover:text-indigo-600 transition-colors">Assignments</a>
-                        <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
-                        <span class="text-slate-800 font-semibold truncate max-w-[150px] sm:max-w-xs"><%= assignment.title %></span>
-                        <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
-                        <span class="text-slate-800 font-semibold">Submissions</span>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-5">
-                    
-                    <div class="relative group mr-2">
-                        <button class="inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors gap-1">
-                            <i class="fa-solid fa-globe text-xl"></i>
-                            <%= locals.language === 'bn' ? 'বাংলা' : 'English' %>
-                        </button>
-                        <div class="absolute right-0 mt-0 w-32 bg-white border border-slate-200 rounded-md shadow-lg hidden group-hover:block z-50 overflow-hidden">
-                            <button onclick="changeLanguageImmediately('en')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'en' ? 'font-bold' : '' %>">English</button>
-                            <button onclick="changeLanguageImmediately('bn')" class="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-100 <%= locals.language === 'bn' ? 'font-bold' : '' %>">বাংলা</button>
-                        </div>
-                    </div>
-
-                    <%- include('../partials/teacher-header-controls') %>
-                </div>
-            </div>
-        </header>
+        <%- include('../partials/teacher-header', { active: 'assignment-submissions' }) %>
 
         <!-- Dashboard Content -->
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
@@ -149,7 +23,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-md overflow-hidden animate-fade-in-up opacity-0 delay-100 card-hover">
                 <% if (submissions && submissions.length > 0) { %>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">

@@ -9,109 +9,146 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Include Centralized Firebase Config -->
     <script src="/js/firebase-config.js"></script>
+    <style>
+        @keyframes fade-in-up {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-up {
+            animation: fade-in-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        .animate-float {
+            animation: float 8s ease-in-out infinite;
+        }
+        .animate-float-delayed {
+            animation: float 10s ease-in-out infinite 2s;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen">
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 text-gray-800 font-sans antialiased flex flex-col min-h-screen relative overflow-x-hidden">
+    <!-- Ambient Background Orbs -->
+    <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-200/50 rounded-full blur-[100px] animate-float pointer-events-none z-0"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/50 rounded-full blur-[100px] animate-float-delayed pointer-events-none z-0"></div>
     
-    <%- include('../partials/navbar') %>
+    <div class="relative z-20">
+        <%- include('../partials/navbar') %>
+    </div>
 
-    <div class="flex-1 flex flex-col md:flex-row">
+    <div class="flex-1 flex items-center justify-center p-6 relative z-10 pt-24">
         
-        <!-- Left Side: Branding/Illustration (Hidden on mobile) -->
-        <div class="hidden md:flex md:w-1/2 bg-blue-600 text-white flex-col justify-center items-center p-12">
-            <div class="max-w-md text-center">
-                <i class="fas fa-graduation-cap text-6xl mb-6"></i>
-                <h1 class="text-4xl font-bold mb-4">EduSmart</h1>
-                <p class="text-lg text-blue-100"><%= t('auth.subtitle') %></p>
-            </div>
-        </div>
-
-        <!-- Right Side: Login Form -->
-        <div class="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12">
-            <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-                
-                <!-- Mobile Branding -->
-                <div class="md:hidden text-center mb-6 text-blue-600">
-                    <i class="fas fa-graduation-cap text-4xl"></i>
-                    <h1 class="text-2xl font-bold mt-2">EduSmart</h1>
+        <!-- Glass Container -->
+        <div class="w-full max-w-5xl bg-white/70 backdrop-blur-2xl border border-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-[2rem] overflow-hidden flex flex-col md:flex-row animate-fade-in-up">
+            
+            <!-- Left Side: Branding/Illustration -->
+            <div class="hidden md:flex md:w-5/12 bg-gradient-to-br from-indigo-600 to-indigo-800 text-white flex-col justify-center items-center p-12 relative overflow-hidden">
+                <!-- Inner glow for branding -->
+                <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPgo8cmVjdCB3aWR0aD0iOCIgaGVpZ2h0PSI4IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20"></div>
+                <div class="relative z-10 max-w-md text-center">
+                    <div class="w-20 h-20 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/30 rotate-3 transition-transform hover:rotate-6">
+                        <i class="fas fa-graduation-cap text-4xl text-white"></i>
+                    </div>
+                    <h1 class="text-4xl font-extrabold mb-4 tracking-tight"><%= t('auth.welcomeBack') %></h1>
+                    <p class="text-lg text-indigo-100 font-medium leading-relaxed"><%= t('auth.subtitle') %></p>
                 </div>
+            </div>
 
-                <h2 class="text-3xl font-bold text-gray-900 mb-2"><%= t('auth.welcomeBack') %></h2>
-                <p class="text-gray-500 mb-8"><%= t('auth.loginToContinue') %></p>
-
-                <!-- Alert Box -->
-                <div id="alertBox" class="hidden mb-6 p-4 rounded-md text-sm"></div>
-
-                <form id="loginForm" class="space-y-5">
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1"><%= t('auth.emailAddress') %></label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-envelope text-gray-400"></i>
-                            </div>
-                            <input type="email" id="email" name="email" required
-                                class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                placeholder="you@example.com">
+            <!-- Right Side: Login Form -->
+            <div class="w-full md:w-7/12 flex items-center justify-center p-8 sm:p-14 bg-white/40">
+                <div class="w-full max-w-md">
+                    
+                    <!-- Mobile Branding -->
+                    <div class="md:hidden text-center mb-8">
+                        <div class="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm border border-indigo-200">
+                            <i class="fas fa-graduation-cap text-3xl"></i>
                         </div>
+                        <h1 class="text-2xl font-bold tracking-tight text-gray-900">EduSmart</h1>
                     </div>
 
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1"><%= t('auth.password') %></label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400"></i>
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-2 hidden md:block"><%= t('auth.loginToContinue') %></h2>
+                        <h2 class="text-2xl font-bold text-gray-900 tracking-tight mb-2 md:hidden"><%= t('auth.welcomeBack') %></h2>
+                        <p class="text-gray-500 font-medium">Please enter your details to sign in.</p>
+                    </div>
+
+                    <!-- Alert Box -->
+                    <div id="alertBox" class="hidden mb-6 p-4 rounded-xl text-sm font-medium border shadow-sm"></div>
+
+                    <form id="loginForm" class="space-y-5">
+                        <div>
+                            <label for="email" class="block text-sm font-semibold text-gray-700 mb-1.5"><%= t('auth.emailAddress') %></label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
+                                    <i class="fas fa-envelope text-gray-400 group-focus-within:text-indigo-600 transition-colors"></i>
+                                </div>
+                                <input type="email" id="email" name="email" required
+                                    class="w-full pl-11 pr-4 py-3 bg-white/60 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
+                                    placeholder="you@example.com">
                             </div>
-                            <input type="password" id="password" name="password" required
-                                class="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                placeholder="••••••••">
-                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700">
-                                <i class="fas fa-eye"></i>
+                        </div>
+
+                        <div>
+                            <label for="password" class="block text-sm font-semibold text-gray-700 mb-1.5"><%= t('auth.password') %></label>
+                            <div class="relative group">
+                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none transition-colors group-focus-within:text-indigo-600">
+                                    <i class="fas fa-lock text-gray-400 group-focus-within:text-indigo-600 transition-colors"></i>
+                                </div>
+                                <input type="password" id="password" name="password" required
+                                    class="w-full pl-11 pr-12 py-3 bg-white/60 border border-gray-200 rounded-xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 focus:bg-white transition-all shadow-sm"
+                                    placeholder="••••••••">
+                                <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-indigo-600 transition-colors">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-1 pb-2">
+                            <div class="flex items-center">
+                                <input id="remember_me" name="remember_me" type="checkbox" class="h-4.5 w-4.5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded cursor-pointer">
+                                <label for="remember_me" class="ml-2.5 block text-sm font-medium text-gray-700 cursor-pointer"><%= t('auth.rememberMe') %></label>
+                            </div>
+                            <div class="text-sm">
+                                <button type="button" id="forgotPasswordBtn" class="font-semibold text-indigo-600 hover:text-indigo-700 focus:outline-none transition-colors"><%= t('auth.forgotPassword') %></button>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitBtn" class="w-full flex justify-center items-center py-3.5 px-4 border border-transparent rounded-xl shadow-md hover:shadow-lg text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/30 hover:-translate-y-0.5 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+                            <span id="btnText"><%= t('auth.logIn') %></span>
+                            <i id="btnSpinner" class="fas fa-circle-notch fa-spin hidden ml-2"></i>
+                        </button>
+                    </form>
+
+                    <div class="mt-8">
+                        <div class="relative">
+                            <div class="absolute inset-0 flex items-center">
+                                <div class="w-full border-t border-gray-200"></div>
+                            </div>
+                            <div class="relative flex justify-center text-sm">
+                                <span class="px-4 bg-[#f8fafe] text-gray-500 font-medium rounded-full text-xs uppercase tracking-wider"><%= t('auth.orContinueWith') %></span>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <button type="button" id="googleLoginBtn" class="w-full inline-flex justify-center items-center py-3.5 px-4 border border-gray-200 rounded-xl shadow-sm bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-4 focus:ring-gray-100 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed">
+                                <svg class="w-5 h-5 mr-3" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                                </svg>
+                                <%= t('auth.signInWithGoogle') %>
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between mt-2">
-                        <div class="flex items-center">
-                            <input id="remember_me" name="remember_me" type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label for="remember_me" class="ml-2 block text-sm text-gray-900"><%= t('auth.rememberMe') %></label>
-                        </div>
-                        <div class="text-sm">
-                            <button type="button" id="forgotPasswordBtn" class="font-medium text-blue-600 hover:text-blue-500 focus:outline-none"><%= t('auth.forgotPassword') %></button>
-                        </div>
-                    </div>
-
-                    <button type="submit" id="submitBtn" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                        <span id="btnText"><%= t('auth.logIn') %></span>
-                        <i id="btnSpinner" class="fas fa-circle-notch fa-spin hidden ml-2 mt-0.5"></i>
-                    </button>
-                </form>
-
-                <div class="mt-6">
-                    <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-white text-gray-500"><%= t('auth.orContinueWith') %></span>
-                        </div>
-                    </div>
-
-                    <div class="mt-6">
-                        <button type="button" id="googleLoginBtn" class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                                <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                                <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-                                <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-                            </svg>
-                            <%= t('auth.signInWithGoogle') %>
-                        </button>
-                    </div>
+                    <p class="mt-10 text-center text-sm font-medium text-gray-600">
+                        <%= t('auth.dontHaveAccount') %> 
+                        <a href="/signup" class="font-bold text-indigo-600 hover:text-indigo-700 transition-colors ml-1"><%= t('auth.signUp') %></a>
+                    </p>
                 </div>
-
-                <p class="mt-8 text-center text-sm text-gray-600">
-                    <%= t('auth.dontHaveAccount') %> 
-                    <a href="/signup" class="font-medium text-blue-600 hover:text-blue-500 transition-colors"><%= t('auth.signUp') %></a>
-                </p>
             </div>
         </div>
     </div>

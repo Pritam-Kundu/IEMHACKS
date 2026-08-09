@@ -1,11 +1,11 @@
 <!-- Load Lucide Icons -->
 <script src="https://unpkg.com/lucide@latest"></script>
 
-<nav class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-5xl h-14 bg-white/40 backdrop-blur-xl border border-white/50 rounded-xl shadow-lg px-4 flex items-center justify-between">
+<nav class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-6xl h-16 bg-white/50 backdrop-blur-xl border border-white/60 rounded-2xl shadow-lg px-6 flex items-center justify-between">
     <!-- Logo -->
     <div class="flex items-center gap-2">
         <a href="/" class="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 transition-colors">
-            <i data-lucide="graduation-cap" class="size-6"></i>
+            <i class="fa-solid fa-graduation-cap text-[1.5rem]"></i>
             <span class="font-mono text-lg font-bold tracking-tight text-slate-900">EduSmart</span>
         </a>
     </div>
@@ -244,10 +244,38 @@
     <div class="flex items-center gap-2">
         <% if (locals.user) { %>
             <a href="/<%= user.role %>/dashboard" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2"><%= t('nav.dashboard') %></a>
-            <a href="/logout" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm"><%= t('nav.logout') %></a>
+            
+            <!-- User Profile Dropdown -->
+            <div class="relative" id="profileDropdownContainer">
+                <button id="profileDropdownBtn" class="flex items-center justify-center w-11 h-11 rounded-full bg-indigo-50 border-2 border-indigo-100 hover:border-indigo-300 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 overflow-hidden">
+                    <img src="<%= user.profilePicture || '/images/default-avatar.png' %>" alt="Profile" class="w-full h-full object-cover">
+                </button>
+                
+                <div id="profileDropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 opacity-0 scale-95 pointer-events-none transition-all duration-200 origin-top-right z-50">
+                    <div class="p-3 border-b border-slate-100">
+                        <p class="text-sm font-semibold text-slate-800 truncate"><%= user.name || 'User' %></p>
+                        <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
+                    </div>
+                    <div class="p-2 space-y-1">
+                        <a href="/<%= user.role %>/profile" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
+                            <i data-lucide="user-circle" class="size-4"></i> Profile
+                        </a>
+                        <a href="/<%= user.role %>/settings" class="flex items-center gap-2 px-3 py-2 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors">
+                            <i data-lucide="settings" class="size-4"></i> Settings
+                        </a>
+                    </div>
+                    <div class="p-2 border-t border-slate-100">
+                        <a href="/logout" class="flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-md transition-colors">
+                            <i data-lucide="log-out" class="size-4"></i> Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
         <% } else { %>
-            <a href="/login" class="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors hidden sm:block mr-2"><%= t('nav.login') %></a>
-            <a href="/signup" class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors shadow-sm"><%= t('nav.getStarted') %></a>
+            <a href="/login" class="bg-indigo-600 text-white hover:bg-indigo-700 px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md hover:shadow-lg flex items-center gap-2">
+                <i data-lucide="log-in" class="size-4"></i>
+                <%= t('nav.login') %>
+            </a>
         <% } %>
 
         <!-- Mobile Menu Toggle -->
@@ -414,11 +442,19 @@
         
         <div class="pt-6 mt-6 border-t border-slate-100 flex flex-col gap-3">
             <% if (locals.user) { %>
-                <a href="/<%= user.role %>/dashboard" class="w-full text-center bg-slate-100 text-slate-900 hover:bg-slate-200 block px-4 py-2 rounded-md font-medium"><%= t('nav.dashboard') %></a>
-                <a href="/logout" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm"><%= t('nav.logout') %></a>
+                <div class="flex items-center gap-3 mb-2 px-2">
+                    <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center"><i data-lucide="user" class="size-5"></i></div>
+                    <div>
+                        <p class="text-sm font-semibold text-slate-800"><%= user.name || 'User' %></p>
+                        <p class="text-xs text-slate-500 capitalize"><%= user.role %></p>
+                    </div>
+                </div>
+                <a href="/<%= user.role %>/dashboard" class="w-full text-left flex items-center gap-3 bg-slate-50 text-slate-700 hover:bg-slate-100 block px-4 py-3 rounded-md font-medium"><i data-lucide="layout-dashboard" class="size-4"></i> Dashboard</a>
+                <a href="/<%= user.role %>/profile" class="w-full text-left flex items-center gap-3 bg-slate-50 text-slate-700 hover:bg-slate-100 block px-4 py-3 rounded-md font-medium"><i data-lucide="user-circle" class="size-4"></i> Profile</a>
+                <a href="/<%= user.role %>/settings" class="w-full text-left flex items-center gap-3 bg-slate-50 text-slate-700 hover:bg-slate-100 block px-4 py-3 rounded-md font-medium"><i data-lucide="settings" class="size-4"></i> Settings</a>
+                <a href="/logout" class="w-full text-left flex items-center gap-3 bg-red-50 text-red-600 hover:bg-red-100 block px-4 py-3 rounded-md font-medium"><i data-lucide="log-out" class="size-4"></i> Logout</a>
             <% } else { %>
-                <a href="/login" class="w-full text-center border border-slate-200 text-slate-700 hover:bg-slate-50 block px-4 py-2 rounded-md font-medium"><%= t('nav.login') %></a>
-                <a href="/signup" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-2 rounded-md font-medium shadow-sm"><%= t('nav.getStarted') %></a>
+                <a href="/login" class="w-full text-center bg-indigo-600 text-white hover:bg-indigo-700 block px-4 py-3 rounded-xl font-bold flex items-center justify-center gap-2 shadow-md"><i data-lucide="log-in" class="size-4"></i> <%= t('nav.login') %></a>
             <% } %>
         </div>
     </div>
@@ -516,6 +552,28 @@
         if(closeBtn) closeBtn.addEventListener('click', closeSheet);
         if(overlay) overlay.addEventListener('click', closeSheet);
     });
+
+    // Profile Dropdown Logic
+    const profileBtn = document.getElementById('profileDropdownBtn');
+    const profileMenu = document.getElementById('profileDropdownMenu');
+    
+    if (profileBtn && profileMenu) {
+        profileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = profileMenu.classList.contains('opacity-0');
+            if (isHidden) {
+                profileMenu.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+            } else {
+                profileMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!profileMenu.contains(e.target) && e.target !== profileBtn) {
+                profileMenu.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+            }
+        });
+    }
 
     // Mobile Accordion Toggle
     window.toggleAccordion = function(contentId, button) {

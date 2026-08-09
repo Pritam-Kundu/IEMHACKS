@@ -360,7 +360,7 @@ const googleLogin = async (req, res) => {
 
 const logout = (req, res) => {
     res.clearCookie('__session');
-    res.redirect('/login');
+    res.redirect('/');
 };
 
 module.exports = {

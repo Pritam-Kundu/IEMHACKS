@@ -1,0 +1,77 @@
+<!-- Mobile sidebar overlay -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 hidden lg:hidden transition-opacity"></div>
+
+<!-- ========== SIDEBAR ========== -->
+<aside id="sidebar"
+    class="fixed inset-y-0 left-0 w-[260px] bg-white/90 backdrop-blur-xl border-r border-indigo-100/50 z-30 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-lg shadow-indigo-100/20">
+
+    <!-- Logo -->
+    <div class="p-5 flex items-center justify-between">
+        <a href="/" class="flex items-center gap-2.5 group">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center shadow-md shadow-indigo-200/50 group-hover:shadow-lg transition-shadow">
+                <i class="fa-solid fa-graduation-cap text-white text-lg"></i>
+            </div>
+            <div>
+                <span class="font-extrabold text-lg text-gray-900 tracking-tight">EduSmart</span>
+                <span class="block text-[10px] font-semibold text-indigo-500 uppercase tracking-widest -mt-0.5">Teacher</span>
+            </div>
+        </a>
+        <button id="closeSidebarBtn" class="lg:hidden w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+    </div>
+
+    <!-- Nav Items -->
+    <nav class="flex-1 px-3 py-2 space-y-1 overflow-y-auto scrollbar-thin">
+        <a href="/teacher/dashboard" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'dashboard' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-indigo-600 bg-indigo-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-layer-group text-sm"></i></div>
+            <span class="font-semibold">Dashboard</span>
+        </a>
+        <a href="/teacher/courses" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'courses' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-violet-600 bg-violet-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-book-open text-sm"></i></div>
+            <span class="font-semibold">My Courses</span>
+        </a>
+        <a href="/teacher/students" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'students' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-blue-600 bg-blue-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-users text-sm"></i></div>
+            <span class="font-semibold">Students</span>
+        </a>
+        <a href="/teacher/lessons" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'lessons' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-emerald-600 bg-emerald-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-chalkboard-user text-sm"></i></div>
+            <span class="font-semibold">Lessons</span>
+        </a>
+        <a href="/teacher/quizzes" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'quizzes' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-amber-600 bg-amber-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-clipboard-question text-sm"></i></div>
+            <span class="font-semibold">Quizzes</span>
+        </a>
+        <a href="/teacher/assignments" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'assignments' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-rose-600 bg-rose-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-file-pen text-sm"></i></div>
+            <span class="font-semibold">Assignments</span>
+        </a>
+        <a href="/teacher/ai-tutor" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'ai-tutor' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-cyan-600 bg-cyan-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-robot text-sm"></i></div>
+            <span class="font-semibold">AI Tutor</span>
+        </a>
+        <a href="/teacher/analytics" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'analytics' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-purple-600 bg-purple-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-solid fa-chart-pie text-sm"></i></div>
+            <span class="font-semibold">Analytics</span>
+        </a>
+        <a href="/teacher/reports" class="sidebar-item group <%= typeof active !== 'undefined' && active === 'reports' ? 'sidebar-active' : 'text-gray-600' %> flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+            <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors text-orange-600 bg-orange-50 group-hover:bg-white group-hover:shadow-sm"><i class="fa-regular fa-file-lines text-sm"></i></div>
+            <span class="font-semibold">Reports</span>
+        </a>
+    </nav>
+
+    <!-- Bottom -->
+    <div class="p-3 border-t border-gray-100">
+        <a href="/teacher/settings" class="sidebar-item group flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 text-sm font-medium">
+            <i class="fa-solid fa-gear w-5 text-center text-base"></i>
+            <span><%= typeof t === 'function' ? t('navigation.settings') : 'Settings' %></span>
+        </a>
+        <form action="/logout" method="POST" class="w-full mt-1">
+            <button type="submit" class="sidebar-item group w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 hover:text-red-600 text-sm font-medium">
+                <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center text-base"></i>
+                <span><%= typeof t === 'function' ? t('common.logout') : 'Logout' %></span>
+            </button>
+        </form>
+    </div>
+</aside>
