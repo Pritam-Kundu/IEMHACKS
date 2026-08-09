@@ -45,7 +45,8 @@
     "myProgress": "My Progress",
     "quizScore": "Quiz Score",
     "overallProgress": "Overall Progress",
-    "recommendedForYou": "Recommended for You"
+    "recommendedForYou": "Recommended for You",
+    "exploreCourses": "Explore Courses"
   },
   "parent": {
     "dashboard": "Parent Dashboard",

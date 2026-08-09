@@ -4,6 +4,12 @@ const Course = require('../models/Course');
 const Progress = require('../models/Progress');
 const Enrollment = require('../models/Enrollment');
 const achievementService = require('../services/achievementService');
+const Mux = require('@mux/mux-node');
+
+const mux = new Mux({
+    tokenId: process.env.MUX_TOKEN_ID,
+    tokenSecret: process.env.MUX_TOKEN_SECRET
+});
 
 /**
  * Get lesson page
@@ -29,6 +35,24 @@ exports.getLessonPage = async (req, res, next) => {
 
         if (!lesson) {
             return res.status(404).render('student/dashboard', { error: 'Lesson not found.' });
+        }
+
+        // --- MUX SYNC FOR LOCALHOST ---
+        // If webhook isn't configured, we manually check the upload status
+        if (lesson.muxAssetId && !lesson.muxPlaybackId) {
+            try {
+                const upload = await mux.video.uploads.retrieve(lesson.muxAssetId);
+                if (upload.asset_id) {
+                    const asset = await mux.video.assets.retrieve(upload.asset_id);
+                    if (asset.status === 'ready' && asset.playback_ids && asset.playback_ids.length > 0) {
+                        lesson.muxPlaybackId = asset.playback_ids[0].id;
+                        lesson.muxStatus = 'ready';
+                        await lesson.save();
+                    }
+                }
+            } catch (err) {
+                console.log('Mux sync error:', err.message);
+            }
         }
 
         // Check if student is enrolled in the course

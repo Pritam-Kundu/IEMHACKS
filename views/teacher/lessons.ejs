@@ -175,7 +175,7 @@
                                                     <span class="text-xs font-bold"><%= lesson.order || '-' %></span>
                                                 </div>
                                                 <div>
-                                                    <p class="font-bold text-slate-800"><%= lesson.title %></p>
+                                                    <a href="/lessons/<%= lesson._id %>" class="font-bold text-slate-800 hover:text-indigo-600 transition-colors block"><%= lesson.title %></a>
                                                     <p class="text-xs text-slate-500 sm:hidden"><%= lesson.course ? lesson.course.title : 'Unassigned' %></p>
                                                 </div>
                                             </div>

@@ -157,12 +157,43 @@
                 </div>
 
                 <!-- Video Section (If exists) -->
-                <% if (lesson.videoUrl) { %>
-                <div class="mb-8 rounded-xl overflow-hidden shadow-lg bg-black aspect-video relative">
-                    <!-- Basic embed assuming YouTube/Vimeo style URL. In reality, requires URL parsing. -->
-                    <iframe src="<%= lesson.videoUrl %>" 
-                            class="absolute top-0 left-0 w-full h-full border-0"
-                            allowfullscreen></iframe>
+                <% if (lesson.muxPlaybackId || lesson.videoUrl) { %>
+                <div class="mb-8">
+                    <% if (lesson.muxPlaybackId) { %>
+                    <!-- Mux Player -->
+                    <div class="rounded-xl overflow-hidden shadow-lg bg-black aspect-video relative">
+                        <mux-player
+                            playback-id="<%= lesson.muxPlaybackId %>"
+                            metadata-video-title="<%= lesson.title %>"
+                            class="w-full h-full"
+                        ></mux-player>
+                    </div>
+                    <% if (lesson.muxDownloadUrl) { %>
+                    <div class="mt-4 flex items-center gap-3">
+                        <a href="<%= lesson.muxDownloadUrl %>" download class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-sm font-semibold transition-colors">
+                            <i class="fa-solid fa-download"></i> Download for Offline Use
+                        </a>
+                    </div>
+                    <% } %>
+
+                    <% } else if (lesson.videoUrl && (lesson.videoUrl.startsWith('/uploads/') || lesson.videoUrl.endsWith('.mp4') || lesson.videoUrl.endsWith('.webm'))) { %>
+                    <!-- Native Video Player for hosted MP4 files -->
+                    <div class="rounded-xl overflow-hidden shadow-lg bg-black aspect-video relative">
+                        <video id="lessonVideo" controls preload="metadata" class="w-full h-full"
+                               poster="">
+                            <source src="<%= lesson.videoUrl %>" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+
+                    <% } else { %>
+                    <!-- Embedded iframe for external video URLs (YouTube/Vimeo etc.) -->
+                    <div class="rounded-xl overflow-hidden shadow-lg bg-black aspect-video relative">
+                        <iframe src="<%= lesson.videoUrl %>" 
+                                class="absolute top-0 left-0 w-full h-full border-0"
+                                allowfullscreen></iframe>
+                    </div>
+                    <% } %>
                 </div>
                 <% } %>
 
@@ -715,5 +746,11 @@
         });
         
     </script>
+
+    </script>
+
+    <!-- Mux Player -->
+    <script src="https://unpkg.com/@mux/mux-player"></script>
+
 </body>
 </html>

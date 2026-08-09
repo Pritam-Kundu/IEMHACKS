@@ -45,7 +45,8 @@
     "myProgress": "আমার অগ্রগতি",
     "quizScore": "কুইজ স্কোর",
     "overallProgress": "সামগ্রিক অগ্রগতি",
-    "recommendedForYou": "আপনার জন্য সুপারিশকৃত"
+    "recommendedForYou": "আপনার জন্য সুপারিশকৃত",
+    "exploreCourses": "কোর্স অন্বেষণ করুন"
   },
   "parent": {
     "dashboard": "অভিভাবক ড্যাশবোর্ড",

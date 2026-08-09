@@ -23,6 +23,9 @@ router.get('/courses/:id', requireAuth, requireRole('teacher'), teacherControlle
 router.get('/students', requireAuth, requireRole('teacher'), teacherController.getStudents);
 router.get('/students/:id', requireAuth, requireRole('teacher'), teacherController.getStudentDetails);
 
+// Mux Upload Route
+router.post('/upload/mux-url', requireAuth, requireRole('teacher'), teacherController.getMuxUploadUrl);
+
 router.get('/lessons', requireAuth, requireRole('teacher'), teacherController.getLessons);
 router.get('/lessons/create', requireAuth, requireRole('teacher'), teacherController.getCreateLesson);
 router.post('/lessons', requireAuth, requireRole('teacher'), teacherController.createLesson);
@@ -53,5 +56,8 @@ router.put('/assignments/:id/submissions/:submissionId/grade', requireAuth, requ
 router.get('/analytics', requireAuth, requireRole('teacher'), teacherController.getAnalytics);
 router.get('/reports', requireAuth, requireRole('teacher'), teacherController.getReports);
 router.get('/settings', requireAuth, requireRole('teacher'), teacherController.getSettings);
+router.put('/api/settings/profile', requireAuth, requireRole('teacher'), teacherController.updateProfile);
+router.put('/api/settings/password', requireAuth, requireRole('teacher'), teacherController.updatePassword);
+router.put('/api/settings/picture', requireAuth, requireRole('teacher'), teacherController.updateProfilePicture);
 
 module.exports = router;

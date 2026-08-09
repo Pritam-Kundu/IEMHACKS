@@ -1,3 +1,12 @@
+const bcrypt = require('bcryptjs');
+const fs = require('fs');
+const path = require('path');
+const Mux = require('@mux/mux-node');
+
+const mux = new Mux({
+    tokenId: process.env.MUX_TOKEN_ID,
+    tokenSecret: process.env.MUX_TOKEN_SECRET,
+});
 const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
 const QuizAttempt = require('../models/QuizAttempt');
@@ -457,7 +466,7 @@ exports.getCreateLesson = async (req, res, next) => {
  */
 exports.createLesson = async (req, res, next) => {
     try {
-        const { title, course, description, content, videoUrl, duration, order, isFree } = req.body;
+        const { title, course, description, content, videoUrl, muxAssetId, duration, order, isFree } = req.body;
         
         if (!title || !course) {
             return res.status(400).json({ success: false, message: 'Title and Course are required.' });
@@ -475,6 +484,7 @@ exports.createLesson = async (req, res, next) => {
             description: description ? description.trim() : '',
             content: content ? content.trim() : '',
             videoUrl: videoUrl ? videoUrl.trim() : undefined,
+            muxAssetId: muxAssetId ? muxAssetId.trim() : undefined,
             duration: duration || 0,
             order: order || 1,
             isFree: isFree === 'on' || isFree === true || isFree === 'true'
@@ -520,7 +530,7 @@ exports.getEditLesson = async (req, res, next) => {
  */
 exports.updateLesson = async (req, res, next) => {
     try {
-        const { title, course, description, content, videoUrl, duration, order, isFree } = req.body;
+        const { title, course, description, content, videoUrl, muxAssetId, duration, order, isFree } = req.body;
         
         // Verify lesson exists and teacher owns its course
         const lesson = await Lesson.findById(req.params.id).populate('course');
@@ -541,6 +551,7 @@ exports.updateLesson = async (req, res, next) => {
         lesson.description = description ? description.trim() : '';
         lesson.content = content ? content.trim() : '';
         lesson.videoUrl = videoUrl ? videoUrl.trim() : undefined;
+        lesson.muxAssetId = muxAssetId ? muxAssetId.trim() : lesson.muxAssetId;
         lesson.duration = duration || 0;
         lesson.order = order || 1;
         lesson.isFree = isFree === 'on' || isFree === true || isFree === 'true';
@@ -1518,4 +1529,142 @@ exports.getSettings = (req, res) => {
         title: 'Settings | EduSmart',
         user: req.user
     });
+};
+
+/**
+ * Update Profile Info
+ */
+exports.updateProfile = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const { name, email } = req.body;
+        
+        if (!name || name.trim().length < 2) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid name' });
+        }
+        
+        if (!email || !email.includes('@')) {
+            return res.status(400).json({ success: false, message: 'Please enter a valid email address' });
+        }
+
+        const existingUser = await User.findOne({ email: email.toLowerCase().trim(), _id: { $ne: teacherId } });
+        if (existingUser) {
+            return res.status(409).json({ success: false, message: 'This email is already registered' });
+        }
+        
+        await User.findByIdAndUpdate(teacherId, { 
+            name: name.trim(), 
+            email: email.toLowerCase().trim() 
+        });
+        
+        res.status(200).json({ success: true, message: 'Profile updated successfully' });
+    } catch (error) {
+        console.error('Update Profile Error:', error);
+        res.status(500).json({ success: false, message: 'Unable to update profile. Please try again.' });
+    }
+};
+
+/**
+ * Update Password
+ */
+exports.updatePassword = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+        
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({ success: false, message: 'All password fields are required' });
+        }
+        
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ success: false, message: 'New passwords do not match' });
+        }
+        
+        if (newPassword.length < 8) {
+            return res.status(400).json({ success: false, message: 'Password must be at least 8 characters' });
+        }
+        
+        const user = await User.findById(teacherId).select('+password');
+        
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+        }
+        
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+        user.password = hashedPassword;
+        await user.save();
+        
+        res.status(200).json({ success: true, message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Update Password Error:', error);
+        res.status(500).json({ success: false, message: 'Unable to save changes. Please try again.' });
+    }
+};
+
+/**
+ * Update Profile Picture
+ */
+exports.updateProfilePicture = async (req, res, next) => {
+    try {
+        const teacherId = req.user._id;
+        const { imageBase64 } = req.body;
+
+        if (!imageBase64) {
+            return res.status(400).json({ success: false, message: 'No image provided' });
+        }
+
+        // Validate base64 format
+        const matches = imageBase64.match(/^data:image\/([A-Za-z-+\/]+);base64,(.+)$/);
+        
+        if (!matches || matches.length !== 3) {
+            return res.status(400).json({ success: false, message: 'Invalid image format' });
+        }
+
+        const extension = matches[1] === 'jpeg' ? 'jpg' : matches[1];
+        const imageData = Buffer.from(matches[2], 'base64');
+        const fileName = `profile_${teacherId}_${Date.now()}.${extension}`;
+        
+        // Ensure uploads directory exists
+        const uploadDir = path.join(__dirname, '..', 'public', 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+
+        const filePath = path.join(uploadDir, fileName);
+        fs.writeFileSync(filePath, imageData);
+
+        const publicPath = `/uploads/${fileName}`;
+
+        await User.findByIdAndUpdate(teacherId, { profilePicture: publicPath });
+
+        res.status(200).json({ success: true, message: 'Profile picture updated successfully', profilePicture: publicPath });
+    } catch (error) {
+        console.error('Update Profile Picture Error:', error);
+        res.status(500).json({ success: false, message: 'Unable to update profile picture. Please try again.' });
+    }
+};
+
+/**
+ * Generate Mux Direct Upload URL
+ */
+exports.getMuxUploadUrl = async (req, res, next) => {
+    try {
+        const upload = await mux.video.uploads.create({
+            new_asset_settings: {
+                playback_policy: ['public']
+            },
+            cors_origin: '*'
+        });
+        
+        res.status(200).json({
+            success: true,
+            uploadUrl: upload.url,
+            uploadId: upload.id
+        });
+    } catch (error) {
+        console.error('Mux upload URL generation failed:', error);
+        res.status(500).json({ success: false, message: 'Failed to generate upload URL' });
+    }
 };
